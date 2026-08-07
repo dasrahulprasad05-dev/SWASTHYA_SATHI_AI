@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -61,7 +61,7 @@ export const AuthPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') as AuthTab) || (searchParams.get('mode') === 'signup' ? 'citizen-signup' : 'signin');
 
-  const { login, register, registerAdmin, forgotPassword, resetPassword, isLoading } = useAuth();
+  const { login, register, registerAdmin, forgotPassword, resetPassword, isLoading, user } = useAuth();
 
   const [currentTab, setCurrentTab] = useState<AuthTab>(initialTab);
   const [isAdminPortal, setIsAdminPortal] = useState(searchParams.get('portal') === 'admin');
@@ -99,6 +99,11 @@ export const AuthPage: React.FC = () => {
   const [forgotNewPassword, setForgotNewPassword] = useState('');
   const [isSubmittingForgot, setIsSubmittingForgot] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
+    }
+  }, [user, navigate]);
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 5000);
@@ -137,7 +142,7 @@ export const AuthPage: React.FC = () => {
     }
 
     try {
-      await register({
+      const res = await register({
         name: citizenForm.name,
         email: citizenForm.email,
         phone: citizenForm.phone,
@@ -146,8 +151,14 @@ export const AuthPage: React.FC = () => {
         password: citizenForm.password,
         role: 'citizen',
       });
-      showToast('Registration successful! Verification email sent via Brevo.', 'success');
-      setTimeout(() => navigate('/dashboard'), 1000);
+      
+      if (res?.verificationRequired) {
+        showToast('Security Check: A verification email has been sent. Please check your inbox and click the link to log in.', 'success');
+        setCurrentTab('signin');
+      } else {
+        showToast('Registration successful!', 'success');
+        setTimeout(() => navigate('/dashboard'), 1000);
+      }
     } catch (err: any) {
       showToast(err.message || 'Registration failed.', 'error');
     }
@@ -165,7 +176,7 @@ export const AuthPage: React.FC = () => {
     }
 
     try {
-      await registerAdmin({
+      const res = await registerAdmin({
         name: adminForm.name,
         email: adminForm.email,
         phone: adminForm.phone,
@@ -176,8 +187,14 @@ export const AuthPage: React.FC = () => {
         password: adminForm.password,
         role: 'admin',
       });
-      showToast('Official Health Administrator account created successfully!', 'success');
-      setTimeout(() => navigate('/admin'), 1000);
+      
+      if (res?.verificationRequired) {
+        showToast('Security Check: A verification email has been sent to your official email. Please verify to access the portal.', 'success');
+        setCurrentTab('signin');
+      } else {
+        showToast('Official Health Administrator account created successfully!', 'success');
+        setTimeout(() => navigate('/admin'), 1000);
+      }
     } catch (err: any) {
       showToast(err.message || 'Admin registration failed.', 'error');
     }

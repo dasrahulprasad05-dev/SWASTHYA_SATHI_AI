@@ -132,29 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      // 1. Try Backend API (which sends Brevo verification email)
-      try {
-        const res = await authService.register({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          phone: data.phone,
-          district: data.district || 'Khordha',
-          language: data.language || 'en',
-          role: 'citizen',
-        });
-        if (res.data?.user) {
-          setUser({
-            ...MOCK_USER,
-            ...res.data.user,
-          });
-          return;
-        }
-      } catch (err) {
-        console.warn('Backend register note:', err);
-      }
-
-      // 2. Supabase Auth Fallback
+      // 1. Try Supabase Auth First for Link-based Verification
       if (isSupabaseConfigured()) {
         const { data: authData, error } = await supabase.auth.signUp({
           email: data.email,
@@ -170,7 +148,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           },
         });
 
-        if (!error && authData.user) {
+        if (error) throw error;
+
+        // If session is null, it means email confirmation is required by Supabase settings
+        if (authData.user && !authData.session) {
+          return { verificationRequired: true };
+        }
+
+        if (authData.user) {
           setUser({
             ...MOCK_USER,
             id: authData.user.id,
@@ -184,17 +169,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
+      // 2. Try Backend API (Brevo OTP fallback)
+      try {
+        const res = await authService.register({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          phone: data.phone,
+          district: data.district || 'Khordha',
+          language: data.language || 'en',
+          role: 'citizen',
+        });
+        
+        if (res.data?.verificationRequired) {
+            return { verificationRequired: true };
+        }
+
+        if (res.data?.user) {
+          setUser({
+            ...MOCK_USER,
+            ...res.data.user,
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend register note:', err);
+      }
+
       // 3. Offline simulation
       await new Promise((resolve) => setTimeout(resolve, 400));
-      setUser({
-        ...MOCK_USER,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        district: data.district || 'Khordha',
-        role: 'citizen',
-      });
-      localStorage.setItem('auth_token', 'jwt_' + Date.now());
+      return { verificationRequired: true };
     } finally {
       setIsLoading(false);
     }
@@ -203,6 +207,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const registerAdmin = async (data: AdminRegisterData) => {
     setIsLoading(true);
     try {
+      // 1. Try Supabase Auth First
+      if (isSupabaseConfigured()) {
+        const { data: authData, error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              name: data.name,
+              phone: data.phone,
+              district: data.district,
+              language: data.language,
+              role: 'admin',
+              designation: data.designation,
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        if (authData.user && !authData.session) {
+          return { verificationRequired: true };
+        }
+      }
+
+      // 2. Try Backend API Fallback
       const res = await authService.register({
         name: data.name,
         email: data.email,
@@ -215,6 +244,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         designation: data.designation,
       });
 
+      if (res.data?.verificationRequired) {
+        return { verificationRequired: true };
+      }
+
       if (res.data?.user) {
         setUser({
           ...MOCK_USER,
@@ -224,15 +257,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Fallback
-      setUser({
-        ...MOCK_USER,
-        name: data.name,
-        email: data.email,
-        role: 'admin',
-        designation: data.designation,
-        district: data.district,
-      });
+      // 3. Offline Fallback
+      return { verificationRequired: true };
     } finally {
       setIsLoading(false);
     }
