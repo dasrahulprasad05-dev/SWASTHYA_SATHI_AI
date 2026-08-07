@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   MessageSquare,
   BookOpen,
@@ -68,10 +69,35 @@ export const FeaturesGrid: React.FC = () => {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: 'spring', stiffness: 100, damping: 15 },
+    },
+  };
+
   return (
     <section style={{ padding: '5rem 1.5rem', backgroundColor: 'var(--bg)' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3.5rem auto' }}>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={itemVariants}
+          style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3.5rem auto' }}
+        >
           <span
             style={{
               fontSize: '0.82rem',
@@ -92,9 +118,13 @@ export const FeaturesGrid: React.FC = () => {
           <p style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>
             Built specifically to solve public healthcare challenges in Odisha with AI and localized knowledge.
           </p>
-        </div>
+        </motion.div>
 
-        <div
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -102,77 +132,76 @@ export const FeaturesGrid: React.FC = () => {
           }}
         >
           {features.map((feat) => (
-            <Link
-              key={feat.title}
-              to={feat.path}
-              style={{
-                backgroundColor: 'var(--surface)',
-                borderRadius: 'var(--radius-2xl)',
-                padding: '2rem',
-                border: '1px solid var(--border)',
-                textDecoration: 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'all 0.25s ease',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                  <div
-                    style={{
-                      width: '56px',
-                      height: '56px',
-                      borderRadius: '16px',
-                      backgroundColor: feat.bg,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {feat.icon}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      backgroundColor: 'var(--surface-hover)',
-                      color: 'var(--text-secondary)',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: 'var(--radius-full)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    {feat.badge}
-                  </span>
-                </div>
-
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.6rem' }}>
-                  {feat.title}
-                </h3>
-                <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  {feat.description}
-                </p>
-              </div>
-
-              <div
+            <motion.div key={feat.title} variants={itemVariants} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: 'spring', stiffness: 300 }}>
+              <Link
+                to={feat.path}
+                className="glass-panel"
                 style={{
+                  borderRadius: 'var(--radius-2xl)',
+                  padding: '2rem',
+                  textDecoration: 'none',
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.88rem',
-                  fontWeight: 700,
-                  color: 'var(--primary)',
-                  marginTop: '1.5rem',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '100%',
                 }}
               >
-                <span>Explore Feature</span>
-                <ArrowRight size={16} />
-              </div>
-            </Link>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                    <div
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '16px',
+                        backgroundColor: feat.bg,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {feat.icon}
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        backgroundColor: 'var(--surface-hover)',
+                        color: 'var(--text-secondary)',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: 'var(--radius-full)',
+                        border: '1px solid var(--border)',
+                      }}
+                    >
+                      {feat.badge}
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.6rem' }}>
+                    {feat.title}
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    {feat.description}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    fontSize: '0.88rem',
+                    fontWeight: 700,
+                    color: 'var(--primary)',
+                    marginTop: '1.5rem',
+                  }}
+                >
+                  <span>Explore Feature</span>
+                  <ArrowRight size={16} />
+                </div>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
-import { MessageSquare, Cpu, ShieldCheck, HeartPulse } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MessageSquare, Cpu, ShieldCheck } from 'lucide-react';
 
 export const HowItWorks: React.FC = () => {
   const steps = [
@@ -23,10 +24,33 @@ export const HowItWorks: React.FC = () => {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: 'spring', stiffness: 80, damping: 20 },
+    },
+  };
+
   return (
     <section style={{ padding: '5rem 1.5rem', backgroundColor: 'var(--surface)' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 3.5rem auto' }}>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={itemVariants}
+          style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 3.5rem auto' }}
+        >
           <span
             style={{
               fontSize: '0.82rem',
@@ -43,9 +67,13 @@ export const HowItWorks: React.FC = () => {
           <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '1rem', color: 'var(--text-primary)' }}>
             3 Simple Steps to Better Health Guidance
           </h2>
-        </div>
+        </motion.div>
 
-        <div
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -54,8 +82,10 @@ export const HowItWorks: React.FC = () => {
           }}
         >
           {steps.map((step, idx) => (
-            <div
+            <motion.div
               key={step.num}
+              variants={itemVariants}
+              whileHover={{ scale: 1.03 }}
               style={{
                 backgroundColor: 'var(--bg)',
                 borderRadius: 'var(--radius-2xl)',
@@ -65,12 +95,13 @@ export const HowItWorks: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1rem',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
                   style={{
-                    fontSize: '2rem',
+                    fontSize: '2.5rem',
                     fontWeight: 900,
                     color: 'var(--primary-200)',
                     fontFamily: 'var(--font-display)',
@@ -87,23 +118,23 @@ export const HowItWorks: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: 'var(--shadow-sm)',
+                    boxShadow: 'var(--shadow)',
                   }}
                 >
                   {step.icon}
                 </div>
               </div>
 
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                 {step.title}
               </h3>
 
-              <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
                 {step.description}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

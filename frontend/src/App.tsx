@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -20,31 +21,53 @@ import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 
+const AnimatedRoutes: React.FC = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+        <Route path="/auth" element={<PageWrapper><AuthPage /></PageWrapper>} />
+        <Route path="/login" element={<PageWrapper><AuthPage /></PageWrapper>} />
+        <Route path="/register" element={<PageWrapper><AuthPage /></PageWrapper>} />
+        <Route path="/chat" element={<PageWrapper><ChatPage /></PageWrapper>} />
+        <Route path="/hospitals" element={<PageWrapper><HospitalFinderPage /></PageWrapper>} />
+        <Route path="/health-hub" element={<PageWrapper><HealthHubPage /></PageWrapper>} />
+        <Route path="/disease/:id" element={<PageWrapper><DiseaseDetailPage /></PageWrapper>} />
+        <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+        <Route path="/medicines" element={<PageWrapper><MedicineGuidePage /></PageWrapper>} />
+        <Route path="/records" element={<PageWrapper><HealthRecordsPage /></PageWrapper>} />
+        <Route path="/schemes" element={<PageWrapper><GovernmentSchemesPage /></PageWrapper>} />
+        <Route path="/emergency" element={<PageWrapper><EmergencyHelpPage /></PageWrapper>} />
+        <Route path="/voice" element={<PageWrapper><VoiceAssistantPage /></PageWrapper>} />
+        <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
+        <Route path="/profile" element={<PageWrapper><ProfilePage /></PageWrapper>} />
+        <Route path="/settings" element={<PageWrapper><SettingsPage /></PageWrapper>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
+const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -15 }}
+    transition={{ duration: 0.3, ease: 'easeInOut' }}
+    style={{ minHeight: '100vh', width: '100%' }}
+  >
+    {children}
+  </motion.div>
+);
+
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/register" element={<AuthPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/hospitals" element={<HospitalFinderPage />} />
-            <Route path="/health-hub" element={<HealthHubPage />} />
-            <Route path="/disease/:id" element={<DiseaseDetailPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/medicines" element={<MedicineGuidePage />} />
-            <Route path="/records" element={<HealthRecordsPage />} />
-            <Route path="/schemes" element={<GovernmentSchemesPage />} />
-            <Route path="/emergency" element={<EmergencyHelpPage />} />
-            <Route path="/voice" element={<VoiceAssistantPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <AnimatedRoutes />
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
