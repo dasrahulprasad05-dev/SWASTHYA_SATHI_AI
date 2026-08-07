@@ -1,0 +1,124 @@
+{
+  "app": {
+    "name": "Swasthya Sathi AI",
+    "tagline": "AI-Powered Public Health Assistant for Odisha",
+    "description": "Your intelligent health companion for accurate guidance, trusted information, and better health decisions."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "chat": "AI Chat",
+    "voice": "Voice Assistant",
+    "healthHub": "Health Hub",
+    "hospitals": "Find Hospitals",
+    "medicineGuide": "Medicine Guide",
+    "medicines": "Medicine Guide",
+    "healthRecords": "Health Records",
+    "records": "Health Records",
+    "schemes": "Government Schemes",
+    "emergency": "Emergency Help",
+    "reminders": "Health Reminders",
+    "dashboard": "Dashboard",
+    "admin": "Admin Surveillance",
+    "profile": "Profile",
+    "settings": "Settings",
+    "newChat": "New Chat",
+    "logout": "Log Out"
+  },
+  "landing": {
+    "headline1": "Your Health.",
+    "headline2": "Our Priority.",
+    "headlineHighlight": "Always with You.",
+    "subtitle": "Swasthya Sathi AI is your intelligent health companion for accurate guidance, trusted information, and better health decisions in Odia, Hindi, and English.",
+    "chatCTA": "Chat with AI Assistant",
+    "voiceCTA": "Talk via Voice",
+    "getStarted": "Get Started",
+    "features": {
+      "ai": "AI Health Assistant",
+      "voice": "Voice Support",
+      "multilingual": "Multilingual (Odia/Hindi/Eng)",
+      "secure": "Secure & Reliable"
+    },
+    "stats": {
+      "citizens": "Citizens Served",
+      "workers": "Health Workers",
+      "hospitals": "Hospitals Listed",
+      "schemes": "Health Schemes",
+      "support": "AI Support"
+    },
+    "trustedBy": "Trusted Information From"
+  },
+  "chat": {
+    "title": "AI Health Assistant",
+    "subtitle": "Instant medical guidance & symptom analysis",
+    "placeholder": "Ask anything about your health, symptoms, or medicines...",
+    "recentChats": "Recent Chats",
+    "disclaimer": "Swasthya Sathi AI provides general health information and is not a substitute for professional medical advice.",
+    "recommendations": "Recommendations",
+    "warnings": "Important Warnings",
+    "sources": "Verified Sources",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "askDoctor": "Consult a Doctor"
+  },
+  "voice": {
+    "listening": "I'm listening...",
+    "speakNow": "Speak now in Odia, Hindi, or English",
+    "stopListening": "Stop Listening",
+    "processing": "Processing your voice...",
+    "responding": "Swasthya Sathi is speaking...",
+    "tapToSpeak": "Tap microphone to speak",
+    "language": "Listening in",
+    "tips": "Try saying:",
+    "transcript": "Live Transcript"
+  },
+  "hospital": {
+    "title": "Find Hospitals & Clinics",
+    "subtitle": "Locate verified healthcare centers near you in Odisha",
+    "searchPlaceholder": "Search by hospital name, specialty, or area...",
+    "useLocation": "Use My Location",
+    "filters": {
+      "all": "All",
+      "government": "Government",
+      "private": "Private",
+      "emergency": "24x7 Emergency",
+      "openNow": "Open Now"
+    },
+    "distance": "km away",
+    "verified": "Verified",
+    "call": "Call Hospital",
+    "directions": "Get Directions",
+    "specialties": "Specialties",
+    "services": "Available Services"
+  },
+  "disease": {
+    "overview": "Overview",
+    "symptoms": "Symptoms",
+    "causes": "Causes",
+    "treatments": "Treatment",
+    "prevention": "Prevention",
+    "spread": "How It Spreads",
+    "whenToSeeDoctor": "When to See a Doctor",
+    "faq": "Frequently Asked Questions",
+    "dos": "Do's",
+    "donts": "Don'ts",
+    "talkToAI": "Talk to AI about this condition"
+  },
+  "dashboard": {
+    "greeting": "Welcome back",
+    "healthScore": "Health Score",
+    "totalChats": "Total Chats",
+    "savedItems": "Saved Items",
+    "reminders": "Reminders",
+    "recentActivity": "Recent Activity",
+    "healthSummary": "Health Summary"
+  },
+  "emergency": {
+    "title": "Emergency Assistance",
+    "callAmbulance": "Call Ambulance (108)",
+    "police": "Police (112)",
+    "womenHelpline": "Women Helpline (181)",
+    "odishaHealthHelpline": "Odisha Health Helpline (104)",
+    "firstAidGuides": "Emergency First Aid Guides"
+  }
+}
