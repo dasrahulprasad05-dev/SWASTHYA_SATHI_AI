@@ -8,7 +8,7 @@ import { ClinicalTriageResponse } from './aiService.js';
 dotenv.config();
 
 const groqApiKey = process.env.GROQ_API_KEY || '';
-const groqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+const groqModel = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 const LANGUAGE_MAP: Record<string, string> = {
   en: 'English',

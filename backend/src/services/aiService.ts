@@ -5,7 +5,7 @@ import { knowledgeBaseService } from './knowledgeBaseService.js';
 dotenv.config();
 
 const groqApiKey = process.env.GROQ_API_KEY || '';
-const groqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+const groqModel = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 let groq: Groq | null = null;
 if (groqApiKey && groqApiKey !== 'your_groq_api_key_here') {
