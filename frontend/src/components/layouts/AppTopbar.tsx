@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Globe, Bell, Moon, Sun, Search, ShieldAlert, Check, Menu } from 'lucide-react';
+import { Globe, Bell, Moon, Sun, Search, ShieldAlert, Check, Menu, User, LogOut, LogIn, LayoutDashboard } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../../constants';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
@@ -22,9 +23,23 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
 }) => {
   const { i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const currentLang =
     SUPPORTED_LANGUAGES.find((l) => l.code === i18n.language) || SUPPORTED_LANGUAGES[0];
@@ -242,23 +257,166 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
         </div>
 
         {/* User Avatar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', paddingLeft: '0.5rem', borderLeft: '1px solid var(--border)' }}>
-          <div
+        <div 
+          ref={profileRef}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.5rem', 
+            paddingLeft: '0.5rem', 
+            borderLeft: '1px solid var(--border)',
+            position: 'relative'
+          }}
+        >
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
             style={{
               width: '36px',
               height: '36px',
               borderRadius: '50%',
-              backgroundColor: 'var(--primary)',
-              color: 'white',
+              backgroundColor: user ? 'var(--primary)' : 'var(--surface-hover)',
+              border: user ? 'none' : '1px solid var(--border)',
+              color: user ? 'white' : 'var(--text-secondary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 700,
               fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
             }}
           >
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'R'}
-          </div>
+            {user?.name ? user.name.charAt(0).toUpperCase() : <User size={18} />}
+          </button>
+
+          {/* Profile Dropdown */}
+          {isProfileOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '115%',
+                right: 0,
+                width: '220px',
+                backgroundColor: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-lg)',
+                boxShadow: 'var(--shadow-lg)',
+                padding: '0.5rem',
+                zIndex: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.25rem'
+              }}
+            >
+              {user ? (
+                <>
+                  <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border-light)', marginBottom: '0.25rem' }}>
+                    <p style={{ fontWeight: 600, fontSize: '0.85rem', margin: 0 }}>{user.name}</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>{user.role === 'admin' ? 'Health Official' : 'Citizen'}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.5rem',
+                      borderRadius: 'var(--radius)',
+                      fontSize: '0.85rem',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      background: 'transparent'
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <LayoutDashboard size={15} />
+                    <span>Dashboard</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsProfileOpen(false);
+                      navigate('/');
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.5rem',
+                      borderRadius: 'var(--radius)',
+                      fontSize: '0.85rem',
+                      textAlign: 'left',
+                      color: 'var(--danger)',
+                      cursor: 'pointer',
+                      background: 'transparent'
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--danger-light)')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <LogOut size={15} />
+                    <span>Logout</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border-light)', marginBottom: '0.25rem' }}>
+                    <p style={{ fontWeight: 600, fontSize: '0.85rem', margin: 0 }}>Join Swasthya Sathi</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      navigate('/auth?mode=signin&portal=citizen');
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.5rem',
+                      borderRadius: 'var(--radius)',
+                      fontSize: '0.85rem',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      background: 'transparent'
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <LogIn size={15} />
+                    <span>Login as Citizen</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      navigate('/auth?mode=signin&portal=admin');
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.5rem',
+                      borderRadius: 'var(--radius)',
+                      fontSize: '0.85rem',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      background: 'transparent'
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--surface-hover)')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <ShieldAlert size={15} />
+                    <span>Login as Official</span>
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>
