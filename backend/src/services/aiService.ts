@@ -88,60 +88,34 @@ export class AIService {
     userMessage: string,
     language: 'en' | 'hi' | 'or'
   ): ClinicalTriageResponse {
-    const lower = userMessage.toLowerCase();
-
     if (language === 'or') {
       return {
-        content: `ଆପଣଙ୍କ ଲକ୍ଷଣ ଅନୁଯାୟୀ ପ୍ରାଥମିକ ପରାମର୍ଶ:\n\n1. ପ୍ରଚୁର ପରିମାଣରେ ପାଣି, ORS ଏବଂ ତରଳ ପଦାର୍ଥ ପିଅନ୍ତୁ।\n2. ଜ୍ୱର ପାଇଁ ଡାକ୍ତରଙ୍କ ପରାମର୍ଶ ନେଇ ପାରାସିଟାମଲ୍ ନିଅନ୍ତୁ (ଆସ୍ପିରିନ୍ ବା ଆଇବୁପ୍ରୋଫେନ୍ ଖାଆନ୍ତୁ ନାହିଁ)।\n3. ଲକ୍ଷଣ ୩ ଦିନରୁ ଅଧିକ ରହିଲେ ନିକଟସ୍ଥ ସରକାରୀ ଡାକ୍ତରଖାନା (DHH/CHC) କୁ ଯାଇ ରକ୍ତ ପରୀକ୍ଷା କରାନ୍ତୁ।`,
-        confidence: 0.91,
-        recommendations: [
-          'ଦିନକୁ ୩-୪ ଲିଟର ପାଣି ଓ ORS ପିଅନ୍ତୁ',
-          'ସମ୍ପୂର୍ଣ୍ଣ ବିଶ୍ରାମ ନିଅନ୍ତୁ',
-          'ସ୍ୱାସ୍ଥ୍ୟ କର୍ମୀ (ASHA) ଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ',
-        ],
-        warnings: [
-          'ପ୍ରବଳ ପେଟ ଯନ୍ତ୍ରଣା ବା ବାରମ୍ବାର ବାନ୍ତି ହେଲେ',
-          'ନାକ ବା ମାଢ଼ିରୁ ରକ୍ତସ୍ରାବ ହେଲେ',
-          'ଶ୍ୱାସକ୍ରିୟାରେ କଷ୍ଟ ଅନୁଭବ ହେଲେ ତୁରନ୍ତ ୧୦୮ କୁ କଲ୍ କରନ୍ତୁ',
-        ],
-        sources: ['ଓଡ଼ିଶା ଜନସ୍ୱାସ୍ଥ୍ୟ ନିର୍ଦ୍ଦେଶାଳୟ', 'NVBDCP ନିର୍ଦ୍ଦେଶାବଳୀ', 'ICMR'],
+        content: `ମୁଁ ବର୍ତ୍ତମାନ ଯାନ୍ତ୍ରିକ ତ୍ରୁଟିର ସମ୍ମୁଖୀନ ହେଉଛି ଏବଂ ଆପଣଙ୍କ ଲକ୍ଷଣଗୁଡ଼ିକର ବିଶ୍ଳେଷଣ କରିପାରୁନାହିଁ। ଦୟାକରି ଡାକ୍ତରଙ୍କ ପରାମର୍ଶ ନିଅନ୍ତୁ ବା ୧୦୪ କୁ କଲ୍ କରନ୍ତୁ।`,
+        confidence: 0.1,
+        recommendations: ['ଡାକ୍ତରଙ୍କ ସହ ପରାମର୍ଶ କରନ୍ତୁ', 'ଅଧିକ ସହାୟତା ପାଇଁ ୧୦୪ କୁ କଲ୍ କରନ୍ତୁ'],
+        warnings: ['ଏହା କେବଳ ଏକ ସାଧାରଣ ସୂଚନା'],
+        sources: [],
         followUp: 'ଆପଣ ନିକଟସ୍ଥ ଡାକ୍ତରଖାନା ଏବଂ ବେଡ୍ ସ୍ଥିତି ଜାଣିବାକୁ ଚାହାଁନ୍ତି କି?',
       };
     }
 
     if (language === 'hi') {
       return {
-        content: `आपके लक्षणों के आधार पर प्राथमिक स्वास्थ्य मार्गदर्शन:\n\n1. पर्याप्त मात्रा में ओआरएस (ORS) और तरल पदार्थों का सेवन करें।\n2. बुखार के लिए केवल पैरासिटामोल लें (एस्पिरिन या ब्रूफेन लेने से बचें)।\n3. यदि बुखार 2-3 दिनों से अधिक रहता है तो निकटतम सरकारी अस्पताल में सीबीसी (CBC) रक्त जांच कराएं।`,
-        confidence: 0.92,
-        recommendations: [
-          'प्रतिदिन 3-4 लीटर साफ पानी और ओआरएस पिएं',
-          'पर्याप्त आराम करें और भारी काम से बचें',
-          'निकटतम स्वास्थ्य केंद्र (PHC/CHC) से संपर्क करें',
-        ],
-        warnings: [
-          'लगातार उल्टी या गंभीर पेट दर्द होना',
-          'मसूड़ों या नाक से रक्तस्राव होना',
-          'सांस लेने में अत्यधिक कठिनाई होने पर तुरंत 108 पर कॉल करें',
-        ],
-        sources: ['ओडिशा जन स्वास्थ्य निदेशालय', 'आईसीएमआर (ICMR) दिशानिर्देश', 'WHO'],
+        content: `मैं वर्तमान में तकनीकी समस्याओं का सामना कर रहा हूँ और आपके लक्षणों का विश्लेषण करने में असमर्थ हूँ। कृपया डॉक्टर से परामर्श लें या 104 पर कॉल करें।`,
+        confidence: 0.1,
+        recommendations: ['डॉक्टर से परामर्श लें', 'अधिक सहायता के लिए 104 पर कॉल करें'],
+        warnings: ['यह केवल एक सामान्य जानकारी है'],
+        sources: [],
         followUp: 'क्या आप निकटतम अस्पताल में बिस्तर की उपलब्धता देखना चाहते हैं?',
       };
     }
 
     return {
-      content: `Based on your reported symptoms (${userMessage}):\n\n1. **Hydration First**: Maintain consistent intake of fluids including ORS, coconut water, and clean drinking water.\n2. **Fever Management**: Use Paracetamol (650mg) as prescribed for temperature control; strictly avoid NSAIDs like Ibuprofen/Aspirin.\n3. **Clinical Testing**: If fever or symptoms persist beyond 48-72 hours, visit your nearest Community Health Center (CHC) or District Hospital for blood work (CBC, NS1 antigen).`,
-      confidence: 0.94,
-      recommendations: [
-        'Drink 3-4 liters of water and electrolyte fluids daily',
-        'Take adequate bed rest and avoid strenuous physical exertion',
-        'Check body temperature every 4-6 hours',
-      ],
-      warnings: [
-        'Persistent severe abdominal pain or vomiting',
-        'Spontaneous bleeding from gums or nose',
-        'Extreme drowsiness or shortness of breath — Call 108 immediately',
-      ],
-      sources: ['Odisha Directorate of Public Health', 'NVBDCP Guidelines', 'WHO Protocol'],
+      content: `I am currently experiencing technical difficulties and cannot analyze your symptoms. Please consult a healthcare professional or call the 104 health helpline.`,
+      confidence: 0.1,
+      recommendations: ['Consult a doctor', 'Call 104 for health assistance'],
+      warnings: ['This is a generic error message'],
+      sources: [],
       followUp: 'Would you like to find the nearest government hospital in your district?',
     };
   }

@@ -10,6 +10,12 @@ dotenv.config();
 const groqApiKey = process.env.GROQ_API_KEY || '';
 const groqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
+const LANGUAGE_MAP: Record<string, string> = {
+  en: 'English',
+  hi: 'Hindi',
+  or: 'Odia (ଓଡ଼ିଆ)'
+};
+
 let model: ChatGroq | null = null;
 if (groqApiKey && groqApiKey !== 'your_groq_api_key_here') {
   model = new ChatGroq({
@@ -162,7 +168,7 @@ Therefore, you must provide a cautious general explanation.
 IMPORTANT: State clearly that you do not have enough reliable information in the knowledge base and recommend consulting a healthcare professional for specific medical decisions. Do NOT give definitive medical diagnoses or dosages.
 Respond in JSON format matching this schema:
 {
-  "content": "Explanation and disclaimer in ${state.language}",
+  "content": "Explanation and disclaimer entirely in ${LANGUAGE_MAP[state.language] || 'English'}",
   "confidence": 0.5,
   "recommendations": ["Consult doctor"],
   "warnings": ["General information only"],
@@ -206,14 +212,14 @@ Clinical Rules & Safety Guardrails:
 1. Always maintain an empathetic, reassuring tone.
 2. Emphasize that your guidance does NOT replace in-person doctor diagnosis.
 3. Use the provided Knowledge Base context to answer accurately.
-4. Support response in the requested language (${state.language}).
+4. Write the entire response strictly in the requested language: ${LANGUAGE_MAP[state.language] || 'English'}. Do NOT mix languages.
 
 Context from Knowledge Base:
 ${state.ragContext}
 
 Always format your response as valid JSON with the following schema:
 {
-  "content": "Detailed empathetic answer in the user's language explaining symptoms, care, and guidance",
+  "content": "Detailed empathetic answer in ${LANGUAGE_MAP[state.language] || 'English'} explaining symptoms, care, and guidance",
   "confidence": ${state.retrievalConfidence},
   "recommendations": ["Recommendation 1", "Recommendation 2", "Recommendation 3"],
   "warnings": ["Red flag symptom 1", "Red flag symptom 2"],
