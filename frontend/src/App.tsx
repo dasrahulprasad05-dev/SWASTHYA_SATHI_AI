@@ -20,6 +20,7 @@ import VoiceAssistantPage from './pages/VoiceAssistantPage';
 import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
+import SymptomCheckerPage from './pages/SymptomCheckerPage';
 
 const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
@@ -32,6 +33,7 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/login" element={<PageWrapper><AuthPage /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><AuthPage /></PageWrapper>} />
         <Route path="/chat" element={<PageWrapper><ChatPage /></PageWrapper>} />
+        <Route path="/symptoms" element={<PageWrapper><SymptomCheckerPage /></PageWrapper>} />
         <Route path="/hospitals" element={<PageWrapper><HospitalFinderPage /></PageWrapper>} />
         <Route path="/health-hub" element={<PageWrapper><HealthHubPage /></PageWrapper>} />
         <Route path="/disease/:id" element={<PageWrapper><DiseaseDetailPage /></PageWrapper>} />
