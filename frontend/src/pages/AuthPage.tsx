@@ -291,7 +291,7 @@ export const AuthPage: React.FC = () => {
           <img 
             src="/logos/main-logo.jpg" 
             alt="Swasthya Sathi AI Logo" 
-            className="w-12 h-12 rounded-xl object-contain bg-white group-hover:scale-105 transition-transform shadow-lg shadow-teal-500/25"
+            className="w-20 h-20 rounded-2xl object-contain bg-transparent group-hover:scale-105 transition-transform shadow-lg shadow-teal-500/25"
           />
           <div className="text-left">
             <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">

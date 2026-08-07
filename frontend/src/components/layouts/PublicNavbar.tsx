@@ -25,7 +25,7 @@ export const PublicNavbar: React.FC = () => {
           <img 
             src="/logos/main-logo.jpg" 
             alt="Swasthya Sathi AI Logo" 
-            style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'white' }} 
+            style={{ width: '72px', height: '72px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'transparent' }} 
           />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>

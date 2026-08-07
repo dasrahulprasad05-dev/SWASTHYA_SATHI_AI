@@ -13,7 +13,7 @@ export const PublicFooter: React.FC = () => {
               <img 
                 src="/logos/main-logo.jpg" 
                 alt="Swasthya Sathi AI Logo" 
-                style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'white' }} 
+                style={{ width: '64px', height: '64px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'transparent' }} 
               />
               <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF' }}>
                 Swasthya Sathi <span style={{ color: 'var(--primary)' }}>AI</span>

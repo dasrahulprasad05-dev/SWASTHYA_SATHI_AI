@@ -74,7 +74,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot, onClose }) =
             <img 
               src="/logos/main-logo.jpg" 
               alt="Swasthya Sathi AI Logo" 
-              style={{ width: '38px', height: '38px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'white', flexShrink: 0 }} 
+              style={{ width: '64px', height: '64px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'transparent', flexShrink: 0 }} 
             />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
