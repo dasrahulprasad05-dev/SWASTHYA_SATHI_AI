@@ -32,14 +32,7 @@ export const HeroSection: React.FC = () => {
       }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '2rem',
-            alignItems: 'center',
-          }}
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left Column: Copy & CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -156,7 +149,7 @@ export const HeroSection: React.FC = () => {
           </motion.div>
 
           {/* Right Column: Robot Mascot & Orbit */}
-          <div style={{ position: 'relative', height: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="relative h-[450px] lg:h-[600px] flex items-center justify-center mt-8 lg:mt-0 overflow-hidden lg:overflow-visible">
             
             {/* Base Hologram Ring */}
             <div style={{

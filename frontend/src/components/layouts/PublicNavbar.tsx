@@ -62,7 +62,7 @@ export const PublicNavbar: React.FC = () => {
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="desktop-nav">
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} className="desktop-nav mobile-hide">
           {PUBLIC_NAV_LINKS.map((link) => {
             const isActive = location.pathname === link.path;
             return (
@@ -98,7 +98,7 @@ export const PublicNavbar: React.FC = () => {
         </nav>
 
         {/* Action CTAs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {/* Language Selector */}
           <div style={{ position: 'relative' }}>
             <button
@@ -223,16 +223,16 @@ export const PublicNavbar: React.FC = () => {
             <span>{t('landing.getStarted')}</span>
             <ArrowRight size={16} />
           </Link>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            style={{ display: 'none', padding: '0.4rem', color: 'var(--text-primary)' }}
-            className="mobile-menu-btn"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="mobile-only"
+          style={{ padding: '0.4rem', color: 'var(--text-primary)' }}
+        >
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
       {/* Mobile Menu Dropdown */}
@@ -260,6 +260,18 @@ export const PublicNavbar: React.FC = () => {
               </Link>
             );
           })}
+          
+          <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <Link to="/emergency" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: 'var(--danger-light)', color: 'var(--danger-dark)', padding: '0.75rem', borderRadius: 'var(--radius)', fontWeight: 700, textDecoration: 'none' }}>
+              <ShieldAlert size={18} /> 108 Helpline
+            </Link>
+            <Link to="/auth" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1px solid var(--border)', color: 'var(--text-primary)', padding: '0.75rem', borderRadius: 'var(--radius)', fontWeight: 600, textDecoration: 'none' }}>
+              Sign In / ପଞ୍ଜୀକରଣ
+            </Link>
+            <Link to="/chat" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: 'var(--primary)', color: 'white', padding: '0.75rem', borderRadius: 'var(--radius)', fontWeight: 600, textDecoration: 'none' }}>
+              {t('landing.getStarted')} <ArrowRight size={18} />
+            </Link>
+          </div>
         </div>
       )}
     </header>

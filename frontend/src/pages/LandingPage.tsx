@@ -38,20 +38,11 @@ export const LandingPage: React.FC = () => {
           <main>
             <HeroSection />
             
-            <div style={{ 
-              maxWidth: '1280px', 
-              margin: '0 auto', 
-              padding: '0 1.5rem 3rem 1.5rem',
-              display: 'flex',
-              gap: '2rem',
-              alignItems: 'flex-start',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ flex: '1 1 600px' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto px-6 pb-12">
+              <div className="lg:col-span-7">
                 <StatsBar />
               </div>
-              <div style={{ flex: '1 1 400px' }}>
+              <div className="lg:col-span-5">
                 <TrustedSources />
               </div>
             </div>
