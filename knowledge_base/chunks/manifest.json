@@ -1,6 +1,6 @@
 {
-  "total_documents": 18,
-  "total_chunks": 172,
+  "total_documents": 33,
+  "total_chunks": 314,
   "documents": [
     {
       "filename": "Anemia_Awareness_Reference.docx",
@@ -24,11 +24,46 @@
       "characters": 6254
     },
     {
+      "filename": "Chickenpox_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 13,
+      "characters": 8390
+    },
+    {
       "filename": "Child_Health_Awareness_Reference.docx",
       "category": "child_health",
       "language": "en",
       "chunks": 8,
       "characters": 6827
+    },
+    {
+      "filename": "Cold_Symptom_Guide.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5668
+    },
+    {
+      "filename": "Common_Cold_and_Flu_Awareness_Guide.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 11,
+      "characters": 7323
+    },
+    {
+      "filename": "Conjunctivitis_Eye_Flu_Public_Health_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 8,
+      "characters": 6095
+    },
+    {
+      "filename": "Cough_Symptom_Guide.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 8,
+      "characters": 5487
     },
     {
       "filename": "Cuttack_District_Healthcare_Facilities_Reference.docx",
@@ -38,11 +73,25 @@
       "characters": 10665
     },
     {
+      "filename": "Dengue_Fever_Public_Health_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 11,
+      "characters": 7143
+    },
+    {
       "filename": "Diabetes_Awareness_Reference.docx",
       "category": "diseases",
       "language": "en",
       "chunks": 12,
       "characters": 7625
+    },
+    {
+      "filename": "Diarrhoea_Dehydration_Children_Reference.docx",
+      "category": "child_health",
+      "language": "en",
+      "chunks": 11,
+      "characters": 8035
     },
     {
       "filename": "Elderly_Health_Awareness.docx",
@@ -80,11 +129,25 @@
       "characters": 5733
     },
     {
+      "filename": "Jaundice_Hepatitis_A_E_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 11,
+      "characters": 7478
+    },
+    {
       "filename": "Khordha_District_Healthcare_Facilities_Reference.docx",
       "category": "hospitals",
       "language": "en",
       "chunks": 12,
       "characters": 9505
+    },
+    {
+      "filename": "Malaria_Public_Health_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 10,
+      "characters": 7381
     },
     {
       "filename": "Mamata_Yojana_Odisha_Guide.docx",
@@ -122,11 +185,53 @@
       "characters": 5838
     },
     {
+      "filename": "Pneumonia_in_Children_Reference.docx",
+      "category": "child_health",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5982
+    },
+    {
       "filename": "Puri_District_Healthcare_Facilities_Reference.docx",
       "category": "hospitals",
       "language": "en",
       "chunks": 13,
       "characters": 10958
+    },
+    {
+      "filename": "Skin_Infections_Public_Health_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 8,
+      "characters": 6143
+    },
+    {
+      "filename": "Tuberculosis_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 13,
+      "characters": 8937
+    },
+    {
+      "filename": "Typhoid_Fever_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 11,
+      "characters": 7007
+    },
+    {
+      "filename": "Viral_Fever_Public_Health_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 3,
+      "characters": 2119
+    },
+    {
+      "filename": "Vomiting_Symptom_Reference.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 6,
+      "characters": 5226
     }
   ]
 }

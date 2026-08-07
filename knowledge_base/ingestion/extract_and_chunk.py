@@ -12,7 +12,10 @@ import json
 import re
 from docx import Document
 
-RAW_DOCS_DIR = r"D:\SWASTHYA SATHI AI\knowledge_base\raw_docs\rahul knowladge base"
+RAW_DOCS_DIRS = [
+    r"D:\SWASTHYA SATHI AI\knowledge_base\raw_docs\rahul knowladge base",
+    r"D:\SWASTHYA SATHI AI\knowledge_base\raw_docs\knowladge base 2",
+]
 OUTPUT_DIR = r"D:\SWASTHYA SATHI AI\knowledge_base\processed"
 CHUNKS_OUTPUT = r"D:\SWASTHYA SATHI AI\knowledge_base\chunks"
 
@@ -24,6 +27,24 @@ CATEGORY_MAP = {
     'anemia': 'diseases',
     'diabetes': 'diseases',
     'hypertension': 'diseases',
+    'chickenpox': 'diseases',
+    'dengue': 'diseases',
+    'malaria': 'diseases',
+    'typhoid': 'diseases',
+    'tuberculosis': 'diseases',
+    'jaundice': 'diseases',
+    'hepatitis': 'diseases',
+    'viral_fever': 'diseases',
+    'conjunctivitis': 'diseases',
+    'skin_infection': 'diseases',
+    'cold_symptom': 'symptoms',
+    'cough_symptom': 'symptoms',
+    'vomiting': 'symptoms',
+    'common_cold': 'diseases',
+    'flu': 'diseases',
+    'pneumonia': 'child_health',
+    'diarrhoea': 'child_health',
+    'dehydration': 'child_health',
     'monsoon': 'prevention',
     'hygiene': 'prevention',
     'sanitation': 'prevention',
@@ -126,15 +147,21 @@ def detect_language(text: str) -> str:
     return 'en'
 
 def process_all_documents():
-    """Main pipeline: Extract → Clean → Chunk → Save."""
+    """Main pipeline: Extract -> Clean -> Chunk -> Save."""
     all_chunks = []
     processed_files = []
 
-    docx_files = [f for f in os.listdir(RAW_DOCS_DIR) if f.endswith('.docx')]
-    print(f"Found {len(docx_files)} .docx files to process\n")
+    # Collect all .docx files from all source directories
+    all_docx = []
+    for docs_dir in RAW_DOCS_DIRS:
+        if os.path.isdir(docs_dir):
+            for f in os.listdir(docs_dir):
+                if f.endswith('.docx'):
+                    all_docx.append((docs_dir, f))
+    print(f"Found {len(all_docx)} .docx files to process\n")
 
-    for filename in sorted(docx_files):
-        filepath = os.path.join(RAW_DOCS_DIR, filename)
+    for docs_dir, filename in sorted(all_docx, key=lambda x: x[1]):
+        filepath = os.path.join(docs_dir, filename)
         doc_id = os.path.splitext(filename)[0]
         category = detect_category(filename)
         

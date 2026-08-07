@@ -32,11 +32,11 @@ export interface SearchResult {
 
 // Medical keyword mappings for better search relevance
 const MEDICAL_SYNONYMS: Record<string, string[]> = {
-  fever: ['temperature', 'bukhar', 'jwara', 'pyrexia', 'high temperature'],
+  fever: ['temperature', 'bukhar', 'jwara', 'pyrexia', 'high temperature', 'viral fever'],
   headache: ['head pain', 'migraine', 'munda bindha', 'sir dard'],
-  dengue: ['dengue fever', 'aedes', 'platelet', 'ns1'],
-  malaria: ['anopheles', 'chills', 'plasmodium', 'antimalarial'],
-  diarrhea: ['loose motion', 'jhada', 'cholera', 'dehydration', 'ors'],
+  dengue: ['dengue fever', 'aedes', 'platelet', 'ns1', 'hemorrhagic'],
+  malaria: ['anopheles', 'chills', 'plasmodium', 'antimalarial', 'act therapy'],
+  diarrhea: ['loose motion', 'jhada', 'cholera', 'dehydration', 'ors', 'diarrhoea', 'watery stool'],
   diabetes: ['sugar', 'blood sugar', 'insulin', 'glucose', 'hba1c'],
   hypertension: ['blood pressure', 'bp', 'high bp', 'high blood pressure'],
   anemia: ['iron deficiency', 'hemoglobin', 'hb', 'pale', 'weakness', 'fatigue'],
@@ -55,6 +55,17 @@ const MEDICAL_SYNONYMS: Record<string, string[]> = {
   khordha: ['bhubaneswar', 'bbsr'],
   cuttack: ['scb medical', 'cuttack district'],
   puri: ['puri district', 'jagannath'],
+  chickenpox: ['varicella', 'itchy rash', 'blisters', 'pox'],
+  tuberculosis: ['tb', 'mycobacterium', 'dots', 'cough blood', 'pulmonary tb'],
+  typhoid: ['enteric fever', 'salmonella', 'widal test', 'typhoid fever'],
+  pneumonia: ['lung infection', 'chest infection', 'breathing difficulty', 'respiratory'],
+  jaundice: ['hepatitis', 'yellow skin', 'liver', 'bilirubin', 'hepatitis a', 'hepatitis e'],
+  conjunctivitis: ['eye flu', 'pink eye', 'eye infection', 'red eye', 'itchy eye'],
+  skin: ['skin infection', 'rash', 'scabies', 'fungal', 'ringworm', 'dermatitis'],
+  cold: ['common cold', 'runny nose', 'sneezing', 'nasal congestion', 'sore throat'],
+  cough: ['dry cough', 'wet cough', 'productive cough', 'khansi', 'throat irritation'],
+  vomiting: ['nausea', 'banti', 'throwing up', 'emesis', 'morning sickness'],
+  flu: ['influenza', 'seasonal flu', 'body ache', 'viral'],
 };
 
 class KnowledgeBaseService {
@@ -205,9 +216,10 @@ class KnowledgeBaseService {
 
   private detectQueryCategory(query: string): string | null {
     const categoryKeywords: Record<string, string[]> = {
-      diseases: ['fever', 'dengue', 'malaria', 'diabetes', 'anemia', 'hypertension', 'bp', 'sugar'],
-      emergency_first_aid: ['emergency', 'accident', 'snake', 'heart attack', 'chest pain', 'stroke', 'burn', 'bleeding'],
-      child_health: ['child', 'baby', 'vaccine', 'immunization', 'infant', 'pediatric'],
+      diseases: ['fever', 'dengue', 'malaria', 'diabetes', 'anemia', 'hypertension', 'bp', 'sugar', 'chickenpox', 'varicella', 'tuberculosis', 'tb', 'typhoid', 'jaundice', 'hepatitis', 'conjunctivitis', 'eye flu', 'skin infection', 'flu', 'influenza', 'viral fever', 'cold'],
+      symptoms: ['cough', 'vomiting', 'nausea', 'cold symptom', 'runny nose', 'sneezing', 'sore throat'],
+      emergency_first_aid: ['emergency', 'accident', 'snake', 'heart attack', 'chest pain', 'stroke', 'burn', 'bleeding', 'poisoning', 'drowning'],
+      child_health: ['child', 'baby', 'vaccine', 'immunization', 'infant', 'pediatric', 'pneumonia', 'diarrhoea', 'diarrhea', 'dehydration'],
       maternal_health: ['pregnancy', 'pregnant', 'maternal', 'delivery', 'antenatal'],
       elderly_health: ['elderly', 'old age', 'geriatric', 'senior'],
       government_schemes: ['scheme', 'yojana', 'bsky', 'ayushman', 'pmjay', 'mamata', 'janani', 'card', 'insurance'],
