@@ -705,7 +705,7 @@ export const AuthPage: React.FC = () => {
             </button>
           </form>
         )}
-      </div>
+      </motion.div>
 
       {/* ── FORGOT & RESET PASSWORD MODAL ── */}
       {isForgotModalOpen && (
