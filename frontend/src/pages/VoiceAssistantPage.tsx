@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Volume2, Sparkles } from 'lucide-react';
+import { Mic, MicOff, Volume2, Sparkles, Square, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { AppLayout } from '../components/layouts/AppLayout';
 import { chatService } from '../services/apiServices';
+import { QuickActions } from '../components/common/QuickActions';
+import { EmergencyCard } from '../components/common/EmergencyCard';
 
 export const VoiceAssistantPage: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
@@ -110,216 +113,211 @@ export const VoiceAssistantPage: React.FC = () => {
 
   return (
     <AppLayout
-      topbarTitle="Odia & Multilingual AI Voice Assistant"
-      topbarSubtitle="Speak naturally in Odia, Hindi, or English for instant medical triage"
-    >
-      <div
-        style={{
-          maxWidth: '860px',
-          margin: '0 auto',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          padding: '1.5rem 1rem',
-        }}
-      >
-        {/* Language Switcher Bar */}
-        <div
-          style={{
-            display: 'inline-flex',
-            backgroundColor: 'var(--surface)',
-            borderRadius: 'var(--radius-full)',
-            padding: '0.35rem',
-            border: '1px solid var(--border)',
-            boxShadow: 'var(--shadow-sm)',
-            marginBottom: '2.5rem',
-          }}
-        >
-          {[
-            { id: 'or', label: 'ଓଡ଼ିଆ (Odia)' },
-            { id: 'hi', label: 'हिंदी (Hindi)' },
-            { id: 'en', label: 'English' },
-          ].map((l) => {
-            const isActive = selectedLang === l.id;
-            return (
-              <button
-                key={l.id}
-                onClick={() => setSelectedLang(l.id as any)}
-                style={{
-                  padding: '0.5rem 1.25rem',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.88rem',
-                  fontWeight: isActive ? 700 : 500,
-                  backgroundColor: isActive ? 'var(--primary)' : 'transparent',
-                  color: isActive ? 'white' : 'var(--text-secondary)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-              >
-                {l.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Animated Voice Orb Center */}
-        <div style={{ position: 'relative', width: '220px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2.5rem' }}>
-          {/* Animated ripple rings */}
-          {isListening && (
-            <>
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: '-20px',
-                  borderRadius: '50%',
-                  border: '2px solid rgba(16, 185, 129, 0.4)',
-                  animation: 'pulse 1.5s infinite',
-                }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: '-40px',
-                  borderRadius: '50%',
-                  border: '2px solid rgba(16, 185, 129, 0.2)',
-                  animation: 'pulse 2s infinite',
-                }}
-              />
-            </>
-          )}
-
-          {/* Main Glowing Mic Button */}
-          <button
-            onClick={toggleListening}
-            style={{
-              width: '140px',
-              height: '140px',
-              borderRadius: '50%',
-              background: isListening
-                ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
-                : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-              border: '6px solid var(--surface)',
-              boxShadow: isListening
-                ? '0 0 35px rgba(239, 68, 68, 0.5)'
-                : '0 0 35px rgba(16, 185, 129, 0.4)',
-              color: 'white',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-              cursor: 'pointer',
-              zIndex: 2,
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
-          >
-            {isListening ? <MicOff size={42} /> : <Mic size={42} />}
-            <span style={{ fontSize: '0.78rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              {isListening ? 'Tap to Stop' : 'Tap to Speak'}
-            </span>
-          </button>
-        </div>
-
-        {/* Status Indicator */}
-        <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-          {isListening
-            ? '🎙️ Listening... Speak your health question in Odia or Hindi'
-            : isLoading
-            ? '⚡ Sathi AI is analyzing your symptoms...'
-            : isSpeaking
-            ? '🔊 Sathi AI is speaking...'
-            : 'Tap the microphone and describe your symptoms in your native tongue'}
-        </p>
-
-        {/* Live Transcript / Result Card */}
-        {(transcript || response) && (
-          <div
-            style={{
-              width: '100%',
-              backgroundColor: 'var(--surface)',
-              borderRadius: 'var(--radius-2xl)',
-              padding: '1.75rem',
-              border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow-md)',
-              textAlign: 'left',
-              marginBottom: '2rem',
-            }}
-          >
-            {transcript && (
-              <div style={{ marginBottom: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-light)' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                  You Said:
-                </span>
-                <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0.35rem 0 0 0' }}>
-                  "{transcript}"
-                </p>
+      topbarTitle="Voice Assistant"
+      topbarSubtitle="Talk naturally, get instant health guidance"
+      rightPanel={
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '1.5rem', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>Live Transcript</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#10B981', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                   <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>You</span>
+                 </div>
+                 <div>
+                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>You • Now</div>
+                   <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.25rem' }}>
+                     {transcript || (isListening ? 'Listening...' : 'Tap the mic and speak')}
+                   </div>
+                 </div>
               </div>
-            )}
 
-            {response && (
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary)' }}>
-                    <Sparkles size={16} />
-                    <span style={{ fontSize: '0.85rem', fontWeight: 800 }}>AI Doctor Advice:</span>
-                  </div>
-                  <button
-                    onClick={() => speakText(response)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                      fontSize: '0.78rem',
-                      color: 'var(--primary)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Volume2 size={15} />
-                    <span>Replay Audio</span>
-                  </button>
+              {isLoading && (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                   <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#F8FAFC', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                     <img src="/logos/main-logo.jpg" alt="AI" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
+                   </div>
+                   <div>
+                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>Swasthya Sathi AI • Now</div>
+                     <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.25rem' }}>
+                       Just a moment, I'm thinking...
+                     </div>
+                     <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+                        {[1,2,3,4].map(i => (
+                          <motion.div key={i} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }} style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981' }} />
+                        ))}
+                     </div>
+                   </div>
                 </div>
-                <p style={{ fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-line' }}>
-                  {response}
-                </p>
+              )}
+
+              {response && !isLoading && (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                   <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#F8FAFC', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                     <img src="/logos/main-logo.jpg" alt="AI" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
+                   </div>
+                   <div>
+                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>Swasthya Sathi AI • Now</div>
+                     <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.25rem' }}>
+                       {response}
+                     </div>
+                     <button
+                       onClick={() => speakText(response)}
+                       style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: 'var(--primary)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, marginTop: '0.5rem' }}
+                     >
+                       <Volume2 size={15} />
+                       <span>Replay Audio</span>
+                     </button>
+                   </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <QuickActions />
+          <EmergencyCard />
+        </div>
+      }
+    >
+      <div style={{ maxWidth: '680px', margin: '0 auto', width: '100%', paddingBottom: '2rem' }}>
+        {/* MAIN CARD */}
+        <div style={{ backgroundColor: 'white', borderRadius: '32px', padding: '1.5rem 2rem 2rem 2rem', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden', border: '1px solid var(--border-light)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          
+          <button 
+            onClick={() => { if(isListening) toggleListening(); }} 
+            style={{ alignSelf: 'flex-end', display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '100px', padding: '0.4rem 0.8rem', fontSize: '0.75rem', fontWeight: 700, color: '#334155', cursor: 'pointer', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', zIndex: 10, visibility: isListening ? 'visible' : 'hidden' }}
+          >
+            <div style={{ width: '8px', height: '8px', backgroundColor: '#EF4444', borderRadius: '2px' }} />
+            Stop Listening
+          </button>
+
+          <div style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#10B981', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>
+              {isListening ? "I'm listening..." : "Tap to start..."}
+            </h2>
+            <p style={{ fontSize: '1.05rem', color: '#64748B', margin: 0, fontWeight: 500 }}>
+              {isListening ? "Speak now" : "Ready when you are"}
+            </p>
+          </div>
+
+          <div style={{ position: 'relative', width: '100%', height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2.5rem' }}>
+            {isListening && (
+              <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', gap: '6px', width: '100%', justifyContent: 'center', zIndex: 0, opacity: 0.35 }}>
+                 {Array.from({length: 24}).map((_, i) => (
+                   <motion.div 
+                     key={i} 
+                     animate={{ height: [`${Math.random() * 20 + 10}px`, `${Math.random() * 70 + 50}px`, `${Math.random() * 20 + 10}px`] }}
+                     transition={{ repeat: Infinity, duration: Math.random() * 0.8 + 0.4, ease: "easeInOut", delay: Math.random() * 0.5 }}
+                     style={{ width: '4px', backgroundColor: '#10B981', borderRadius: '4px' }} 
+                   />
+                 ))}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Suggested Voice Prompts */}
-        <div style={{ width: '100%', textAlign: 'left', marginTop: '1rem' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase' }}>
-            Quick Prompts to Try
-          </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
-            {samplePrompts.map((p, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setTranscript(p.text);
-                  processVoiceQuery(p.text);
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.75rem 1rem',
-                  backgroundColor: 'var(--surface)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.88rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <Mic size={15} color="var(--primary)" />
-                <span>"{p.text}"</span>
-              </button>
-            ))}
+            <button 
+              onClick={toggleListening}
+              style={{ 
+                width: '110px', height: '110px', borderRadius: '50%', 
+                background: 'linear-gradient(135deg, #10B981 0%, #047857 100%)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'white', zIndex: 10, cursor: 'pointer', border: 'none',
+                boxShadow: isListening ? '0 0 0 12px rgba(16, 185, 129, 0.15), 0 0 0 24px rgba(16, 185, 129, 0.08)' : '0 15px 35px rgba(16,185,129,0.35)',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {isListening ? <Mic size={44} strokeWidth={2.5} /> : <MicOff size={44} strokeWidth={2.5} />}
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F0FDF4', color: '#047857', padding: '0.5rem 1.25rem', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '2.5rem' }}>
+            <Volume2 size={16} />
+            <span>Listening in {selectedLang === 'or' ? 'ଓଡ଼ିଆ (Odia)' : selectedLang === 'hi' ? 'हिंदी (Hindi)' : 'English'}</span>
+          </div>
+
+          <div style={{ width: '100%', backgroundColor: '#F8FAFC', borderRadius: '24px', padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px', background: 'linear-gradient(to top, #D1FAE5, transparent)', zIndex: 0, opacity: 0.5 }} />
+            
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', color: '#10B981', fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <Sparkles size={16} />
+                <span>Tips</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div style={{ alignSelf: 'flex-start', backgroundColor: 'white', padding: '0.75rem 1.25rem', borderRadius: '14px', fontSize: '0.88rem', color: '#334155', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                  ମୋତେ ଜ୍ୱର ହେଉଛି (I have fever)
+                </div>
+                <div style={{ alignSelf: 'flex-start', backgroundColor: 'white', padding: '0.75rem 1.25rem', borderRadius: '14px', fontSize: '0.88rem', color: '#334155', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                  ନିକଟରେ ଡାକ୍ତରଖାନା କେଉଁଠି ଅଛି? (Nearby hospitals?)
+                </div>
+                <div style={{ alignSelf: 'flex-start', backgroundColor: 'white', padding: '0.75rem 1.25rem', borderRadius: '14px', fontSize: '0.88rem', color: '#334155', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                  ମୁଣ୍ଡ ବିନ୍ଧା ପାଇଁ କ'ଣ କରିବି? (Headache relief?)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* STATUS CARD */}
+        <div style={{ backgroundColor: 'white', borderRadius: '20px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--border-light)', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <img src="/logos/main-logo.jpg" alt="Bot" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'contain' }} />
+            </div>
+            <div>
+              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.2rem' }}>
+                {isListening ? 'Listening...' : 'Ready'}
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B', fontWeight: 500 }}>
+                {isListening ? 'Please speak clearly' : 'Click the mic to start'}
+              </p>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            {isListening && (
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center', height: '24px' }}>
+                {[1,2,3,4,5,6].map(i => (
+                  <motion.div 
+                    key={i} 
+                    animate={{ height: ['20%', '100%', '20%'] }}
+                    transition={{ repeat: Infinity, duration: Math.random() * 0.4 + 0.3, ease: "easeInOut" }}
+                    style={{ width: '3px', backgroundColor: '#10B981', borderRadius: '3px' }} 
+                  />
+                ))}
+              </div>
+            )}
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748B', fontVariantNumeric: 'tabular-nums' }}>
+              00:{isListening ? '12' : '00'}
+            </div>
+          </div>
+        </div>
+
+        {/* VOICE SETTINGS */}
+        <div>
+          <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A', marginBottom: '1rem', textAlign: 'left' }}>Voice Settings</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '0.75rem 1rem', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', gap: '0.25rem', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+              <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600, textAlign: 'left' }}>Voice</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Volume2 size={16} color="#10B981" />
+                <select style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '0.85rem', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
+                  <option>Swasthya (Female)</option>
+                  <option>Swasthya (Male)</option>
+                </select>
+              </div>
+            </div>
+            
+            <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '0.75rem 1rem', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', gap: '0.25rem', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+              <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600, textAlign: 'left' }}>Speech Speed</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Settings size={16} color="#10B981" />
+                <select style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '0.85rem', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
+                  <option>Normal</option>
+                  <option>Slow</option>
+                  <option>Fast</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
