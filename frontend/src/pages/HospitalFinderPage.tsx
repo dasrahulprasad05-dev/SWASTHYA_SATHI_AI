@@ -35,16 +35,45 @@ export const HospitalFinderPage: React.FC = () => {
     fetchHospitals();
   }, [filters]);
 
+  // Haversine formula to calculate distance in km
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  };
+
   const handleUseLocation = () => {
     if (navigator.geolocation) {
+      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
-        () => {
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          
+          // Calculate distance for each hospital
+          const hospitalsWithDistance = hospitals.map(h => {
+            if (h.lat && h.lng) {
+              const dist = calculateDistance(userLat, userLng, h.lat, h.lng);
+              // Round to 1 decimal place
+              return { ...h, distance: Math.round(dist * 10) / 10 };
+            }
+            return h;
+          });
+
           // Sort hospitals by distance
-          const sorted = [...hospitals].sort((a, b) => (a.distance || 0) - (b.distance || 0));
+          const sorted = hospitalsWithDistance.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
           setHospitals(sorted);
+          setIsLoading(false);
         },
-        () => {
-          // fallback
+        (error) => {
+          console.warn('Geolocation error:', error);
+          setIsLoading(false);
         }
       );
     }
