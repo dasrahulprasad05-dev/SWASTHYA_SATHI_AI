@@ -58,59 +58,28 @@ export class AIService {
     language: 'en' | 'hi' | 'or' = 'en',
     chatHistory: Array<{ role: 'user' | 'assistant'; content: string }> = []
   ): Promise<ClinicalTriageResponse> {
-    if (!groq) {
-      return this.generateFallbackResponse(userMessage, language);
-    }
-
     try {
-      // RAG: Retrieve relevant knowledge context from processed medical documents
-      const ragContext = await knowledgeBaseService.buildRAGContext(userMessage, 5);
+      const { langGraphApp } = await import('./langGraphService.js');
+      const { HumanMessage, AIMessage } = await import('@langchain/core/messages');
 
-      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-        { role: 'system', content: SYSTEM_HEALTH_PROMPT },
-      ];
+      // Convert history to LangChain messages
+      const lcMessages = chatHistory.slice(-4).map(m => 
+        m.role === 'user' ? new HumanMessage(m.content) : new AIMessage(m.content)
+      );
 
-      // Add recent context
-      for (const msg of chatHistory.slice(-4)) {
-        messages.push({ role: msg.role, content: msg.content });
+      const result = await langGraphApp.invoke({
+        userMessage,
+        language,
+        messages: lcMessages
+      });
+
+      if (result.finalResponse) {
+        return result.finalResponse;
       }
 
-      // Inject RAG context + user query
-      const enrichedQuery = ragContext
-        ? `User query in ${language} language: "${userMessage}".${ragContext}\n\nPlease analyze the user's query using the above verified knowledge and respond with JSON matching the schema in ${language}.`
-        : `User query in ${language} language: "${userMessage}". Please analyze and respond with JSON matching the schema in ${language}.`;
-
-      messages.push({
-        role: 'user',
-        content: enrichedQuery,
-      });
-
-      const chatCompletion = await groq.chat.completions.create({
-        messages,
-        model: groqModel,
-        temperature: 0.3,
-        response_format: { type: 'json_object' },
-      });
-
-      const responseText = chatCompletion.choices[0]?.message?.content || '{}';
-      const parsed = JSON.parse(responseText);
-
-      return {
-        content: parsed.content || 'Medical triage assessment complete.',
-        confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.92,
-        recommendations: Array.isArray(parsed.recommendations)
-          ? parsed.recommendations
-          : ['Maintain hydration and rest', 'Consult your nearest CHC or PHC'],
-        warnings: Array.isArray(parsed.warnings)
-          ? parsed.warnings
-          : ['Seek emergency care if symptoms worsen or breathing difficulty develops'],
-        sources: Array.isArray(parsed.sources)
-          ? parsed.sources
-          : ['Odisha Directorate of Public Health', 'WHO Clinical Protocols'],
-        followUp: parsed.followUp || 'Would you like to find the nearest hospital with bed availability?',
-      };
+      return this.generateFallbackResponse(userMessage, language);
     } catch (error) {
-      console.error('Groq AI generation error:', error);
+      console.error('LangGraph pipeline error:', error);
       return this.generateFallbackResponse(userMessage, language);
     }
   }
