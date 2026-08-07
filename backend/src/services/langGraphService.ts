@@ -161,18 +161,19 @@ async function fallbackNode(state: typeof GraphState.State) {
     return { finalResponse: generateHardFallback(state.userMessage, state.language) };
   }
 
-  const prompt = `
+const prompt = `
 You are a health assistant. The user asked: "${state.userMessage}".
-We do NOT have specific reliable medical information in our knowledge base to answer this securely.
-Therefore, you must provide a cautious general explanation.
-IMPORTANT: State clearly that you do not have enough reliable information in the knowledge base and recommend consulting a healthcare professional for specific medical decisions. Do NOT give definitive medical diagnoses or dosages.
-Respond in JSON format matching this schema:
+We do NOT have specific reliable medical information in our local knowledge base to answer this securely.
+Therefore, you must provide a cautious general explanation based on your training data.
+IMPORTANT: State clearly that you recommend consulting a healthcare professional for specific medical decisions. Do NOT give definitive medical diagnoses or dosages.
+
+Respond in JSON format matching this schema. You MUST generate specific, useful tips and warning signs relevant to the user's query:
 {
-  "content": "Explanation and disclaimer entirely in ${LANGUAGE_MAP[state.language] || 'English'}",
+  "content": "Detailed explanation entirely in ${LANGUAGE_MAP[state.language] || 'English'}",
   "confidence": 0.5,
-  "recommendations": ["Consult doctor"],
-  "warnings": ["General information only"],
-  "sources": ["General Knowledge"],
+  "recommendations": ["Actionable home care tip 1", "Actionable home care tip 2", "Consult a doctor"],
+  "warnings": ["Red flag symptom to watch for 1", "Red flag symptom 2"],
+  "sources": ["General Medical Knowledge"],
   "followUp": "Would you like to search for a hospital?"
 }
 `;
@@ -217,11 +218,11 @@ Clinical Rules & Safety Guardrails:
 Context from Knowledge Base:
 ${state.ragContext}
 
-Always format your response as valid JSON with the following schema:
+Always format your response as valid JSON with the following schema. You MUST generate specific, actionable tips for recommendations and real red flag symptoms for warnings:
 {
   "content": "Detailed empathetic answer in ${LANGUAGE_MAP[state.language] || 'English'} explaining symptoms, care, and guidance",
   "confidence": ${state.retrievalConfidence},
-  "recommendations": ["Recommendation 1", "Recommendation 2", "Recommendation 3"],
+  "recommendations": ["Actionable tip 1", "Actionable tip 2", "Consult doctor"],
   "warnings": ["Red flag symptom 1", "Red flag symptom 2"],
   "sources": ["Source 1", "Source 2"],
   "followUp": "Helpful next question or suggestion"
