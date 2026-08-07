@@ -58,8 +58,8 @@ export const HospitalFinderPage: React.FC = () => {
           
           // Calculate distance for each hospital
           const hospitalsWithDistance = hospitals.map(h => {
-            if (h.lat && h.lng) {
-              const dist = calculateDistance(userLat, userLng, h.lat, h.lng);
+            if (h.coordinates?.lat && h.coordinates?.lng) {
+              const dist = calculateDistance(userLat, userLng, h.coordinates.lat, h.coordinates.lng);
               // Round to 1 decimal place
               return { ...h, distance: Math.round(dist * 10) / 10 };
             }
