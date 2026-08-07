@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk';
 import dotenv from 'dotenv';
+import { knowledgeBaseService } from './knowledgeBaseService.js';
 
 dotenv.config();
 
@@ -62,6 +63,9 @@ export class AIService {
     }
 
     try {
+      // RAG: Retrieve relevant knowledge context from processed medical documents
+      const ragContext = await knowledgeBaseService.buildRAGContext(userMessage, 5);
+
       const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
         { role: 'system', content: SYSTEM_HEALTH_PROMPT },
       ];
@@ -71,9 +75,14 @@ export class AIService {
         messages.push({ role: msg.role, content: msg.content });
       }
 
+      // Inject RAG context + user query
+      const enrichedQuery = ragContext
+        ? `User query in ${language} language: "${userMessage}".${ragContext}\n\nPlease analyze the user's query using the above verified knowledge and respond with JSON matching the schema in ${language}.`
+        : `User query in ${language} language: "${userMessage}". Please analyze and respond with JSON matching the schema in ${language}.`;
+
       messages.push({
         role: 'user',
-        content: `User query in ${language} language: "${userMessage}". Please analyze and respond with JSON matching the schema in ${language}.`,
+        content: enrichedQuery,
       });
 
       const chatCompletion = await groq.chat.completions.create({

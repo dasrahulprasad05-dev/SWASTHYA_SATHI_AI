@@ -47,4 +47,27 @@ router.get('/admin/surveillance', AdminController.getSurveillance);
 router.get('/admin/trends', AdminController.getDiseaseTrends);
 router.post('/admin/broadcast', AdminController.broadcastAlert);
 
+// ── RAG Knowledge Base Endpoints ──
+import { knowledgeBaseService } from '../services/knowledgeBaseService.js';
+
+router.get('/knowledge/stats', async (_req, res) => {
+  try {
+    const stats = await knowledgeBaseService.getStats();
+    res.json({ success: true, ...stats });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err?.message });
+  }
+});
+
+router.post('/knowledge/search', async (req, res) => {
+  try {
+    const { query, topK = 5, category } = req.body;
+    if (!query) return res.status(400).json({ success: false, error: 'Query is required' });
+    const results = await knowledgeBaseService.search(query, topK, category);
+    res.json({ success: true, results: results.map(r => ({ ...r.chunk, score: r.score })) });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err?.message });
+  }
+});
+
 export default router;

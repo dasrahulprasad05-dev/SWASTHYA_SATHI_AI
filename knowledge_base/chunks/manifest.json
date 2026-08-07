@@ -1,0 +1,132 @@
+{
+  "total_documents": 18,
+  "total_chunks": 172,
+  "documents": [
+    {
+      "filename": "Anemia_Awareness_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 11,
+      "characters": 7564
+    },
+    {
+      "filename": "Ayushman_Bharat_PMJAY_Guide.docx",
+      "category": "government_schemes",
+      "language": "en",
+      "chunks": 9,
+      "characters": 6441
+    },
+    {
+      "filename": "BSKY_Odisha_Guide.docx",
+      "category": "government_schemes",
+      "language": "en",
+      "chunks": 10,
+      "characters": 6254
+    },
+    {
+      "filename": "Child_Health_Awareness_Reference.docx",
+      "category": "child_health",
+      "language": "en",
+      "chunks": 8,
+      "characters": 6827
+    },
+    {
+      "filename": "Cuttack_District_Healthcare_Facilities_Reference.docx",
+      "category": "hospitals",
+      "language": "en",
+      "chunks": 14,
+      "characters": 10665
+    },
+    {
+      "filename": "Diabetes_Awareness_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 12,
+      "characters": 7625
+    },
+    {
+      "filename": "Elderly_Health_Awareness.docx",
+      "category": "elderly_health",
+      "language": "en",
+      "chunks": 9,
+      "characters": 6524
+    },
+    {
+      "filename": "Emergency_Warning_Signs_Guide.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 10,
+      "characters": 6962
+    },
+    {
+      "filename": "Hygiene_Sanitation_Awareness_Reference.docx",
+      "category": "prevention",
+      "language": "en",
+      "chunks": 8,
+      "characters": 5911
+    },
+    {
+      "filename": "Hypertension_Awareness_Reference.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 12,
+      "characters": 7367
+    },
+    {
+      "filename": "Janani_Suraksha_Yojana_Guide.docx",
+      "category": "government_schemes",
+      "language": "en",
+      "chunks": 8,
+      "characters": 5733
+    },
+    {
+      "filename": "Khordha_District_Healthcare_Facilities_Reference.docx",
+      "category": "hospitals",
+      "language": "en",
+      "chunks": 12,
+      "characters": 9505
+    },
+    {
+      "filename": "Mamata_Yojana_Odisha_Guide.docx",
+      "category": "government_schemes",
+      "language": "en",
+      "chunks": 9,
+      "characters": 6253
+    },
+    {
+      "filename": "Maternal_Health_Awareness_Reference.docx",
+      "category": "maternal_health",
+      "language": "en",
+      "chunks": 7,
+      "characters": 6621
+    },
+    {
+      "filename": "Monsoon_Health_Awareness_Reference.docx",
+      "category": "prevention",
+      "language": "en",
+      "chunks": 7,
+      "characters": 6638
+    },
+    {
+      "filename": "National_Immunization_Schedule.docx",
+      "category": "child_health",
+      "language": "en",
+      "chunks": 6,
+      "characters": 5291
+    },
+    {
+      "filename": "Nutrition_Awareness_Reference.docx",
+      "category": "prevention",
+      "language": "en",
+      "chunks": 7,
+      "characters": 5838
+    },
+    {
+      "filename": "Puri_District_Healthcare_Facilities_Reference.docx",
+      "category": "hospitals",
+      "language": "en",
+      "chunks": 13,
+      "characters": 10958
+    }
+  ]
+}
