@@ -33,7 +33,7 @@ export interface SearchResult {
 // Medical keyword mappings for better search relevance
 const MEDICAL_SYNONYMS: Record<string, string[]> = {
   fever: ['temperature', 'bukhar', 'jwara', 'pyrexia', 'high temperature', 'viral fever'],
-  headache: ['head pain', 'migraine', 'munda bindha', 'sir dard'],
+  headache: ['head pain', 'migraine', 'munda bindha', 'sir dard', 'tension headache', 'cluster headache'],
   dengue: ['dengue fever', 'aedes', 'platelet', 'ns1', 'hemorrhagic'],
   malaria: ['anopheles', 'chills', 'plasmodium', 'antimalarial', 'act therapy'],
   diarrhea: ['loose motion', 'jhada', 'cholera', 'dehydration', 'ors', 'diarrhoea', 'watery stool'],
@@ -66,6 +66,22 @@ const MEDICAL_SYNONYMS: Record<string, string[]> = {
   cough: ['dry cough', 'wet cough', 'productive cough', 'khansi', 'throat irritation'],
   vomiting: ['nausea', 'banti', 'throwing up', 'emesis', 'morning sickness'],
   flu: ['influenza', 'seasonal flu', 'body ache', 'viral'],
+  // New KB3 topics
+  breathlessness: ['shortness of breath', 'dyspnea', 'breathing difficulty', 'gasping', 'wheezing', 'asthma'],
+  chest_pain: ['angina', 'heart pain', 'cardiac pain', 'tightness in chest'],
+  burns: ['scalding', 'thermal burn', 'chemical burn', 'sunburn', 'degree burn'],
+  fracture: ['broken bone', 'bone crack', 'splint', 'cast', 'dislocation'],
+  electric_shock: ['electrocution', 'electrical injury', 'current shock'],
+  heat_stroke: ['sunstroke', 'hyperthermia', 'heat exhaustion', 'loo', 'heat wave'],
+  snake_bite: ['snakebite', 'anti venom', 'antivenom', 'venomous bite', 'serpent bite'],
+  bleeding: ['hemorrhage', 'blood loss', 'wound bleeding', 'severe bleeding', 'cut'],
+  dizziness: ['vertigo', 'lightheaded', 'fainting', 'syncope', 'chakkar'],
+  rash: ['skin rash', 'hives', 'urticaria', 'eczema', 'allergic rash'],
+  cancer: ['cervical cancer', 'breast cancer', 'tumor', 'malignancy', 'oncology', 'screening'],
+  menstrual: ['periods', 'menstruation', 'period pain', 'menstrual hygiene', 'pad', 'sanitary napkin'],
+  family_planning: ['contraception', 'birth control', 'condom', 'iud', 'sterilization', 'spacing'],
+  myth: ['myth', 'fact', 'misconception', 'false belief', 'rumor'],
+  vaccine: ['vaccination', 'immunization', 'shot', 'dose', 'anti-vaxxer', 'vaccine myth'],
 };
 
 class KnowledgeBaseService {
@@ -216,15 +232,18 @@ class KnowledgeBaseService {
 
   private detectQueryCategory(query: string): string | null {
     const categoryKeywords: Record<string, string[]> = {
-      diseases: ['fever', 'dengue', 'malaria', 'diabetes', 'anemia', 'hypertension', 'bp', 'sugar', 'chickenpox', 'varicella', 'tuberculosis', 'tb', 'typhoid', 'jaundice', 'hepatitis', 'conjunctivitis', 'eye flu', 'skin infection', 'flu', 'influenza', 'viral fever', 'cold'],
-      symptoms: ['cough', 'vomiting', 'nausea', 'cold symptom', 'runny nose', 'sneezing', 'sore throat'],
-      emergency_first_aid: ['emergency', 'accident', 'snake', 'heart attack', 'chest pain', 'stroke', 'burn', 'bleeding', 'poisoning', 'drowning'],
+      diseases: ['fever', 'dengue', 'malaria', 'diabetes', 'anemia', 'hypertension', 'bp', 'sugar', 'chickenpox', 'varicella', 'tuberculosis', 'tb', 'typhoid', 'jaundice', 'hepatitis', 'conjunctivitis', 'eye flu', 'skin infection', 'flu', 'influenza', 'viral fever', 'cold', 'cancer', 'cervical', 'breast cancer', 'tumor'],
+      symptoms: ['cough', 'vomiting', 'nausea', 'cold symptom', 'runny nose', 'sneezing', 'sore throat', 'headache', 'migraine', 'dizziness', 'vertigo', 'breathlessness', 'shortness of breath', 'chest pain', 'rash', 'diarrhoea symptom'],
+      emergency_first_aid: ['emergency', 'accident', 'snake', 'snake bite', 'heart attack', 'stroke', 'burn', 'burns', 'bleeding', 'poisoning', 'drowning', 'fracture', 'broken bone', 'electric shock', 'electrocution', 'heat stroke', 'sunstroke', 'first aid', 'severe bleeding'],
       child_health: ['child', 'baby', 'vaccine', 'immunization', 'infant', 'pediatric', 'pneumonia', 'diarrhoea', 'diarrhea', 'dehydration'],
       maternal_health: ['pregnancy', 'pregnant', 'maternal', 'delivery', 'antenatal'],
+      women_health: ['menstrual', 'periods', 'menstruation', 'family planning', 'contraception', 'birth control', 'sanitary napkin', 'pad'],
       elderly_health: ['elderly', 'old age', 'geriatric', 'senior'],
       government_schemes: ['scheme', 'yojana', 'bsky', 'ayushman', 'pmjay', 'mamata', 'janani', 'card', 'insurance'],
       hospitals: ['hospital', 'medical college', 'aiims', 'scb', 'chc', 'phc', 'bed', 'facility'],
       prevention: ['hygiene', 'sanitation', 'nutrition', 'diet', 'monsoon', 'prevention', 'wash'],
+      myths_and_facts: ['myth', 'fact', 'misconception', 'false belief', 'rumor', 'vaccine myth'],
+      faq: ['faq', 'frequently asked', 'common question', 'how to', 'what should i do'],
     };
 
     for (const [category, keywords] of Object.entries(categoryKeywords)) {

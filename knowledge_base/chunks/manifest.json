@@ -1,6 +1,6 @@
 {
-  "total_documents": 33,
-  "total_chunks": 314,
+  "total_documents": 52,
+  "total_chunks": 475,
   "documents": [
     {
       "filename": "Anemia_Awareness_Reference.docx",
@@ -22,6 +22,34 @@
       "language": "en",
       "chunks": 10,
       "characters": 6254
+    },
+    {
+      "filename": "Breathlessness_Awareness.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 9,
+      "characters": 6498
+    },
+    {
+      "filename": "Burns_First_Aid.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5837
+    },
+    {
+      "filename": "Cervical_Breast_Cancer_Awareness_Odisha.docx",
+      "category": "diseases",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5983
+    },
+    {
+      "filename": "Chest_Pain_Awareness.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5663
     },
     {
       "filename": "Chickenpox_Reference.docx",
@@ -94,6 +122,20 @@
       "characters": 8035
     },
     {
+      "filename": "Diarrhoea_Symptom_Reference.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 6,
+      "characters": 5325
+    },
+    {
+      "filename": "Dizziness_Symptom_Awareness.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 10,
+      "characters": 6883
+    },
+    {
       "filename": "Elderly_Health_Awareness.docx",
       "category": "elderly_health",
       "language": "en",
@@ -101,11 +143,46 @@
       "characters": 6524
     },
     {
+      "filename": "Electric_Shock_First_Aid_Reference.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 8,
+      "characters": 5188
+    },
+    {
       "filename": "Emergency_Warning_Signs_Guide.docx",
       "category": "emergency_first_aid",
       "language": "en",
       "chunks": 10,
       "characters": 6962
+    },
+    {
+      "filename": "Fever_Myth_vs_Fact.docx",
+      "category": "myths_and_facts",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5851
+    },
+    {
+      "filename": "Fracture_First_Aid_Reference.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 7,
+      "characters": 4847
+    },
+    {
+      "filename": "Headache_Health_Awareness.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5178
+    },
+    {
+      "filename": "Heat_Stroke_First_Aid_Odisha.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5740
     },
     {
       "filename": "Hygiene_Sanitation_Awareness_Reference.docx",
@@ -199,11 +276,32 @@
       "characters": 10958
     },
     {
+      "filename": "Rash_Symptom_Awareness.docx",
+      "category": "symptoms",
+      "language": "en",
+      "chunks": 9,
+      "characters": 6482
+    },
+    {
+      "filename": "Severe_Bleeding_First_Aid.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 9,
+      "characters": 5728
+    },
+    {
       "filename": "Skin_Infections_Public_Health_Reference.docx",
       "category": "diseases",
       "language": "en",
       "chunks": 8,
       "characters": 6143
+    },
+    {
+      "filename": "Snake_Bite_First_Aid_Odisha.docx",
+      "category": "emergency_first_aid",
+      "language": "en",
+      "chunks": 7,
+      "characters": 4675
     },
     {
       "filename": "Tuberculosis_Reference.docx",
@@ -232,6 +330,41 @@
       "language": "en",
       "chunks": 6,
       "characters": 5226
+    },
+    {
+      "filename": "family_planning_awareness.docx",
+      "category": "women_health",
+      "language": "en",
+      "chunks": 10,
+      "characters": 6796
+    },
+    {
+      "filename": "menstrual_hygiene_awareness.docx",
+      "category": "women_health",
+      "language": "en",
+      "chunks": 9,
+      "characters": 6318
+    },
+    {
+      "filename": "nutrition_myths_vs_facts.docx",
+      "category": "myths_and_facts",
+      "language": "en",
+      "chunks": 8,
+      "characters": 5276
+    },
+    {
+      "filename": "public-health-faq.md",
+      "category": "faq",
+      "language": "en",
+      "chunks": 8,
+      "characters": 5466
+    },
+    {
+      "filename": "vaccine-myths-vs-facts.docx",
+      "category": "myths_and_facts",
+      "language": "en",
+      "chunks": 7,
+      "characters": 4723
     }
   ]
 }

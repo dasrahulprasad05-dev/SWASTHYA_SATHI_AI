@@ -1,7 +1,11 @@
 """
-Swasthya Sathi AI — DOCX Knowledge Base Extractor
-Extracts text from all .docx files, cleans it, chunks it with metadata,
+Swasthya Sathi AI — DOCX + Markdown Knowledge Base Extractor
+Extracts text from all .docx and .md files, cleans it, chunks it with metadata,
 and outputs structured JSON knowledge files for RAG ingestion.
+
+Handles deduplication:
+  - Skips files with "(1)" in the name (duplicate uploads)
+  - Skips files whose base name was already processed from an earlier folder
 """
 
 import sys
@@ -15,6 +19,7 @@ from docx import Document
 RAW_DOCS_DIRS = [
     r"D:\SWASTHYA SATHI AI\knowledge_base\raw_docs\rahul knowladge base",
     r"D:\SWASTHYA SATHI AI\knowledge_base\raw_docs\knowladge base 2",
+    r"D:\SWASTHYA SATHI AI\knowledge_base\raw_docs\knowladge base 3",
 ]
 OUTPUT_DIR = r"D:\SWASTHYA SATHI AI\knowledge_base\processed"
 CHUNKS_OUTPUT = r"D:\SWASTHYA SATHI AI\knowledge_base\chunks"
@@ -24,6 +29,7 @@ os.makedirs(CHUNKS_OUTPUT, exist_ok=True)
 
 # Category mapping based on filename keywords
 CATEGORY_MAP = {
+    # Diseases
     'anemia': 'diseases',
     'diabetes': 'diseases',
     'hypertension': 'diseases',
@@ -37,34 +43,65 @@ CATEGORY_MAP = {
     'viral_fever': 'diseases',
     'conjunctivitis': 'diseases',
     'skin_infection': 'diseases',
+    'common_cold': 'diseases',
+    'flu': 'diseases',
+    'cervical': 'diseases',
+    'breast_cancer': 'diseases',
+    'cancer': 'diseases',
+    # Symptoms
     'cold_symptom': 'symptoms',
     'cough_symptom': 'symptoms',
     'vomiting': 'symptoms',
-    'common_cold': 'diseases',
-    'flu': 'diseases',
+    'headache': 'symptoms',
+    'dizziness': 'symptoms',
+    'breathlessness': 'symptoms',
+    'chest_pain': 'symptoms',
+    'rash_symptom': 'symptoms',
+    'diarrhoea_symptom': 'symptoms',
+    # Emergency / First Aid
+    'burn': 'emergency_first_aid',
+    'fracture': 'emergency_first_aid',
+    'electric_shock': 'emergency_first_aid',
+    'severe_bleeding': 'emergency_first_aid',
+    'snake_bite': 'emergency_first_aid',
+    'heat_stroke': 'emergency_first_aid',
+    'first_aid': 'emergency_first_aid',
+    'emergency': 'emergency_first_aid',
+    'warning': 'emergency_first_aid',
+    # Child health
     'pneumonia': 'child_health',
-    'diarrhoea': 'child_health',
+    'diarrhoea_dehydration': 'child_health',
     'dehydration': 'child_health',
-    'monsoon': 'prevention',
-    'hygiene': 'prevention',
-    'sanitation': 'prevention',
-    'nutrition': 'prevention',
     'child_health': 'child_health',
     'immunization': 'child_health',
+    # Maternal / Women's health
     'maternal': 'maternal_health',
+    'family_planning': 'women_health',
+    'menstrual': 'women_health',
+    # Myths & Facts
+    'myth': 'myths_and_facts',
+    'myths': 'myths_and_facts',
+    'vaccine-myth': 'myths_and_facts',
+    # Government schemes
     'mamata': 'government_schemes',
     'janani': 'government_schemes',
     'bsky': 'government_schemes',
     'ayushman': 'government_schemes',
     'pmjay': 'government_schemes',
+    # Others
     'elderly': 'elderly_health',
-    'emergency': 'emergency_first_aid',
-    'warning': 'emergency_first_aid',
+    'monsoon': 'prevention',
+    'hygiene': 'prevention',
+    'sanitation': 'prevention',
+    'nutrition_awareness': 'prevention',
     'khordha': 'hospitals',
     'cuttack': 'hospitals',
     'puri': 'hospitals',
     'district': 'hospitals',
     'healthcare_facilities': 'hospitals',
+    # FAQ
+    'faq': 'faq',
+    'public-health-faq': 'faq',
 }
 
 def detect_category(filename: str) -> str:
@@ -89,6 +126,16 @@ def extract_text_from_docx(filepath: str) -> str:
             if row_text:
                 full_text.append(row_text)
     return '\n'.join(full_text)
+
+def extract_text_from_md(filepath: str) -> str:
+    """Extract text from a Markdown file."""
+    with open(filepath, 'r', encoding='utf-8') as f:
+        text = f.read()
+    # Strip markdown header markers for cleaner text but keep the content
+    text = re.sub(r'^#{1,6}\s+', '', text, flags=re.MULTILINE)
+    # Remove horizontal rules
+    text = re.sub(r'^-{3,}\s*$', '', text, flags=re.MULTILINE)
+    return text.strip()
 
 def clean_text(text: str) -> str:
     """Clean extracted text while preserving Odia, Hindi & English characters."""
@@ -146,22 +193,46 @@ def detect_language(text: str) -> str:
         return 'hi'
     return 'en'
 
+def is_duplicate_upload(filename: str) -> bool:
+    """Check if a file is a '(1)' style duplicate upload."""
+    return bool(re.search(r'\(\d+\)', filename))
+
 def process_all_documents():
-    """Main pipeline: Extract -> Clean -> Chunk -> Save."""
+    """Main pipeline: Extract -> Clean -> Chunk -> Save (with deduplication)."""
     all_chunks = []
     processed_files = []
+    seen_filenames = set()  # Track by base filename to deduplicate across folders
 
-    # Collect all .docx files from all source directories
-    all_docx = []
+    # Collect all supported files from all source directories
+    all_files = []
     for docs_dir in RAW_DOCS_DIRS:
         if os.path.isdir(docs_dir):
             for f in os.listdir(docs_dir):
-                if f.endswith('.docx'):
-                    all_docx.append((docs_dir, f))
-    print(f"Found {len(all_docx)} .docx files to process\n")
+                if f.endswith('.docx') or f.endswith('.md'):
+                    all_files.append((docs_dir, f))
+    print(f"Found {len(all_files)} files to process\n")
 
-    for docs_dir, filename in sorted(all_docx, key=lambda x: x[1]):
+    skipped_duplicates = []
+
+    for docs_dir, filename in sorted(all_files, key=lambda x: x[1]):
         filepath = os.path.join(docs_dir, filename)
+
+        # --- Deduplication ---
+        # 1. Skip "(1)" style duplicate uploads
+        if is_duplicate_upload(filename):
+            skipped_duplicates.append(f"{filename} (duplicate upload copy)")
+            print(f"[SKIP] {filename} — duplicate upload '(1)' copy")
+            continue
+
+        # 2. Skip if same filename already processed from an earlier folder
+        if filename in seen_filenames:
+            folder_name = os.path.basename(docs_dir)
+            skipped_duplicates.append(f"{filename} (already processed from earlier folder)")
+            print(f"[SKIP] {filename} — already processed, skipping from '{folder_name}'")
+            continue
+
+        seen_filenames.add(filename)
+
         doc_id = os.path.splitext(filename)[0]
         category = detect_category(filename)
         
@@ -169,7 +240,12 @@ def process_all_documents():
         print(f"   Category: {category}")
 
         # 1. Extract
-        raw_text = extract_text_from_docx(filepath)
+        if filename.endswith('.docx'):
+            raw_text = extract_text_from_docx(filepath)
+        elif filename.endswith('.md'):
+            raw_text = extract_text_from_md(filepath)
+        else:
+            continue
         
         # 2. Clean
         cleaned_text = clean_text(raw_text)
@@ -234,9 +310,14 @@ def process_all_documents():
 
     print("=" * 60)
     print(f"[OK] PROCESSING COMPLETE")
-    print(f"   Documents: {len(processed_files)}")
+    print(f"   Documents Processed: {len(processed_files)}")
     print(f"   Total Chunks: {len(all_chunks)}")
-    print(f"   Output: {OUTPUT_DIR}")
+    print(f"   Duplicates Skipped: {len(skipped_duplicates)}")
+    if skipped_duplicates:
+        print(f"\n   Skipped files:")
+        for s in skipped_duplicates:
+            print(f"     - {s}")
+    print(f"\n   Output: {OUTPUT_DIR}")
     print(f"   Chunks Index: {chunks_index_path}")
     print("=" * 60)
 
