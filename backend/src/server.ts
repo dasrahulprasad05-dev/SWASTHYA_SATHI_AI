@@ -13,12 +13,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 // Security and utility middleware
 app.use(helmet());
-app.use(
-  cors({
-    origin: [CORS_ORIGIN, 'http://127.0.0.1:5173', 'http://localhost:5173'],
-    credentials: true,
-  })
-);
+app.use(cors()); // Permissive CORS to allow Vercel to connect without errors
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
