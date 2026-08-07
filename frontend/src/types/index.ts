@@ -10,8 +10,11 @@ export interface User {
   phone?: string;
   avatar?: string;
   location?: string;
+  district?: string;
   language: 'en' | 'hi' | 'or';
-  role: 'user' | 'admin' | 'super_admin';
+  role: 'citizen' | 'health_officer' | 'admin' | 'user' | 'super_admin';
+  designation?: string;
+  department?: string;
   isVerified: boolean;
   memberSince: string;
   accountType: 'Free' | 'Premium';
@@ -40,14 +43,33 @@ export interface AuthState {
 export interface LoginCredentials {
   email: string;
   password: string;
+  adminPortal?: boolean;
 }
 
 export interface RegisterData {
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   password: string;
-  language: string;
+  district?: string;
+  language?: string;
+  role?: 'citizen' | 'health_officer' | 'admin';
+}
+
+export interface AdminRegisterData extends RegisterData {
+  designation: string;
+  department: string;
+  adminAccessKey: string;
+}
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  email: string;
+  otp: string;
+  newPassword: string;
 }
 
 // ── Chat ──

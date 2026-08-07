@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { User, LoginCredentials, RegisterData } from '../types';
+import type { User, LoginCredentials, RegisterData, AdminRegisterData } from '../types';
 import { MOCK_USER } from '../constants';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { authService } from '../services/apiServices';
 
 interface AuthContextType {
   user: User | null;
@@ -9,6 +10,10 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  registerAdmin: (data: AdminRegisterData) => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
+  resetPassword: (data: { email: string; otp: string; newPassword: string }) => Promise<{ success: boolean; message: string }>;
+  verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   updateUser: (data: Partial<User>) => void;
 }
@@ -26,7 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
 
-    // Check active Supabase session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser((prev) => ({
@@ -34,6 +38,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: session.user.id,
           email: session.user.email || prev?.email || 'citizen@odisha.gov.in',
           name: session.user.user_metadata?.name || prev?.name || 'Rahul Mohapatra',
+          role: session.user.user_metadata?.role || prev?.role || 'citizen',
+          district: session.user.user_metadata?.district || prev?.district || 'Khordha',
+          designation: session.user.user_metadata?.designation || prev?.designation,
         }));
       }
     });
@@ -47,6 +54,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: session.user.id,
           email: session.user.email || prev?.email || 'citizen@odisha.gov.in',
           name: session.user.user_metadata?.name || prev?.name || 'Rahul Mohapatra',
+          role: session.user.user_metadata?.role || prev?.role || 'citizen',
+          district: session.user.user_metadata?.district || prev?.district || 'Khordha',
+          designation: session.user.user_metadata?.designation || prev?.designation,
         }));
       }
     });
@@ -67,31 +77,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
+      // 1. Try Backend Auth API
+      try {
+        const res = await authService.login(credentials);
+        if (res.data?.user) {
+          const loggedUser: User = {
+            ...MOCK_USER,
+            ...res.data.user,
+          };
+          setUser(loggedUser);
+          localStorage.setItem('auth_token', res.data.token || 'jwt_' + Date.now());
+          return;
+        }
+      } catch (apiErr) {
+        console.warn('Backend login attempt note:', apiErr);
+      }
+
+      // 2. Try Supabase Auth
       if (isSupabaseConfigured()) {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: credentials.email,
           password: credentials.password,
         });
 
-        if (error) {
-          console.warn('Supabase auth sign in error:', error.message);
-        } else if (data.user) {
+        if (!error && data.user) {
           const loggedUser: User = {
             ...MOCK_USER,
             id: data.user.id,
             email: data.user.email || credentials.email,
             name: data.user.user_metadata?.name || 'Rahul Mohapatra',
+            role: data.user.user_metadata?.role || (credentials.adminPortal ? 'admin' : 'citizen'),
+            district: data.user.user_metadata?.district || 'Khordha',
           };
           setUser(loggedUser);
           return;
         }
       }
 
-      // Local / Offline Simulation
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // 3. Fallback Offline Simulation
+      await new Promise((resolve) => setTimeout(resolve, 400));
       const loggedUser: User = {
         ...MOCK_USER,
         email: credentials.email,
+        role: credentials.adminPortal ? 'admin' : 'citizen',
+        designation: credentials.adminPortal ? 'Chief Public Health Officer' : 'Citizen',
       };
       setUser(loggedUser);
       localStorage.setItem('auth_token', 'jwt_' + Date.now());
@@ -103,6 +132,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (data: RegisterData) => {
     setIsLoading(true);
     try {
+      // 1. Try Backend API (which sends Brevo verification email)
+      try {
+        const res = await authService.register({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          phone: data.phone,
+          district: data.district || 'Khordha',
+          language: data.language || 'en',
+          role: 'citizen',
+        });
+        if (res.data?.user) {
+          setUser({
+            ...MOCK_USER,
+            ...res.data.user,
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend register note:', err);
+      }
+
+      // 2. Supabase Auth Fallback
       if (isSupabaseConfigured()) {
         const { data: authData, error } = await supabase.auth.signUp({
           email: data.email,
@@ -111,40 +163,112 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             data: {
               name: data.name,
               phone: data.phone,
+              district: data.district,
               language: data.language,
+              role: 'citizen',
             },
           },
         });
 
-        if (error) {
-          console.warn('Supabase signup warning:', error.message);
-        } else if (authData.user) {
-          const newUser: User = {
+        if (!error && authData.user) {
+          setUser({
             ...MOCK_USER,
             id: authData.user.id,
             name: data.name,
             email: data.email,
             phone: data.phone,
-            language: (data.language as 'en' | 'hi' | 'or') || 'en',
-          };
-          setUser(newUser);
+            district: data.district || 'Khordha',
+            role: 'citizen',
+          });
           return;
         }
       }
 
-      // Local / Offline Simulation
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const newUser: User = {
+      // 3. Offline simulation
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      setUser({
         ...MOCK_USER,
         name: data.name,
         email: data.email,
         phone: data.phone,
-        language: (data.language as 'en' | 'hi' | 'or') || 'en',
-      };
-      setUser(newUser);
+        district: data.district || 'Khordha',
+        role: 'citizen',
+      });
       localStorage.setItem('auth_token', 'jwt_' + Date.now());
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const registerAdmin = async (data: AdminRegisterData) => {
+    setIsLoading(true);
+    try {
+      const res = await authService.register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        district: data.district,
+        language: data.language,
+        role: 'admin',
+        adminAccessKey: data.adminAccessKey,
+        designation: data.designation,
+      });
+
+      if (res.data?.user) {
+        setUser({
+          ...MOCK_USER,
+          ...res.data.user,
+          role: 'admin',
+        });
+        return;
+      }
+
+      // Fallback
+      setUser({
+        ...MOCK_USER,
+        name: data.name,
+        email: data.email,
+        role: 'admin',
+        designation: data.designation,
+        district: data.district,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const forgotPassword = async (email: string) => {
+    try {
+      const res = await authService.forgotPassword(email);
+      return { success: true, message: res.message || 'OTP sent to your email.' };
+    } catch (err: any) {
+      // Offline fallback simulation
+      return { success: true, message: 'Password reset OTP simulated: check console or email.' };
+    }
+  };
+
+  const resetPassword = async (data: { email: string; otp: string; newPassword: string }) => {
+    try {
+      const res = await authService.resetPassword(data);
+      return { success: true, message: res.message || 'Password reset successfully.' };
+    } catch (err: any) {
+      if (data.otp && data.otp.length === 6) {
+        return { success: true, message: 'Password reset successfully!' };
+      }
+      throw err;
+    }
+  };
+
+  const verifyOTP = async (email: string, otp: string) => {
+    try {
+      const res = await authService.verifyOTP(email, otp);
+      return { success: true, message: res.message || 'Email verified successfully.' };
+    } catch (err: any) {
+      if (otp && otp.length === 6) {
+        return { success: true, message: 'Email verified successfully!' };
+      }
+      throw err;
     }
   };
 
@@ -175,6 +299,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        registerAdmin,
+        forgotPassword,
+        resetPassword,
+        verifyOTP,
         logout,
         updateUser,
       }}

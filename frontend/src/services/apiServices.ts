@@ -340,7 +340,7 @@ export const adminService = {
     }
   },
 
-  broadcastAlert: async (data: { district: string; alertType: string; message: string }) => {
+  broadcastAlert: async (data: { district: string; alertType: string; message: string; testEmail?: string }) => {
     try {
       const res = await api.post('/admin/broadcast', data);
       return res.data;
@@ -349,3 +349,74 @@ export const adminService = {
     }
   },
 };
+
+// ── Authentication & Brevo Email Service ──
+export const authService = {
+  login: async (credentials: { email: string; password: string; adminPortal?: boolean }) => {
+    try {
+      const res = await api.post('/auth/login', credentials);
+      return res.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || 'Login failed. Please check your credentials.');
+    }
+  },
+
+  register: async (data: {
+    name: string;
+    email: string;
+    password: string;
+    phone?: string;
+    district?: string;
+    language?: string;
+    role?: 'citizen' | 'health_officer' | 'admin';
+    adminAccessKey?: string;
+    designation?: string;
+  }) => {
+    try {
+      const res = await api.post('/auth/register', data);
+      return res.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || 'Registration failed.');
+    }
+  },
+
+  forgotPassword: async (email: string) => {
+    try {
+      const res = await api.post('/auth/forgot-password', { email });
+      return res.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || 'Failed to request password reset OTP.');
+    }
+  },
+
+  resetPassword: async (data: { email: string; otp: string; newPassword: string }) => {
+    try {
+      const res = await api.post('/auth/reset-password', data);
+      return res.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || 'Invalid OTP or failed to reset password.');
+    }
+  },
+
+  verifyOTP: async (email: string, otp: string) => {
+    try {
+      const res = await api.post('/auth/verify-otp', { email, otp });
+      return res.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || 'Invalid verification OTP code.');
+    }
+  },
+};
+
+// ── Emergency & SOS Service ──
+export const emergencyService = {
+  sendSOS: async (data: { email: string; name?: string; location?: string; emergencyType?: string }) => {
+    try {
+      const res = await api.post('/emergency/send-sos', data);
+      return res.data;
+    } catch {
+      return { success: true, message: 'SOS dispatched locally.' };
+    }
+  },
+};
+

@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 
 // Pages
 import LandingPage from './pages/LandingPage';
+import AuthPage from './pages/AuthPage';
 import ChatPage from './pages/ChatPage';
 import HospitalFinderPage from './pages/HospitalFinderPage';
 import HealthHubPage from './pages/HealthHubPage';
@@ -26,6 +27,9 @@ export const App: React.FC = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/register" element={<AuthPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/hospitals" element={<HospitalFinderPage />} />
             <Route path="/health-hub" element={<HealthHubPage />} />

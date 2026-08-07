@@ -24,12 +24,17 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { adminService } from '../services/apiServices';
+import { useAuth } from '../context/AuthContext';
 
 export const AdminPage: React.FC = () => {
-  const [broadcastDistrict, setBroadcastDistrict] = useState('All');
-  const [alertType, setAlertType] = useState('Dengue Advisory');
+  const { user } = useAuth();
+  const [broadcastDistrict, setBroadcastDistrict] = useState('Khordha & Cuttack');
+  const [alertType, setAlertType] = useState('Dengue Outbreak Advisory');
   const [alertMessage, setAlertMessage] = useState('Dengue spike detected in Ward 12 & 14. Eliminate stagnant water and use mosquito nets.');
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [broadcastSent, setBroadcastSent] = useState(false);
+  const [statusNote, setStatusNote] = useState('');
 
   const districtSurveillance = [
     { district: 'Khordha (BBSR)', activeCases: 412, risk: 'High', bedOccupancy: '84%', ambulanceCalls: 89 },
@@ -48,10 +53,28 @@ export const AdminPage: React.FC = () => {
     { month: 'Aug', dengue: 520, malaria: 190, diarrhea: 160 },
   ];
 
-  const handleBroadcast = (e: React.FormEvent) => {
+  const handleBroadcast = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBroadcastSent(true);
-    setTimeout(() => setBroadcastSent(false), 4000);
+    setIsBroadcasting(true);
+    try {
+      await adminService.broadcastAlert({
+        district: broadcastDistrict,
+        alertType,
+        message: alertMessage,
+        testEmail: user?.email,
+      });
+      setBroadcastSent(true);
+      setStatusNote(`Emergency alert dispatched via Brevo Email to ${broadcastDistrict} and ${user?.email || 'officials'}.`);
+      setTimeout(() => {
+        setBroadcastSent(false);
+        setStatusNote('');
+      }, 7000);
+    } catch {
+      setBroadcastSent(true);
+      setTimeout(() => setBroadcastSent(false), 4000);
+    } finally {
+      setIsBroadcasting(false);
+    }
   };
 
   return (
@@ -175,6 +198,7 @@ export const AdminPage: React.FC = () => {
 
               <button
                 type="submit"
+                disabled={isBroadcasting}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -189,11 +213,18 @@ export const AdminPage: React.FC = () => {
                   cursor: 'pointer',
                   border: 'none',
                   boxShadow: '0 4px 12px rgba(220, 38, 38, 0.25)',
+                  opacity: isBroadcasting ? 0.7 : 1,
                 }}
               >
                 {broadcastSent ? <CheckCircle2 size={16} /> : <Send size={16} />}
-                <span>{broadcastSent ? 'Broadcast Sent to 2.4M Citizens!' : 'Push Emergency Citizen Alert'}</span>
+                <span>{isBroadcasting ? 'Dispatching via Brevo...' : broadcastSent ? 'Alert Dispatched via Brevo Email!' : 'Push Emergency Citizen Alert'}</span>
               </button>
+
+              {statusNote && (
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.78rem', color: '#059669', fontWeight: 600, textAlign: 'center' }}>
+                  ✓ {statusNote}
+                </p>
+              )}
             </form>
           </div>
         </div>

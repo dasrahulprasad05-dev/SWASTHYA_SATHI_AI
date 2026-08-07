@@ -3,6 +3,7 @@ import { AIController } from '../controllers/aiController.js';
 import { HospitalController } from '../controllers/hospitalController.js';
 import { DiseaseController } from '../controllers/diseaseController.js';
 import { AdminController } from '../controllers/adminController.js';
+import { AuthController } from '../controllers/authController.js';
 
 const router = Router();
 
@@ -15,6 +16,16 @@ router.get('/health', (req, res) => {
     version: '1.0.0',
   });
 });
+
+// ── Auth & Password Management Endpoints (Brevo Email Powered) ──
+router.post('/auth/register', AuthController.register);
+router.post('/auth/login', AuthController.login);
+router.post('/auth/forgot-password', AuthController.forgotPassword);
+router.post('/auth/reset-password', AuthController.resetPassword);
+router.post('/auth/verify-otp', AuthController.verifyOTP);
+
+// ── Emergency & SOS Endpoints ──
+router.post('/emergency/send-sos', AuthController.sendEmergencySos);
 
 // ── AI Health Triage & Voice Endpoints ──
 router.post('/ai/chat', AIController.handleChat);

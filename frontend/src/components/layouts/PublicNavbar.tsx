@@ -181,6 +181,27 @@ export const PublicNavbar: React.FC = () => {
             <span>108 Helpline</span>
           </Link>
 
+          {/* Sign In / Auth Portal Link */}
+          <Link
+            to="/auth"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              backgroundColor: 'var(--surface-hover, #1e293b)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border)',
+              padding: '0.45rem 0.95rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.88rem',
+              fontWeight: 600,
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+            }}
+          >
+            <span>Sign In / ପଞ୍ଜୀକରଣ</span>
+          </Link>
+
           {/* Get Started / Chat CTA */}
           <Link
             to="/chat"

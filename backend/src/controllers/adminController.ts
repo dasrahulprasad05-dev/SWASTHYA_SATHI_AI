@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { supabase, isSupabaseConfigured } from '../config/supabase.js';
+import { EmailService } from '../services/emailService.js';
 
 export class AdminController {
   static async getSurveillance(req: Request, res: Response): Promise<void> {
@@ -69,19 +70,42 @@ export class AdminController {
 
   static async broadcastAlert(req: Request, res: Response): Promise<void> {
     try {
-      const { district, alertType, message } = req.body;
+      const { district = 'Khordha & Cuttack', alertType = 'Dengue Outbreak Advisory', message, guidelines = [], testEmail } = req.body;
 
       if (!message) {
         res.status(400).json({ error: 'Alert notification message is required.' });
         return;
       }
 
-      console.log(`[EMERGENCY BROADCAST DISPATCHED] District: ${district || 'Statewide'} | Type: ${alertType} | Message: ${message}`);
+      console.log(`[EMERGENCY BROADCAST DISPATCHED] District: ${district} | Type: ${alertType} | Message: ${message}`);
+
+      // Dispatch Brevo Emergency Broadcast Email
+      const recipients = testEmail
+        ? [{ email: testEmail, name: 'Verified Citizen' }]
+        : [
+            { email: 'citizen.alerts@swasthyasathi.odisha.gov.in', name: 'Odisha Public Health Network' },
+            { email: 'health.officer@odisha.gov.in', name: 'District Medical Officer' },
+          ];
+
+      const emailResult = await EmailService.sendEmergencyBroadcastEmail(
+        recipients,
+        alertType,
+        message,
+        district,
+        guidelines.length > 0
+          ? guidelines
+          : [
+              'Clean all open water containers, flower pots, and coolers weekly (Dry Day).',
+              'Seek immediate medical attention at the nearest CHC/DHH if high fever lasts >48 hours.',
+              'Call 108 for free emergency ambulance transport.',
+            ]
+      );
 
       res.status(200).json({
         success: true,
-        message: `Health alert broadcast queued successfully for ${district || 'all districts'}.`,
+        message: `Health alert broadcast queued and dispatched to citizens across ${district}.`,
         broadcastId: `alert-${Date.now()}`,
+        emailDispatched: emailResult.success,
         timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
