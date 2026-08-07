@@ -105,44 +105,38 @@ export const chatService = {
         return res.data.data;
       }
     } catch (err) {
-      console.warn('Backend AI API unavailable, evaluating intelligent local triage:', err);
+      console.warn('Backend AI API unavailable:', err);
     }
 
-    // 2. Intelligent Multilingual Fallback Clinical Triage
+    // 2. Safe Offline Fallback
     await new Promise((r) => setTimeout(r, 900));
 
-    let triageContent = `Thank you for consulting Swasthya Sathi AI. Based on your symptoms regarding "${content.slice(0, 35)}...", here is your clinical triage:\n\n1. **Hydration & Rest**: Ensure adequate intake of oral fluids (ORS / clean water) and complete bed rest.\n2. **Fever & Pain Management**: Use Paracetamol (650mg) as prescribed; avoid NSAIDs like Ibuprofen/Aspirin.\n3. **Clinical Evaluation**: If symptoms persist for more than 48 hours or high fever continues, visit your nearest Community Health Center (CHC) or District Hospital.`;
-    let triageRecs = ['Drink 3-4 liters of ORS/water daily', 'Complete bed rest', 'Monitor temperature every 4 hours'];
-    let triageWarnings = ['Seek immediate emergency care (Call 108) if you experience severe abdominal pain, persistent vomiting, or bleeding.'];
-    let triageSources = ['Odisha Public Health Directorate', 'WHO Guidelines', 'ICMR'];
-    let triageFollowUp = 'Would you like to locate nearby hospitals with active bed availability?';
+    let fallbackContent = 'Our servers are currently experiencing high traffic or the AI service is unavailable. Please try again in a few moments. If you have a medical emergency, please contact a healthcare professional or dial 108 immediately.';
+    let recommendations = ['Please try again later', 'Consult a doctor for immediate medical concerns'];
+    let warnings = ['Service temporarily offline'];
 
     if (language === 'or') {
-      triageContent = `ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ AI ପରାମର୍ଶ:\n\n1. **ତରଳ ପଦାର୍ଥ ଓ ବିଶ୍ରାମ**: ପ୍ରଚୁର ପରିମାଣରେ ପାଣି, ORS ଏବଂ ତରଳ ପଦାର୍ଥ ପିଅନ୍ତୁ।\n2. **ଜ୍ୱର ନିୟନ୍ତ୍ରଣ**: ଡାକ୍ତରଙ୍କ ପରାମର୍ଶ କ୍ରମେ ପାରାସିଟାମଲ୍ ନିଅନ୍ତୁ। ଆସ୍ପିରିନ୍ ବା ଆଇବୁପ୍ରୋଫେନ୍ ଖାଆନ୍ତୁ ନାହିଁ।\n3. **ଡାକ୍ତରଖାନା ଯାଞ୍ଚ**: ଲକ୍ଷଣ ୩ ଦିନରୁ ଅଧିକ ରହିଲେ ନିକଟସ୍ଥ ସରକାରୀ ଡାକ୍ତରଖାନାରେ ରକ୍ତ ପରୀକ୍ଷା କରାନ୍ତୁ।`;
-      triageRecs = ['ଦିନକୁ ୩-୪ ଲିଟର ପାଣି ଓ ORS ପିଅନ୍ତୁ', 'ସମ୍ପୂର୍ଣ୍ଣ ବିଶ୍ରାମ ନିଅନ୍ତୁ', 'ASHA କର୍ମୀଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ'];
-      triageWarnings = ['ପ୍ରବଳ ପେଟ ଯନ୍ତ୍ରଣା ବା ରକ୍ତସ୍ରାବ ହେଲେ ତୁରନ୍ତ ୧୦୮ କୁ କଲ୍ କରନ୍ତୁ'];
-      triageSources = ['ଓଡ଼ିଶା ଜନସ୍ୱାସ୍ଥ୍ୟ ନିର୍ଦ୍ଦେଶାଳୟ', 'NVBDCP'];
-      triageFollowUp = 'ଆପଣ ନିକଟସ୍ଥ ଡାକ୍ତରଖାନାର ବେଡ୍ ସ୍ଥିତି ଜାଣିବାକୁ ଚାହାଁନ୍ତି କି?';
+      fallbackContent = 'ଆମର ସର୍ଭରଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ବ୍ୟସ୍ତ ଅଛନ୍ତି କିମ୍ବା AI ସେବା ଉପଲବ୍ଧ ନାହିଁ। ଦୟାକରି କିଛି ସମୟ ପରେ ଚେଷ୍ଟା କରନ୍ତୁ। ଜରୁରୀକାଳୀନ ପରିସ୍ଥିତିରେ, ଦୟାକରି ୧୦୮ କୁ କଲ୍ କରନ୍ତୁ କିମ୍ବା ଡାକ୍ତରଙ୍କ ସହ ପରାମର୍ଶ କରନ୍ତୁ।';
+      recommendations = ['ଦୟାକରି ପରେ ଚେଷ୍ଟା କରନ୍ତୁ', 'ଡାକ୍ତରଙ୍କ ପରାମର୍ଶ ନିଅନ୍ତୁ'];
+      warnings = ['ସେବା ସାମୟିକ ଭାବେ ବନ୍ଦ ଅଛି'];
     } else if (language === 'hi') {
-      triageContent = `स्वास्थ्य साथी AI प्राथमिक मार्गदर्शन:\n\n1. **पर्याप्त तरल पदार्थ**: ओआरएस (ORS), नारियल पानी और साफ पानी का सेवन करें।\n2. **दवा दिशानिर्देश**: बुखार के लिए केवल पैरासिटामोल लें (एस्पिरिन या ब्रूफेन लेने से बचें)।\n3. **डॉक्टरी जांच**: यदि लक्षण 2-3 दिनों से अधिक रहें तो तुरंत निकटतम अस्पताल जाएं।`;
-      triageRecs = ['प्रतिदिन 3-4 लीटर पानी और ओआरएस पिएं', 'पर्याप्त आराम करें', 'निकटतम स्वास्थ्य केंद्र से संपर्क करें'];
-      triageWarnings = ['लगातार उल्टी या रक्तस्राव होने पर तुरंत 108 पर संपर्क करें'];
-      triageSources = ['ओडिशा जन स्वास्थ्य विभाग', 'आईसीएमआर (ICMR)'];
-      triageFollowUp = 'क्या आप निकटतम अस्पताल में बिस्तर की उपलब्धता देखना चाहते हैं?';
+      fallbackContent = 'हमारे सर्वर वर्तमान में व्यस्त हैं या एआई सेवा उपलब्ध नहीं है। कृपया कुछ क्षणों बाद फिर से प्रयास करें। आपात स्थिति में, कृपया 108 डायल करें या डॉक्टर से परामर्श लें।';
+      recommendations = ['कृपया बाद में प्रयास करें', 'डॉक्टर से परामर्श लें'];
+      warnings = ['सेवा अस्थायी रूप से ऑफ़लाइन है'];
     }
 
     return {
       id: Date.now().toString(),
       chatId,
-      content: triageContent,
+      content: fallbackContent,
       role: 'assistant',
       timestamp: new Date().toISOString(),
       metadata: {
-        recommendations: triageRecs,
-        warnings: triageWarnings,
-        followUp: triageFollowUp,
-        sources: triageSources,
-        confidence: 0.94,
+        recommendations,
+        warnings,
+        followUp: '',
+        sources: ['System Alert'],
+        confidence: 0.1,
       },
     };
   },
