@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('swasthya_user');
-    return saved ? JSON.parse(saved) : MOCK_USER; // Default to demo user for seamless UX
+    return saved ? JSON.parse(saved) : null; // Start as logged out if no saved session
   });
   const [isLoading, setIsLoading] = useState(false);
 
