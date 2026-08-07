@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Shield,
   Lock,
@@ -281,7 +282,12 @@ export const AuthPage: React.FC = () => {
       </div>
 
       {/* Main Glass Card */}
-      <div className="w-full max-w-xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/50 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-xl glass-dark rounded-3xl p-6 sm:p-10 relative z-10"
+      >
         {/* Navigation Tabs */}
         <div className="grid grid-cols-3 gap-1 bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800/80 mb-8">
           <button

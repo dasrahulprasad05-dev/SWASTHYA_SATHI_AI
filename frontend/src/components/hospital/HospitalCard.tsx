@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, Phone, Star, ShieldCheck, Navigation, Info, Clock } from 'lucide-react';
 import type { Hospital } from '../../types';
 
@@ -14,16 +15,17 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
   isSelected,
 }) => {
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02, y: -4 }}
       onClick={() => onSelect(hospital)}
+      className={isSelected ? "glass-accent" : "glass-panel"}
       style={{
-        backgroundColor: 'var(--surface)',
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
-        border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
-        boxShadow: isSelected ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+        border: isSelected ? '2px solid var(--primary)' : '1px solid rgba(255, 255, 255, 0.6)',
+        boxShadow: isSelected ? 'var(--shadow-md)' : '0 4px 24px -1px rgba(0, 0, 0, 0.08)',
         cursor: 'pointer',
-        transition: 'all 0.2s',
+        transition: 'border 0.2s',
         display: 'flex',
         flexDirection: 'column',
         gap: '0.85rem',
@@ -91,7 +93,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '0.25rem',
-            backgroundColor: 'var(--surface-hover)',
+            backgroundColor: 'rgba(255, 255, 255, 0.6)',
             padding: '0.25rem 0.5rem',
             borderRadius: 'var(--radius)',
             fontSize: '0.82rem',
@@ -123,7 +125,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
             style={{
               fontSize: '0.72rem',
               fontWeight: 500,
-              backgroundColor: 'var(--surface-hover)',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
               color: 'var(--text-secondary)',
               padding: '0.15rem 0.5rem',
               borderRadius: 'var(--radius-full)',
@@ -150,7 +152,9 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
           borderTop: '1px solid var(--border-light)',
         }}
       >
-        <a
+        <motion.a
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           href={`tel:${hospital.phone}`}
           onClick={(e) => e.stopPropagation()}
           style={{
@@ -159,7 +163,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.35rem',
-            backgroundColor: 'var(--surface-hover)',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
             border: '1px solid var(--border)',
             color: 'var(--text-primary)',
             padding: '0.45rem 0',
@@ -171,10 +175,15 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
         >
           <Phone size={14} color="var(--primary)" />
           <span>Call</span>
-        </a>
+        </motion.a>
 
-        <button
-          onClick={() => onSelect(hospital)}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(hospital);
+          }}
           style={{
             flex: 1,
             display: 'flex',
@@ -183,6 +192,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
             gap: '0.35rem',
             backgroundColor: 'var(--primary)',
             color: 'white',
+            border: 'none',
             padding: '0.45rem 0',
             borderRadius: 'var(--radius)',
             fontSize: '0.8rem',
@@ -192,8 +202,8 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
         >
           <Info size={14} />
           <span>Details</span>
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
