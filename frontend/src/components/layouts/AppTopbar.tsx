@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, Bell, Moon, Sun, Search, ShieldAlert, Check } from 'lucide-react';
+import { Globe, Bell, Moon, Sun, Search, ShieldAlert, Check, Menu } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../../constants';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,7 @@ interface AppTopbarProps {
   subtitle?: string;
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
+  onMenuClick?: () => void;
 }
 
 export const AppTopbar: React.FC<AppTopbarProps> = ({
@@ -17,6 +18,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
   subtitle,
   leftContent,
   rightContent,
+  onMenuClick,
 }) => {
   const { i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
@@ -49,6 +51,24 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
     >
       {/* Left Section: Title & Subtitle or Custom Content */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {onMenuClick && (
+          <button 
+            className="mobile-only" 
+            onClick={onMenuClick} 
+            style={{ 
+              color: 'var(--text-primary)', 
+              padding: '0.4rem', 
+              borderRadius: 'var(--radius)', 
+              backgroundColor: 'var(--surface-hover)',
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        
         {leftContent ? (
           leftContent
         ) : (
@@ -59,7 +79,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
               </h1>
             )}
             {subtitle && (
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0 }}>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0 }} className="mobile-hide">
                 {subtitle}
               </p>
             )}

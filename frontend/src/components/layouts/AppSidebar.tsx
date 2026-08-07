@@ -19,12 +19,14 @@ import {
   Heart,
   LogOut,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { APP_NAV_ITEMS } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
 
 interface AppSidebarProps {
   bottomSlot?: React.ReactNode;
+  onClose?: () => void;
 }
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -43,7 +45,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Settings: <Settings size={19} />,
 };
 
-export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot }) => {
+export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot, onClose }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,46 +69,54 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot }) => {
     >
       {/* Brand Header */}
       <div style={{ padding: '1.25rem 1.25rem 1rem 1.25rem', borderBottom: '1px solid var(--border-light)' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-          <div
-            style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)',
-              flexShrink: 0,
-            }}
-          >
-            <Heart size={20} fill="currentColor" />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-                Swasthya Sathi
-              </span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  backgroundColor: 'var(--primary-light)',
-                  color: 'var(--primary-dark)',
-                  padding: '0.05rem 0.35rem',
-                  borderRadius: '4px',
-                }}
-              >
-                AI
-              </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+            <div
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)',
+                flexShrink: 0,
+              }}
+            >
+              <Heart size={20} fill="currentColor" />
             </div>
-            <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>
-              Health Companion
-            </p>
-          </div>
-        </Link>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                  Swasthya Sathi
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    backgroundColor: 'var(--primary-light)',
+                    color: 'var(--primary-dark)',
+                    padding: '0.05rem 0.35rem',
+                    borderRadius: '4px',
+                  }}
+                >
+                  AI
+                </span>
+              </div>
+              <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>
+                Health Companion
+              </p>
+            </div>
+          </Link>
+          
+          {onClose && (
+            <button className="mobile-only" onClick={onClose} style={{ color: 'var(--text-muted)', padding: '0.5rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <X size={20} />
+            </button>
+          )}
+        </div>
 
         {/* New Chat Button */}
         <button
