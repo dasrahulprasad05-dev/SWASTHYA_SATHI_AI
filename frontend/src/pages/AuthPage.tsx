@@ -20,6 +20,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { PasswordStrengthMeter } from '../components/auth/PasswordStrengthMeter';
 
 const ODISHA_DISTRICTS = [
   'Khordha (Bhubaneswar)',
@@ -66,6 +67,10 @@ export const AuthPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<AuthTab>(initialTab);
   const [isAdminPortal, setIsAdminPortal] = useState(searchParams.get('portal') === 'admin');
   const [showPassword, setShowPassword] = useState(false);
+  const [showCitizenPass, setShowCitizenPass] = useState(false);
+  const [showCitizenConfirm, setShowCitizenConfirm] = useState(false);
+  const [showAdminPass, setShowAdminPass] = useState(false);
+  const [showAdminConfirm, setShowAdminConfirm] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Form states
@@ -542,40 +547,57 @@ export const AuthPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Password *
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••••••"
-                    value={citizenForm.password}
-                    onChange={(e) => setCitizenForm({ ...citizenForm, password: e.target.value })}
-                    className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
-                  />
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
+                    <input
+                      type={showCitizenPass ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={citizenForm.password}
+                      onChange={(e) => setCitizenForm({ ...citizenForm, password: e.target.value })}
+                      className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCitizenPass(!showCitizenPass)}
+                      className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300"
+                    >
+                      {showCitizenPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Confirm Password *
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••••••"
-                    value={citizenForm.confirmPassword}
-                    onChange={(e) => setCitizenForm({ ...citizenForm, confirmPassword: e.target.value })}
-                    className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
-                  />
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Confirm Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
+                    <input
+                      type={showCitizenConfirm ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={citizenForm.confirmPassword}
+                      onChange={(e) => setCitizenForm({ ...citizenForm, confirmPassword: e.target.value })}
+                      className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCitizenConfirm(!showCitizenConfirm)}
+                      className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300"
+                    >
+                      {showCitizenConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
               </div>
+              <PasswordStrengthMeter password={citizenForm.password} />
             </div>
 
             <div className="p-3 rounded-xl bg-teal-950/30 border border-teal-800/40 text-xs text-teal-300 flex items-center gap-2">
@@ -683,34 +705,57 @@ export const AuthPage: React.FC = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Password *
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={adminForm.password}
-                  onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
-                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
+                    <input
+                      type={showAdminPass ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={adminForm.password}
+                      onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
+                      className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminPass(!showAdminPass)}
+                      className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300"
+                    >
+                      {showAdminPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Confirm Password *
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={adminForm.confirmPassword}
-                  onChange={(e) => setAdminForm({ ...adminForm, confirmPassword: e.target.value })}
-                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Confirm Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
+                    <input
+                      type={showAdminConfirm ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={adminForm.confirmPassword}
+                      onChange={(e) => setAdminForm({ ...adminForm, confirmPassword: e.target.value })}
+                      className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminConfirm(!showAdminConfirm)}
+                      className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300"
+                    >
+                      {showAdminConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
               </div>
+              <PasswordStrengthMeter password={adminForm.password} />
             </div>
 
             <button
