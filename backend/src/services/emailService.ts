@@ -3,9 +3,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
-const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
-const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'noreply@swasthyasathi.odisha.gov.in';
-const SENDER_NAME = process.env.BREVO_SENDER_NAME || 'Swasthya Sathi AI (ଓଡ଼ିଶା ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ)';
 
 export interface SendEmailPayload {
   to: Array<{ email: string; name?: string }>;
@@ -19,14 +16,18 @@ export class EmailService {
    * Core method to send transactional email via Brevo REST API
    */
   static async sendTransactionalEmail(payload: SendEmailPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
-    if (!BREVO_API_KEY || BREVO_API_KEY === 'your_brevo_api_key_here') {
+    const apiKey = process.env.BREVO_API_KEY || '';
+    const senderEmail = process.env.BREVO_SENDER_EMAIL || 'dasrahulprasad05@gmail.com';
+    const senderName = process.env.BREVO_SENDER_NAME || 'Swasthya Sathi AI (ଓଡ଼ିଶା ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ)';
+
+    if (!apiKey || apiKey === 'your_brevo_api_key_here') {
       console.log(`[BREVO EMAIL SIMULATION] To: ${payload.to.map((t) => t.email).join(', ')} | Subject: "${payload.subject}"`);
       return { success: true, messageId: `simulated-${Date.now()}` };
     }
 
     try {
       const body = {
-        sender: payload.sender || { email: SENDER_EMAIL, name: SENDER_NAME },
+        sender: payload.sender || { email: senderEmail, name: senderName },
         to: payload.to,
         subject: payload.subject,
         htmlContent: payload.htmlContent,
@@ -36,7 +37,7 @@ export class EmailService {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'api-key': BREVO_API_KEY,
+          'api-key': apiKey,
           'content-type': 'application/json',
         },
         body: JSON.stringify(body),
