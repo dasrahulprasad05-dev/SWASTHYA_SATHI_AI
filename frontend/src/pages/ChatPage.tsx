@@ -142,11 +142,13 @@ export const ChatPage: React.FC = () => {
         />
 
         {/* Right: Messages conversation area */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%' }}>
           {/* Scrollable messages */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
             {messages.length === 0 ? (
-              <AIWelcome onSelectPrompt={handleSendMessage} />
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AIWelcome onSelectPrompt={handleSendMessage} />
+              </div>
             ) : (
               <>
                 {messages.map((msg) => (
@@ -167,11 +169,13 @@ export const ChatPage: React.FC = () => {
           </div>
 
           {/* Chat input footer */}
-          <ChatInput
-            onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            onVoiceClick={() => navigate('/voice')}
-          />
+          <div style={{ marginTop: 'auto' }}>
+            <ChatInput
+              onSendMessage={handleSendMessage}
+              isLoading={isLoading}
+              onVoiceClick={() => navigate('/voice')}
+            />
+          </div>
         </div>
       </div>
     </AppLayout>
