@@ -49,7 +49,7 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
   onSelectHospital,
 }) => {
   const defaultCenter: [number, number] = [20.2961, 85.8245]; // Bhubaneswar coordinates
-  const activeCenter: [number, number] = selectedHospital
+  const activeCenter: [number, number] = selectedHospital?.coordinates?.lat && selectedHospital?.coordinates?.lng
     ? [selectedHospital.coordinates.lat, selectedHospital.coordinates.lng]
     : defaultCenter;
 
@@ -78,6 +78,8 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
         <MapController center={activeCenter} zoom={selectedHospital ? 14 : 12} />
 
         {hospitals.map((hospital) => {
+          if (!hospital.coordinates?.lat || !hospital.coordinates?.lng) return null;
+
           const isSelected = selectedHospital?.id === hospital.id;
           const icon = isSelected
             ? selectedIcon
