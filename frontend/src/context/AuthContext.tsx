@@ -9,8 +9,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  registerAdmin: (data: AdminRegisterData) => Promise<void>;
+  register: (data: RegisterData) => Promise<{ verificationRequired?: boolean } | void>;
+  registerAdmin: (data: AdminRegisterData) => Promise<{ verificationRequired?: boolean } | void>;
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   resetPassword: (data: { email: string; otp: string; newPassword: string }) => Promise<{ success: boolean; message: string }>;
   verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
