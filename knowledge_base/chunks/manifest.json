@@ -1,6 +1,6 @@
 {
-  "total_documents": 52,
-  "total_chunks": 475,
+  "total_documents": 53,
+  "total_chunks": 479,
   "documents": [
     {
       "filename": "Anemia_Awareness_Reference.docx",
@@ -358,6 +358,13 @@
       "language": "en",
       "chunks": 8,
       "characters": 5466
+    },
+    {
+      "filename": "swasthya_sathi_faq.md",
+      "category": "faq",
+      "language": "en",
+      "chunks": 4,
+      "characters": 2651
     },
     {
       "filename": "vaccine-myths-vs-facts.docx",

@@ -1,13 +1,12 @@
 import React from 'react';
-import { ShieldCheck, Award, Building2, Landmark, HeartPulse } from 'lucide-react';
 
 export const TrustedSources: React.FC = () => {
   const sources = [
-    { name: 'World Health Organization', short: 'WHO', icon: <GlobeIcon size={24} color="#0284C7" /> },
-    { name: 'Ministry of Health & Family Welfare', short: 'MoHFW', icon: <Landmark size={24} color="#10B981" /> },
-    { name: 'ICMR', short: 'ICMR', icon: <Award size={24} color="#8B5CF6" /> },
-    { name: 'National Health Mission', short: 'NHM', icon: <HeartPulse size={24} color="#EF4444" /> },
-    { name: 'Odisha Health Department', short: 'Odisha Health', icon: <Building2 size={24} color="#F59E0B" /> },
+    { name: 'World Health Organization', short: 'WHO', src: '/logos/who.png' },
+    { name: 'Ministry of Health & Family Welfare', short: 'MoHFW', src: '/logos/mohfw.png' },
+    { name: 'ICMR', short: 'ICMR', src: '/logos/icmr.png' },
+    { name: 'National Health Mission', short: 'NHM', src: '/logos/nhm.png' },
+    { name: 'Odisha Health Department', short: 'Odisha Health', src: '/logos/odisha-health.png' },
   ];
 
   return (
@@ -49,26 +48,23 @@ export const TrustedSources: React.FC = () => {
               justifyContent: 'center',
               width: '45px',
               height: '45px',
-              backgroundColor: '#F8FAFC',
+              backgroundColor: '#FFFFFF',
               borderRadius: '8px',
               boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
               border: '1px solid #E2E8F0',
+              overflow: 'hidden',
+              padding: '4px'
             }}
           >
-            {src.icon}
+            <img 
+              src={src.src} 
+              alt={`${src.short} Logo`} 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
           </div>
         ))}
       </div>
     </div>
   );
 };
-
-// Quick Globe Icon for WHO
-const GlobeIcon = ({ size, color }: { size: number; color: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="2" y1="12" x2="22" y2="12"></line>
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-  </svg>
-);
 
