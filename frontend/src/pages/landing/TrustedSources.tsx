@@ -1,72 +1,67 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShieldCheck, Award, Building2, Landmark } from 'lucide-react';
 
 export const TrustedSources: React.FC = () => {
   const { t } = useTranslation();
 
   const sources = [
-    { name: 'World Health Organization', short: 'WHO', icon: <ShieldCheck size={22} color="#0284C7" />, desc: 'Global Health Protocols' },
-    { name: 'Ministry of Health & Family Welfare', short: 'MoHFW', icon: <Landmark size={22} color="#10B981" />, desc: 'National Health Guidelines' },
-    { name: 'Indian Council of Medical Research', short: 'ICMR', icon: <Award size={22} color="#8B5CF6" />, desc: 'Clinical Research Data' },
-    { name: 'Odisha Health Department', short: 'Odisha Health', icon: <Building2 size={22} color="#F59E0B" />, desc: 'State Hospital & BSKY Registry' },
+    { name: 'World Health Organization', short: 'WHO', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/WHO_logo.svg/1200px-WHO_logo.svg.png' },
+    { name: 'Ministry of Health & Family Welfare', short: 'MoHFW', src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Ministry_of_Health_and_Family_Welfare.svg' },
+    { name: 'ICMR', short: 'ICMR', src: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/90/Indian_Council_of_Medical_Research_Logo.svg/1200px-Indian_Council_of_Medical_Research_Logo.svg.png' },
+    { name: 'National Health Mission', short: 'NHM', src: 'https://nhm.gov.in/images/logo.png' },
+    { name: 'Odisha Health Department', short: 'Odisha Health', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Seal_of_Odisha.png/120px-Seal_of_Odisha.png' },
   ];
 
   return (
-    <section style={{ padding: '3.5rem 1.5rem', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', textAlign: 'center' }}>
-        <p style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2rem' }}>
-          {t('landing.trustedBy')}
-        </p>
+    <div
+      style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        padding: '1.5rem',
+        borderRadius: '20px',
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.8)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+        justifyContent: 'center',
+      }}
+    >
+      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748B', marginBottom: '1rem', textTransform: 'uppercase' }}>
+        Trusted Information From
+      </p>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.5rem',
-          }}
-        >
-          {sources.map((src) => (
-            <div
-              key={src.short}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                padding: '1.25rem',
-                backgroundColor: 'var(--surface-hover)',
-                borderRadius: 'var(--radius-xl)',
-                border: '1px solid var(--border)',
-                textAlign: 'left',
-              }}
-            >
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '12px',
-                  backgroundColor: 'var(--surface)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: 'var(--shadow-sm)',
-                  flexShrink: 0,
-                }}
-              >
-                {src.icon}
-              </div>
-              <div>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                  {src.name}
-                </h4>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                  {src.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '1.5rem',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {sources.map((src) => (
+          <div
+            key={src.short}
+            title={src.name}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '45px',
+              height: '45px',
+              padding: '4px',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+            }}
+          >
+            <img src={src.src} alt={src.short} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          </div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 };
+
