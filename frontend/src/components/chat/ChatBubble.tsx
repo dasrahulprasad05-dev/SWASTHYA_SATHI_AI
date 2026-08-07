@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   HeartPulse,
   CheckCircle2,
@@ -31,9 +32,22 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const bubbleVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      transition: { type: 'spring', stiffness: 200, damping: 20 }
+    }
+  };
+
   if (isUser) {
     return (
-      <div
+      <motion.div
+        variants={bubbleVariants}
+        initial="hidden"
+        animate="visible"
         style={{
           display: 'flex',
           justifyContent: 'flex-end',
@@ -65,13 +79,16 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
             {formatDate(message.timestamp, 'short')}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   // Assistant Message
   return (
-    <div
+    <motion.div
+      variants={bubbleVariants}
+      initial="hidden"
+      animate="visible"
       style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -128,7 +145,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
               Verified
             </span>
           </div>
-          {message.metadata?.confidence && (
+          {message.metadata?.confidence !== undefined && (
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               Confidence: {Math.round(message.metadata.confidence * 100)}%
             </span>
@@ -202,7 +219,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
 
         {/* Follow-up Prompt Chip */}
         {message.metadata?.followUp && onSendFollowUp && (
-          <div style={{ marginBottom: '0.85rem' }}>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} style={{ display: 'inline-block', marginBottom: '0.85rem' }}>
             <button
               onClick={() => onSendFollowUp(message.metadata?.followUp || '')}
               style={{
@@ -218,12 +235,13 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
                 fontWeight: 600,
                 cursor: 'pointer',
                 textAlign: 'left',
+                transition: 'all 0.2s',
               }}
             >
               <Sparkles size={14} />
               <span>{message.metadata.followUp}</span>
             </button>
-          </div>
+          </motion.div>
         )}
 
         {/* Footer Actions & Sources */}
@@ -249,7 +267,9 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
 
           {/* Copy and Feedback Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleCopy}
               title="Copy answer"
               style={{
@@ -265,9 +285,11 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.8 }}
               onClick={() => setLiked(true)}
               title="Helpful"
               style={{
@@ -277,8 +299,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
               }}
             >
               <ThumbsUp size={14} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.8 }}
               onClick={() => setLiked(false)}
               title="Not helpful"
               style={{
@@ -288,10 +312,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
               }}
             >
               <ThumbsDown size={14} />
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

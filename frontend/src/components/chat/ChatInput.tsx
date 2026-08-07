@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, Mic, Paperclip, AlertCircle, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Send, Mic, Paperclip, AlertCircle } from 'lucide-react';
 
 interface ChatInputProps {
   onSendMessage: (text: string) => void;
@@ -15,6 +16,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
@@ -40,24 +42,29 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div style={{ padding: '0.85rem 1.5rem 1.25rem 1.5rem', backgroundColor: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
+    <div style={{ padding: '0.85rem 1.5rem 1.25rem 1.5rem', backgroundColor: 'transparent', position: 'relative' }}>
       <div style={{ maxWidth: '840px', margin: '0 auto' }}>
         {/* Input Bar Container */}
-        <div
+        <motion.div
+          animate={{
+            borderColor: isFocused ? 'var(--primary-300)' : 'rgba(255, 255, 255, 0.4)',
+            boxShadow: isFocused ? '0 8px 32px rgba(16, 185, 129, 0.15)' : '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+          }}
+          className="glass-panel"
           style={{
             display: 'flex',
             alignItems: 'flex-end',
             gap: '0.6rem',
-            backgroundColor: 'var(--bg)',
             borderRadius: '24px',
             padding: '0.5rem 0.85rem',
-            border: '1.5px solid var(--border)',
-            boxShadow: 'var(--shadow-sm)',
+            border: '1.5px solid rgba(255, 255, 255, 0.4)',
             transition: 'border-color 0.2s',
           }}
         >
           {/* Attachment Button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1, backgroundColor: 'var(--surface-hover)' }}
+            whileTap={{ scale: 0.9 }}
             type="button"
             title="Attach Medical Report / Prescription"
             style={{
@@ -67,10 +74,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               display: 'flex',
               alignItems: 'center',
               borderRadius: '50%',
+              border: 'none',
+              background: 'transparent',
             }}
           >
             <Paperclip size={18} />
-          </button>
+          </motion.button>
 
           {/* Textarea */}
           <textarea
@@ -78,6 +87,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder={t('chat.placeholder')}
             rows={1}
             style={{
@@ -96,7 +107,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           />
 
           {/* Mic Button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="button"
             onClick={onVoiceClick}
             title="Voice Input (Odia/Hindi/Eng)"
@@ -108,13 +121,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
+              border: 'none',
             }}
           >
             <Mic size={18} />
-          </button>
+          </motion.button>
 
           {/* Send Button */}
-          <button
+          <motion.button
+            whileHover={input.trim() && !isLoading ? { scale: 1.05 } : {}}
+            whileTap={input.trim() && !isLoading ? { scale: 0.95 } : {}}
             type="button"
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
@@ -127,13 +143,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               cursor: input.trim() && !isLoading ? 'pointer' : 'not-allowed',
               display: 'flex',
               alignItems: 'center',
+              border: 'none',
               boxShadow: input.trim() ? '0 2px 8px rgba(16, 185, 129, 0.3)' : 'none',
-              transition: 'all 0.2s',
             }}
           >
             <Send size={18} />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* Medical Disclaimer */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginTop: '0.6rem' }}>
