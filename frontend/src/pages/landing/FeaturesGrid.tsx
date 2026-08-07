@@ -84,7 +84,7 @@ export const FeaturesGrid: React.FC = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
+      transition: { type: 'spring' as const, stiffness: 100, damping: 15 },
     },
   };
 
@@ -132,7 +132,7 @@ export const FeaturesGrid: React.FC = () => {
           }}
         >
           {features.map((feat) => (
-            <motion.div key={feat.title} variants={itemVariants} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: 'spring', stiffness: 300 }}>
+            <motion.div key={feat.title} variants={itemVariants} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: 'spring' as const, stiffness: 300 }}>
               <Link
                 to={feat.path}
                 className="glass-panel"
