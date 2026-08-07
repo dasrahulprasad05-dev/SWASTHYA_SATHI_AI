@@ -10,20 +10,11 @@ export const PublicFooter: React.FC = () => {
           {/* Col 1: About & Mission */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  backgroundColor: 'var(--primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                }}
-              >
-                <Heart size={20} fill="currentColor" />
-              </div>
+              <img 
+                src="/logos/main-logo.jpg" 
+                alt="Swasthya Sathi AI Logo" 
+                style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'white' }} 
+              />
               <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF' }}>
                 Swasthya Sathi <span style={{ color: 'var(--primary)' }}>AI</span>
               </span>

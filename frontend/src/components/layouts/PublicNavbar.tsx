@@ -22,21 +22,11 @@ export const PublicNavbar: React.FC = () => {
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0.85rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Brand Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-          <div
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
-              color: 'white',
-            }}
-          >
-            <Heart size={24} fill="currentColor" />
-          </div>
+          <img 
+            src="/logos/main-logo.jpg" 
+            alt="Swasthya Sathi AI Logo" 
+            style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'white' }} 
+          />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>

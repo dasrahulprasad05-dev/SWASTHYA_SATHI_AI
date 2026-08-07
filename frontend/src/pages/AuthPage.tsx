@@ -288,9 +288,11 @@ export const AuthPage: React.FC = () => {
       {/* Top Header & Branding */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
         <Link to="/" className="inline-flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25 group-hover:scale-105 transition-transform">
-            <HeartPulse className="w-7 h-7 text-white" />
-          </div>
+          <img 
+            src="/logos/main-logo.jpg" 
+            alt="Swasthya Sathi AI Logo" 
+            className="w-12 h-12 rounded-xl object-contain bg-white group-hover:scale-105 transition-transform shadow-lg shadow-teal-500/25"
+          />
           <div className="text-left">
             <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
               Swasthya Sathi AI

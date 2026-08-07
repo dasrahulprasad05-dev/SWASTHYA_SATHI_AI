@@ -71,22 +71,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot, onClose }) =
       <div style={{ padding: '1.25rem 1.25rem 1rem 1.25rem', borderBottom: '1px solid var(--border-light)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-            <div
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)',
-                flexShrink: 0,
-              }}
-            >
-              <Heart size={20} fill="currentColor" />
-            </div>
+            <img 
+              src="/logos/main-logo.jpg" 
+              alt="Swasthya Sathi AI Logo" 
+              style={{ width: '38px', height: '38px', borderRadius: '8px', objectFit: 'contain', backgroundColor: 'white', flexShrink: 0 }} 
+            />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
