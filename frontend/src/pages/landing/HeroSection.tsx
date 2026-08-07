@@ -189,8 +189,8 @@ export const HeroSection: React.FC = () => {
                 height: 'auto',
                 position: 'relative',
                 zIndex: 10,
-                filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.2))',
-                mixBlendMode: 'screen', // Drops the black background from the AI generated image!
+                filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.5))',
+                clipPath: 'circle(48% at 50% 50%)', // Hides the square black background corners perfectly
               }}
             />
 
