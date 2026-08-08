@@ -151,9 +151,9 @@ export class HospitalController {
               specialties: h.specialties || [],
               services: h.services || [],
               beds: {
-                icu: h.hospital_beds?.icu_beds || 0,
-                oxygen: h.hospital_beds?.oxygen_beds || 0,
-                general: h.hospital_beds?.general_beds || 0,
+                icu: (Array.isArray(h.hospital_beds) ? h.hospital_beds[0]?.icu_beds : h.hospital_beds?.icu_beds) || 0,
+                oxygen: (Array.isArray(h.hospital_beds) ? h.hospital_beds[0]?.oxygen_beds : h.hospital_beds?.oxygen_beds) || 0,
+                general: (Array.isArray(h.hospital_beds) ? h.hospital_beds[0]?.general_beds : h.hospital_beds?.general_beds) || 0,
               },
             }));
           }

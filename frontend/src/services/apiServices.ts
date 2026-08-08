@@ -199,9 +199,9 @@ export const hospitalService = {
             specialties: h.specialties || [],
             services: h.services || [],
             beds: {
-              icu: h.hospital_beds?.icu_beds || 0,
-              oxygen: h.hospital_beds?.oxygen_beds || 0,
-              general: h.hospital_beds?.general_beds || 0,
+              icu: (Array.isArray(h.hospital_beds) ? h.hospital_beds[0]?.icu_beds : h.hospital_beds?.icu_beds) || 0,
+              oxygen: (Array.isArray(h.hospital_beds) ? h.hospital_beds[0]?.oxygen_beds : h.hospital_beds?.oxygen_beds) || 0,
+              general: (Array.isArray(h.hospital_beds) ? h.hospital_beds[0]?.general_beds : h.hospital_beds?.general_beds) || 0,
             },
           }));
         }
@@ -255,7 +255,7 @@ export const healthService = {
   getDiseaseById: async (id: string): Promise<Disease> => {
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('diseases').select('*').limit(1).single();
+        const { data, error } = await supabase.from('diseases').select('*').eq('id', id).single();
         if (!error && data) {
           return {
             id: data.id,

@@ -1,20 +1,7 @@
-import Groq from 'groq-sdk';
 import dotenv from 'dotenv';
 import { knowledgeBaseService } from './knowledgeBaseService.js';
 
 dotenv.config();
-
-const groqApiKey = process.env.GROQ_API_KEY || '';
-const groqModel = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
-
-let groq: Groq | null = null;
-if (groqApiKey && groqApiKey !== 'your_groq_api_key_here') {
-  try {
-    groq = new Groq({ apiKey: groqApiKey });
-  } catch (err) {
-    console.warn('Groq client initialization warning:', err);
-  }
-}
 
 export interface ClinicalTriageResponse {
   content: string;
@@ -25,32 +12,7 @@ export interface ClinicalTriageResponse {
   followUp: string;
 }
 
-const SYSTEM_HEALTH_PROMPT = `
-You are "Swasthya Sathi AI" (ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ AI), a trusted, empathetic, and evidence-based clinical health assistant for Odisha, India.
 
-Your core mission is to provide accurate preliminary health guidance, symptom analysis, and direct users to verified Odisha health facilities (AIIMS BBSR, SCB Cuttack, Capital Hospital, CHCs/DHHs) or emergency services (108 Ambulance, 104 Health Helpline).
-
-Clinical Rules & Safety Guardrails:
-1. Always maintain an empathetic, reassuring tone.
-2. Emphasize that your guidance does NOT replace in-person doctor diagnosis.
-3. For acute danger signs (chest pain, stroke signs, extreme bleeding, convulsion, snake bite, severe breathlessness), instruct IMMEDIATE 108 ambulance dispatch.
-4. Provide structured guidance:
-   - Clinical Assessment summary
-   - Immediate Home Recommendations (hydration, ORS, Paracetamol for fever; strictly advise against NSAIDs like Ibuprofen if dengue is suspected)
-   - Red Flag Symptoms / Warning Signs requiring hospital visit
-   - Official sources (Odisha Public Health Directorate, NVBDCP, WHO, ICMR)
-5. Support response in the requested language (Odia, Hindi, or English).
-
-Always format your response as valid JSON with the following schema:
-{
-  "content": "Detailed empathetic answer in the user's language explaining symptoms, care, and guidance",
-  "confidence": 0.95,
-  "recommendations": ["Recommendation 1", "Recommendation 2", "Recommendation 3"],
-  "warnings": ["Red flag symptom 1", "Red flag symptom 2"],
-  "sources": ["Odisha Health Department", "WHO Guidelines", "ICMR Protocol"],
-  "followUp": "Helpful next question or suggestion"
-}
-`;
 
 export class AIService {
   static async generateHealthTriage(

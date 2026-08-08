@@ -114,6 +114,7 @@ export interface Hospital {
   type: 'Government' | 'Private' | 'NGO' | 'Clinic';
   address: string;
   city?: string;
+  district?: string;
   state?: string;
   pincode?: string;
   phone: string;

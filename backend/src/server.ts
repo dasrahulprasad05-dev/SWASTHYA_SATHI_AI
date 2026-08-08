@@ -9,11 +9,13 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 // Security and utility middleware
 app.use(helmet());
-app.use(cors()); // Permissive CORS to allow Vercel to connect without errors
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

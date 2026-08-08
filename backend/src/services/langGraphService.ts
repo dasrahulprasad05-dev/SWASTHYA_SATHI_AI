@@ -263,7 +263,7 @@ async function finalSafetyCheckNode(state: typeof GraphState.State) {
   
   // Basic guard against definitive diagnosis
   if (contentLower.includes("i diagnose you with") || contentLower.includes("you definitely have")) {
-    response.content += "\\n\\n*Disclaimer: I am an AI, not a doctor. This is not a definitive diagnosis.*";
+    response.content += "\n\n*Disclaimer: I am an AI, not a doctor. This is not a definitive diagnosis.*";
   }
 
   // Guard against specific strong prescriptions not typically given by AI

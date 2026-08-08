@@ -14,7 +14,7 @@ interface AuthContextType {
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   resetPassword: (data: { email: string; otp: string; newPassword: string }) => Promise<{ success: boolean; message: string }>;
   verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
 }
 

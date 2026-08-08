@@ -109,7 +109,19 @@ export class DiseaseController {
   }
 
   static async getDiseaseById(req: Request, res: Response): Promise<void> {
-    res.status(200).json({ success: true, data: MOCK_DISEASE_FALLBACK });
+    try {
+      const { id } = req.params;
+      if (isSupabaseConfigured()) {
+        const { data, error } = await supabase.from('diseases').select('*').eq('id', id).single();
+        if (!error && data) {
+          res.status(200).json({ success: true, data });
+          return;
+        }
+      }
+      res.status(200).json({ success: true, data: MOCK_DISEASE_FALLBACK });
+    } catch (error: any) {
+      res.status(500).json({ error: error?.message });
+    }
   }
 
   static async getAllMedicines(req: Request, res: Response): Promise<void> {

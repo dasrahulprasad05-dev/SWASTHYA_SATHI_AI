@@ -187,7 +187,7 @@ export class AuthController {
         expiresAt: Date.now() + 15 * 60 * 1000,
       });
 
-      console.log(`[PASSWORD RESET OTP GENERATED] Email: ${email} | Code: ${otp}`);
+      console.log(`[PASSWORD RESET OTP GENERATED] Email: ${email} | OTP dispatched via email.`);
 
       // Dispatch Brevo email
       const emailResult = await EmailService.sendPasswordResetEmail(email, email.split('@')[0], otp);
@@ -236,7 +236,11 @@ export class AuthController {
       // OTP is valid! Update Supabase password if configured
       if (isSupabaseConfigured()) {
         try {
-          await supabase.auth.admin.updateUserById(email, { password: newPassword });
+          const { data: userData } = await supabase.auth.admin.listUsers();
+          const targetUser = userData?.users?.find(u => u.email === email.toLowerCase());
+          if (targetUser) {
+            await supabase.auth.admin.updateUserById(targetUser.id, { password: newPassword });
+          }
         } catch (dbErr) {
           console.warn('Supabase password reset update note:', dbErr);
         }

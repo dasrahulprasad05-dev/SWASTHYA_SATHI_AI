@@ -110,7 +110,7 @@ export const MOCK_USER: User = {
   phone: '+91 98765 43210',
   location: 'Bhubaneswar, Odisha',
   language: 'or',
-  role: 'user',
+  role: 'citizen',
   isVerified: true,
   memberSince: '2024',
   accountType: 'Free',
