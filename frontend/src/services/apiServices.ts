@@ -23,6 +23,7 @@ import {
   MOCK_ADMIN_STATS,
 } from '../constants';
 import { diseasesData } from '../data/diseasesData';
+import { ODISHA_HOSPITALS } from '../data/hospitalsData';
 
 // ── Chat & AI Triage Service ──
 export const chatService = {
@@ -222,7 +223,7 @@ export const hospitalService = {
     }
 
     // 3. Local Mock Filtering
-    let filtered = [...MOCK_HOSPITALS];
+    let filtered = [...ODISHA_HOSPITALS];
     if (filters?.type && filters.type !== 'All') {
       filtered = filtered.filter((h) => h.type.toLowerCase() === filters.type?.toLowerCase());
     }
@@ -230,12 +231,18 @@ export const hospitalService = {
       filtered = filtered.filter((h) => h.isOpen24x7);
     }
     if (filters?.query) {
-      const q = filters.query.toLowerCase();
+      const q = filters.query.toLowerCase().trim();
       filtered = filtered.filter(
         (h) =>
           h.name.toLowerCase().includes(q) ||
           h.address.toLowerCase().includes(q) ||
-          h.specialties.some((s) => s.toLowerCase().includes(q))
+          (h.city && h.city.toLowerCase().includes(q)) ||
+          (h.district && h.district.toLowerCase().includes(q)) ||
+          (h.specialties && h.specialties.some((s) => s.toLowerCase().includes(q))) ||
+          (h.services &&
+            h.services.some((s) =>
+              typeof s === 'string' ? s.toLowerCase().includes(q) : s.name.toLowerCase().includes(q)
+            ))
       );
     }
     return filtered;
@@ -244,10 +251,15 @@ export const hospitalService = {
   getHospitalById: async (id: string): Promise<Hospital | undefined> => {
     try {
       const res = await api.get<ApiResponse<Hospital>>(`/hospitals/${id}`);
-      return res.data.data;
+      if (res.data?.data) return res.data.data;
     } catch {
-      return MOCK_HOSPITALS.find((h) => h.id === id) || MOCK_HOSPITALS[0];
+      // Continue to local dataset
     }
+    return (
+      ODISHA_HOSPITALS.find((h) => h.id === id || h.id === `hosp-${id}`) ||
+      MOCK_HOSPITALS.find((h) => h.id === id) ||
+      ODISHA_HOSPITALS[0]
+    );
   },
 };
 

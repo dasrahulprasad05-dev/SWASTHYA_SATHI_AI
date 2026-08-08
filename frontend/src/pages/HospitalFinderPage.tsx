@@ -15,25 +15,15 @@ export const HospitalFinderPage: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
   const [modalHospital, setModalHospital] = useState<Hospital | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationNotice, setLocationNotice] = useState<string | null>(null);
   const [filters, setFilters] = useState<HospitalFilters>({
     type: 'All',
     query: '',
     openNow: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchHospitals = async () => {
-      setIsLoading(true);
-      try {
-        const data = await hospitalService.getHospitals(filters);
-        setHospitals(data);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchHospitals();
-  }, [filters]);
 
   // Haversine formula to calculate distance in km
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -48,50 +38,91 @@ export const HospitalFinderPage: React.FC = () => {
     return R * c; // Distance in km
   };
 
-  const handleUseLocation = () => {
-    if (navigator.geolocation) {
+  const applyDistanceAndSort = (
+    data: Hospital[],
+    coords: { lat: number; lng: number } | null
+  ): Hospital[] => {
+    if (!coords) return data;
+    const withDistance = data.map((h) => {
+      if (h.coordinates?.lat && h.coordinates?.lng) {
+        const dist = calculateDistance(coords.lat, coords.lng, h.coordinates.lat, h.coordinates.lng);
+        return { ...h, distance: Math.round(dist * 10) / 10 };
+      }
+      return h;
+    });
+    return withDistance.sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
+  };
+
+  useEffect(() => {
+    const fetchHospitals = async () => {
       setIsLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-
-          // Re-fetch hospitals to ensure we have the latest data
-          let currentHospitals: Hospital[];
-          try {
-            currentHospitals = await hospitalService.getHospitals(filters);
-          } catch {
-            // Fall back to current state if fetch fails
-            currentHospitals = [...hospitals];
-          }
-          
-          // Calculate distance for each hospital
-          const hospitalsWithDistance = currentHospitals.map(h => {
-            if (h.coordinates?.lat && h.coordinates?.lng) {
-              const dist = calculateDistance(userLat, userLng, h.coordinates.lat, h.coordinates.lng);
-              // Round to 1 decimal place
-              return { ...h, distance: Math.round(dist * 10) / 10 };
-            }
-            return h;
-          });
-
-          // Sort hospitals by distance
-          const sorted = hospitalsWithDistance.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
-          setHospitals(sorted);
-          setIsLoading(false);
-        },
-        (error) => {
-          console.warn('Geolocation error:', error);
-          setIsLoading(false);
+      try {
+        const data = await hospitalService.getHospitals(filters);
+        const processed = applyDistanceAndSort(data, userLocation);
+        setHospitals(processed);
+        if (processed.length > 0 && !selectedHospital) {
+          setSelectedHospital(processed[0]);
         }
-      );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchHospitals();
+  }, [filters, userLocation]);
+
+  const handleUseLocation = () => {
+    setIsLocating(true);
+    setLocationNotice(null);
+
+    if (!navigator.geolocation) {
+      // Fallback for browsers without geolocation
+      const fallbackCoords = { lat: 20.2961, lng: 85.8245 }; // Central Bhubaneswar
+      setUserLocation(fallbackCoords);
+      setLocationNotice('Geolocation not supported in browser. Sorted from Bhubaneswar.');
+      setIsLocating(false);
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setUserLocation(coords);
+        setIsLocating(false);
+        setLocationNotice(null);
+      },
+      (error) => {
+        console.warn('Geolocation failed or permission denied:', error);
+        // Fallback to central Odisha (Bhubaneswar Capital)
+        const fallbackCoords = { lat: 20.2961, lng: 85.8245 };
+        setUserLocation(fallbackCoords);
+        setLocationNotice(
+          t(
+            'hospital.locationNotice',
+            'Location access was unavailable. Showing hospitals sorted from central Odisha (Bhubaneswar).'
+          )
+        );
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 60000,
+      }
+    );
+  };
+
+  const handleResetLocation = () => {
+    setUserLocation(null);
+    setLocationNotice(null);
   };
 
   return (
     <AppLayout
-      topbarTitle={t('hospital.title')}
-      topbarSubtitle={t('hospital.subtitle')}
+      topbarTitle={t('hospital.title', 'Nearby Medical Services')}
+      topbarSubtitle={t('hospital.subtitle', 'Locate hospitals, ICU beds, and 24x7 emergency centers across Odisha')}
       rightPanel={
         <>
           <EmergencyCard />
@@ -105,7 +136,43 @@ export const HospitalFinderPage: React.FC = () => {
           filters={filters}
           onChange={setFilters}
           onUseLocation={handleUseLocation}
+          isLocating={isLocating}
+          hasUserLocation={!!userLocation}
+          onResetLocation={handleResetLocation}
         />
+
+        {/* Location Notice Banner if fallback was used */}
+        {locationNotice && (
+          <div
+            style={{
+              backgroundColor: '#EFF6FF',
+              border: '1px solid #BFDBFE',
+              borderRadius: 'var(--radius-lg)',
+              padding: '0.65rem 1rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.85rem',
+              color: '#1D4ED8',
+            }}
+          >
+            <span>{locationNotice}</span>
+            <button
+              onClick={() => setLocationNotice(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#1D4ED8',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Split View: List on Left, Map on Right */}
         <div
@@ -129,7 +196,7 @@ export const HospitalFinderPage: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                Showing {hospitals.length} verified hospitals in Odisha
+                {t('hospital.showingHospitals', 'Showing {{count}} verified hospitals in Odisha', { count: hospitals.length })}
               </span>
             </div>
 
@@ -156,7 +223,7 @@ export const HospitalFinderPage: React.FC = () => {
                 }}
               >
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                  No hospitals found matching your filter criteria.
+                  {t('hospital.noHospitals', 'No hospitals found matching your filter criteria.')}
                 </p>
               </div>
             )}
@@ -167,6 +234,7 @@ export const HospitalFinderPage: React.FC = () => {
             <HospitalMap
               hospitals={hospitals}
               selectedHospital={selectedHospital}
+              userLocation={userLocation}
               onSelectHospital={(h) => {
                 setSelectedHospital(h);
                 setModalHospital(h);

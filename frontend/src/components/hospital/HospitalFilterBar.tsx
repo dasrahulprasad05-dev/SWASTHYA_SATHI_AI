@@ -1,22 +1,31 @@
 import React from 'react';
-import { Search, MapPin, Filter, ShieldAlert } from 'lucide-react';
+import { Search, MapPin, ShieldAlert, Loader2, X, Navigation } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { HospitalFilters } from '../../types';
 
 interface HospitalFilterBarProps {
   filters: HospitalFilters;
   onChange: (filters: HospitalFilters) => void;
   onUseLocation: () => void;
+  isLocating?: boolean;
+  hasUserLocation?: boolean;
+  onResetLocation?: () => void;
 }
 
 export const HospitalFilterBar: React.FC<HospitalFilterBarProps> = ({
   filters,
   onChange,
   onUseLocation,
+  isLocating = false,
+  hasUserLocation = false,
+  onResetLocation,
 }) => {
+  const { t } = useTranslation();
+
   const filterPills = [
-    { label: 'All', value: 'All' },
-    { label: 'Government', value: 'Government' },
-    { label: 'Private', value: 'Private' },
+    { label: t('hospital.filter.all', 'All'), value: 'All' },
+    { label: t('hospital.filter.govt', 'Government'), value: 'Government' },
+    { label: t('hospital.filter.private', 'Private'), value: 'Private' },
   ];
 
   return (
@@ -50,10 +59,14 @@ export const HospitalFilterBar: React.FC<HospitalFilterBarProps> = ({
         >
           <Search size={18} color="var(--text-muted)" />
           <input
+            id="hospital-search-input"
             type="text"
             value={filters.query || ''}
             onChange={(e) => onChange({ ...filters, query: e.target.value })}
-            placeholder="Search hospital name, specialty (e.g. Cardiology), or district..."
+            placeholder={t(
+              'hospital.filter.searchPlaceholder',
+              'Search hospital name, specialty (e.g. Cardiology, Trauma), or district...'
+            )}
             style={{
               flex: 1,
               backgroundColor: 'transparent',
@@ -66,25 +79,74 @@ export const HospitalFilterBar: React.FC<HospitalFilterBarProps> = ({
         </div>
 
         {/* GPS Location Button */}
-        <button
-          onClick={onUseLocation}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.45rem',
-            backgroundColor: 'var(--primary-light)',
-            color: 'var(--primary-dark)',
-            padding: '0.65rem 1.15rem',
-            borderRadius: 'var(--radius-lg)',
-            fontSize: '0.85rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            border: '1px solid var(--primary)',
-          }}
-        >
-          <MapPin size={16} />
-          <span>Near Me</span>
-        </button>
+        {hasUserLocation ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#EFF6FF',
+              border: '1.5px solid #3B82F6',
+              borderRadius: 'var(--radius-lg)',
+              padding: '0.35rem 0.65rem 0.35rem 0.85rem',
+              gap: '0.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#1D4ED8', fontSize: '0.85rem', fontWeight: 700 }}>
+              <Navigation size={15} color="#2563EB" />
+              <span>{t('hospital.filter.locationActive', 'Sorted by Distance')}</span>
+            </div>
+            {onResetLocation && (
+              <button
+                onClick={onResetLocation}
+                title={t('hospital.filter.clearLocation', 'Clear Location')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748B',
+                  cursor: 'pointer',
+                  padding: '2px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderRadius: '50%',
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        ) : (
+          <button
+            id="hospital-near-me-btn"
+            onClick={onUseLocation}
+            disabled={isLocating}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              backgroundColor: isLocating ? 'var(--surface-hover)' : 'var(--primary-light)',
+              color: isLocating ? 'var(--text-muted)' : 'var(--primary-dark)',
+              padding: '0.65rem 1.15rem',
+              borderRadius: 'var(--radius-lg)',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              cursor: isLocating ? 'not-allowed' : 'pointer',
+              border: '1px solid var(--primary)',
+              transition: 'all 0.2s',
+            }}
+          >
+            {isLocating ? (
+              <>
+                <Loader2 size={16} className="spin-animation" />
+                <span>{t('hospital.filter.locating', 'Finding Location...')}</span>
+              </>
+            ) : (
+              <>
+                <MapPin size={16} />
+                <span>{t('hospital.filter.nearMe', 'Near Me')}</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Filter Tags & Checkboxes Row */}
@@ -142,7 +204,7 @@ export const HospitalFilterBar: React.FC<HospitalFilterBarProps> = ({
             style={{ width: '16px', height: '16px', accentColor: 'var(--danger)', cursor: 'pointer' }}
           />
           <ShieldAlert size={16} color={filters.openNow ? '#EF4444' : 'var(--text-muted)'} />
-          <span>24x7 Emergency Only</span>
+          <span>{t('hospital.filter.emergencyOnly', '24x7 Emergency Only')}</span>
         </label>
       </div>
     </div>

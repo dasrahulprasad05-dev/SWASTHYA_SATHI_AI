@@ -192,5 +192,23 @@
     "womenHelpline": "Women Helpline (181)",
     "odishaHealthHelpline": "Odisha Health Helpline (104)",
     "firstAidGuides": "Emergency First Aid Guides"
+  },
+  "hospital": {
+    "title": "Nearby Medical Services",
+    "subtitle": "Locate hospitals, ICU beds, and 24x7 emergency centers across Odisha",
+    "showingHospitals": "Showing {{count}} verified hospitals in Odisha",
+    "noHospitals": "No hospitals found matching your filter criteria.",
+    "locationNotice": "Location access was unavailable. Showing hospitals sorted from central Odisha (Bhubaneswar).",
+    "filter": {
+      "all": "All",
+      "govt": "Government",
+      "private": "Private",
+      "searchPlaceholder": "Search hospital name, specialty (e.g. Cardiology, Trauma), or district...",
+      "nearMe": "Near Me",
+      "locating": "Finding Location...",
+      "locationActive": "Sorted by Distance",
+      "clearLocation": "Clear Location",
+      "emergencyOnly": "24x7 Emergency Only"
+    }
   }
 }

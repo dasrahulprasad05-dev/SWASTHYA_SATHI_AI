@@ -28,6 +28,18 @@ const govtIcon = createCustomIcon('#10B981');
 const pvtIcon = createCustomIcon('#3B82F6');
 const selectedIcon = createCustomIcon('#EF4444');
 
+// User location pulsating marker icon
+const userLocationIcon = L.divIcon({
+  className: 'user-map-marker',
+  html: `<div style="position: relative; width: 22px; height: 22px;">
+    <div style="position: absolute; width: 22px; height: 22px; background: rgba(59, 130, 246, 0.35); border-radius: 50%; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+    <div style="position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background-color: #2563EB; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.35);"></div>
+  </div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+  popupAnchor: [0, -12],
+});
+
 // Map repositioning helper component
 const MapController: React.FC<{ center: [number, number]; zoom: number }> = ({ center, zoom }) => {
   const map = useMap();
@@ -41,17 +53,23 @@ interface HospitalMapProps {
   hospitals: Hospital[];
   selectedHospital: Hospital | null;
   onSelectHospital: (hospital: Hospital) => void;
+  userLocation?: { lat: number; lng: number } | null;
 }
 
 export const HospitalMap: React.FC<HospitalMapProps> = ({
   hospitals,
   selectedHospital,
   onSelectHospital,
+  userLocation,
 }) => {
   const defaultCenter: [number, number] = [20.2961, 85.8245]; // Bhubaneswar coordinates
   const activeCenter: [number, number] = selectedHospital?.coordinates?.lat && selectedHospital?.coordinates?.lng
     ? [selectedHospital.coordinates.lat, selectedHospital.coordinates.lng]
+    : userLocation
+    ? [userLocation.lat, userLocation.lng]
     : defaultCenter;
+
+  const activeZoom = selectedHospital ? 14 : userLocation ? 13 : 11;
 
   return (
     <div
@@ -67,7 +85,7 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
     >
       <MapContainer
         center={defaultCenter}
-        zoom={12}
+        zoom={11}
         scrollWheelZoom={true}
         style={{ height: '100%', width: '100%' }}
       >
@@ -75,7 +93,21 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapController center={activeCenter} zoom={selectedHospital ? 14 : 12} />
+        <MapController center={activeCenter} zoom={activeZoom} />
+
+        {/* User Current Location Marker */}
+        {userLocation && (
+          <Marker position={[userLocation.lat, userLocation.lng]} icon={userLocationIcon}>
+            <Popup>
+              <div style={{ padding: '0.2rem', textAlign: 'center' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1D4ED8' }}>📍 Your Current Location</div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>
+                  Hospitals are sorted starting from this position.
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        )}
 
         {hospitals.map((hospital) => {
           if (!hospital.coordinates?.lat || !hospital.coordinates?.lng) return null;
@@ -113,6 +145,11 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
                     </span>
                     {hospital.isOpen24x7 && (
                       <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#DC2626' }}>24x7</span>
+                    )}
+                    {hospital.distance !== undefined && (
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#2563EB', marginLeft: 'auto' }}>
+                        {hospital.distance} km
+                      </span>
                     )}
                   </div>
                   <h4 style={{ fontSize: '0.9rem', fontWeight: 700, margin: '0 0 0.25rem 0', color: '#1E293B' }}>
