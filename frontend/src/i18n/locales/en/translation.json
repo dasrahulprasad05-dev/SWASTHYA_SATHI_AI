@@ -104,6 +104,17 @@
     "donts": "Don'ts",
     "talkToAI": "Talk to AI about this condition"
   },
+  "medicine": {
+    "subtitle": "Verified dosages, interactions, and PM Jan Aushadhi affordable generics",
+    "searchPlaceholder": "Search medicine by name (e.g. Paracetamol, Dolo, ORS)...",
+    "genericSalt": "Generic Salt",
+    "savings": "Jan Aushadhi Generic Savings",
+    "lessCost": "Less Cost",
+    "vs": "vs",
+    "primaryUsage": "Primary Usage",
+    "adultDosage": "Standard Adult Dosage",
+    "precautions": "Precautions & Safety Warnings"
+  },
   "dashboard": {
     "greeting": "Welcome back",
     "healthScore": "Health Score",

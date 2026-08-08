@@ -1,66 +1,28 @@
 import React, { useState } from 'react';
 import { Search, Pill, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AppLayout } from '../components/layouts/AppLayout';
 import { EmergencyCard } from '../components/common/EmergencyCard';
 import { QuickActions } from '../components/common/QuickActions';
+import { medicinesData } from '../data/medicinesData';
 
 export const MedicineGuidePage: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [search, setSearch] = useState('');
+  
+  const currentLang = i18n.language === 'or' ? 'or' : 'en';
 
-  const medicines = [
-    {
-      name: 'Paracetamol (Dolo 650 / Calpol)',
-      genericName: 'Paracetamol / Acetaminophen',
-      usage: 'Fever reduction & mild-to-moderate pain relief (headache, body ache).',
-      dosage: '650mg every 6-8 hours for adults as needed. Maximum 3000mg/day.',
-      janAushadhiAlt: 'Jan Aushadhi Paracetamol 650mg',
-      priceCompare: { branded: '₹34 / strip', generic: '₹8 / strip', savings: '76%' },
-      warnings: ['Do not exceed maximum daily dosage to prevent liver toxicity', 'Avoid alcohol consumption while on medication'],
-      pregnancySafe: 'Generally considered safe under medical guidance.',
-    },
-    {
-      name: 'Oral Rehydration Salts (ORS)',
-      genericName: 'WHO-formula Electrolyte Solution',
-      usage: 'Prevention and treatment of dehydration caused by diarrhea, vomiting, or heat stroke.',
-      dosage: 'Dissolve 1 full sachet in 1 Litre of clean drinking water. Drink frequently in small sips.',
-      janAushadhiAlt: 'Jan Aushadhi ORS 21.8g Sachet',
-      priceCompare: { branded: '₹22 / pack', generic: '₹4.50 / pack', savings: '80%' },
-      warnings: ['Do not mix with milk, soup, or fruit juice', 'Use prepared solution within 24 hours'],
-      pregnancySafe: 'Completely safe during pregnancy and lactation.',
-    },
-    {
-      name: 'Azithromycin 500mg',
-      genericName: 'Azithromycin Tablet',
-      usage: 'Bacterial infections of the respiratory tract, throat, skin, and ear.',
-      dosage: '1 tablet once daily for 3-5 days as specifically prescribed by a doctor.',
-      janAushadhiAlt: 'Jan Aushadhi Azithromycin 500mg',
-      priceCompare: { branded: '₹120 / 3 tabs', generic: '₹28 / 3 tabs', savings: '77%' },
-      warnings: ['Prescription only — complete the full course even if feeling better', 'Take 1 hour before or 2 hours after meals'],
-      pregnancySafe: 'Consult doctor before taking.',
-    },
-    {
-      name: 'Cetirizine 10mg',
-      genericName: 'Cetirizine Hydrochloride',
-      usage: 'Allergic rhinitis, runny nose, sneezing, itching, and hives.',
-      dosage: '10mg once daily at bedtime.',
-      janAushadhiAlt: 'Jan Aushadhi Cetirizine 10mg',
-      priceCompare: { branded: '₹25 / 10 tabs', generic: '₹5 / 10 tabs', savings: '80%' },
-      warnings: ['May cause mild drowsiness — avoid driving immediately after intake'],
-      pregnancySafe: 'Consult physician.',
-    },
-  ];
-
-  const filtered = medicines.filter(
+  const filtered = medicinesData.filter(
     (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.genericName.toLowerCase().includes(search.toLowerCase()) ||
-      m.usage.toLowerCase().includes(search.toLowerCase())
+      m[currentLang].name.toLowerCase().includes(search.toLowerCase()) ||
+      m[currentLang].genericName.toLowerCase().includes(search.toLowerCase()) ||
+      m[currentLang].usage.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <AppLayout
-      topbarTitle="Medicine Guide & Generic Alternatives"
-      topbarSubtitle="Verified dosages, interactions, and PM Jan Aushadhi affordable generics"
+      topbarTitle={t('nav.medicines')}
+      topbarSubtitle={t('medicine.subtitle', 'Verified dosages, interactions, and PM Jan Aushadhi affordable generics')}
       rightPanel={
         <>
           <EmergencyCard />
@@ -96,7 +58,7 @@ export const MedicineGuidePage: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search medicine by name (e.g. Paracetamol, Dolo, ORS, Azithromycin)..."
+              placeholder={t('medicine.searchPlaceholder', 'Search medicine by name (e.g. Paracetamol, Dolo, ORS)...')}
               style={{
                 flex: 1,
                 backgroundColor: 'transparent',
@@ -111,9 +73,11 @@ export const MedicineGuidePage: React.FC = () => {
 
         {/* Medicine Cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {filtered.map((med) => (
+          {filtered.map((med) => {
+            const medInfo = med[currentLang];
+            return (
             <div
-              key={med.name}
+              key={med.id}
               style={{
                 backgroundColor: 'var(--surface)',
                 borderRadius: 'var(--radius-2xl)',
@@ -140,11 +104,11 @@ export const MedicineGuidePage: React.FC = () => {
                       <Pill size={18} />
                     </div>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                      {med.name}
+                      {medInfo.name}
                     </h3>
                   </div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
-                    Generic Salt: <span style={{ fontWeight: 600, color: 'var(--primary-dark)' }}>{med.genericName}</span>
+                    {t('medicine.genericSalt', 'Generic Salt')}: <span style={{ fontWeight: 600, color: 'var(--primary-dark)' }}>{medInfo.genericName}</span>
                   </p>
                 </div>
 
@@ -158,12 +122,12 @@ export const MedicineGuidePage: React.FC = () => {
                     textAlign: 'right',
                   }}
                 >
-                  <span style={{ fontSize: '0.75rem', color: '#047857', fontWeight: 600 }}>Jan Aushadhi Generic Savings</span>
+                  <span style={{ fontSize: '0.75rem', color: '#047857', fontWeight: 600 }}>{t('medicine.savings', 'Jan Aushadhi Generic Savings')}</span>
                   <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#065F46' }}>
-                    {med.priceCompare.savings} Less Cost
+                    {med.priceCompare.savings} {t('medicine.lessCost', 'Less Cost')}
                   </div>
                   <span style={{ fontSize: '0.7rem', color: '#047857' }}>
-                    {med.priceCompare.generic} vs {med.priceCompare.branded}
+                    {med.priceCompare.generic} {t('medicine.vs', 'vs')} {med.priceCompare.branded}
                   </span>
                 </div>
               </div>
@@ -172,19 +136,19 @@ export const MedicineGuidePage: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
                 <div style={{ backgroundColor: 'var(--bg)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
                   <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 0.35rem 0' }}>
-                    Primary Usage
+                    {t('medicine.primaryUsage', 'Primary Usage')}
                   </h4>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                    {med.usage}
+                    {medInfo.usage}
                   </p>
                 </div>
 
                 <div style={{ backgroundColor: 'var(--bg)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
                   <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 0.35rem 0' }}>
-                    Standard Adult Dosage
+                    {t('medicine.adultDosage', 'Standard Adult Dosage')}
                   </h4>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                    {med.dosage}
+                    {medInfo.dosage}
                   </p>
                 </div>
               </div>
@@ -193,16 +157,16 @@ export const MedicineGuidePage: React.FC = () => {
               <div style={{ backgroundColor: '#FEF2F2', padding: '0.85rem 1rem', borderRadius: 'var(--radius-lg)', border: '1px solid #FECACA' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#DC2626', marginBottom: '0.35rem' }}>
                   <AlertTriangle size={15} />
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>Precautions & Safety Warnings</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>{t('medicine.precautions', 'Precautions & Safety Warnings')}</span>
                 </div>
                 <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', color: '#991B1B' }}>
-                  {med.warnings.map((w, idx) => (
+                  {medInfo.warnings.map((w, idx) => (
                     <li key={idx}>{w}</li>
                   ))}
                 </ul>
               </div>
             </div>
-          ))}
+          );})}
         </div>
       </div>
     </AppLayout>
