@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
 
 // Global 404 handler
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({
     error: 'Endpoint not found',
     path: req.originalUrl,

@@ -1,14 +1,15 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { AIController } from '../controllers/aiController.js';
 import { HospitalController } from '../controllers/hospitalController.js';
 import { DiseaseController } from '../controllers/diseaseController.js';
 import { AdminController } from '../controllers/adminController.js';
 import { AuthController } from '../controllers/authController.js';
+import { knowledgeBaseService } from '../services/knowledgeBaseService.js';
 
 const router = Router();
 
 // ── Health Check ──
-router.get('/health', (req, res) => {
+router.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'online',
     service: 'Swasthya Sathi AI Backend',
@@ -48,9 +49,7 @@ router.get('/admin/trends', AdminController.getDiseaseTrends);
 router.post('/admin/broadcast', AdminController.broadcastAlert);
 
 // ── RAG Knowledge Base Endpoints ──
-import { knowledgeBaseService } from '../services/knowledgeBaseService.js';
-
-router.get('/knowledge/stats', async (_req, res) => {
+router.get('/knowledge/stats', async (_req: Request, res: Response) => {
   try {
     const stats = await knowledgeBaseService.getStats();
     res.json({ success: true, ...stats });
@@ -59,7 +58,7 @@ router.get('/knowledge/stats', async (_req, res) => {
   }
 });
 
-router.post('/knowledge/search', async (req, res) => {
+router.post('/knowledge/search', async (req: Request, res: Response) => {
   try {
     const { query, topK = 5, category } = req.body;
     if (!query) return res.status(400).json({ success: false, error: 'Query is required' });
