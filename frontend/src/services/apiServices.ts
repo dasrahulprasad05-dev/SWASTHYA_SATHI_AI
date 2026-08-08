@@ -22,6 +22,7 @@ import {
   MOCK_DASHBOARD_STATS,
   MOCK_ADMIN_STATS,
 } from '../constants';
+import { diseasesData } from '../data/diseasesData';
 
 // ── Chat & AI Triage Service ──
 export const chatService = {
@@ -253,6 +254,39 @@ export const hospitalService = {
 // ── Health / Disease Service ──
 export const healthService = {
   getDiseaseById: async (id: string): Promise<Disease> => {
+    // 1. Check local rich 110+ dataset first
+    const found = diseasesData.find(
+      (d) =>
+        d.id === id ||
+        d.id === `dis-${id}` ||
+        (id === '1' && d.id === 'dengue-fever') ||
+        (id === '2' && d.id === 'malaria-falciparum') ||
+        (id === '3' && d.id.includes('chikungunya')) ||
+        (id === '4' && d.id === 'cholera-diarrhea')
+    );
+
+    if (found) {
+      return {
+        id: found.id,
+        name: found.en.name,
+        nativeName: found.or.nativeName || found.or.name,
+        category: found.category,
+        severity: found.severity,
+        transmission: found.transmission,
+        overview: found.en.overview,
+        symptoms: found.en.symptoms,
+        causes: found.en.causes,
+        treatments: found.en.treatments,
+        prevention: found.en.prevention,
+        dos: found.en.dos,
+        donts: found.en.donts,
+        whenToSeeDoctor: found.en.whenToSeeDoctor,
+        faqs: found.en.faqs,
+        en: found.en,
+        or: found.or,
+      };
+    }
+
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.from('diseases').select('*').eq('id', id).single();
@@ -289,6 +323,39 @@ export const healthService = {
   },
 
   searchDiseases: async (query: string): Promise<Disease[]> => {
+    const q = query.toLowerCase();
+    const localMatches = diseasesData.filter(
+      (d) =>
+        d.en.name.toLowerCase().includes(q) ||
+        d.or.name.includes(q) ||
+        (d.or.nativeName && d.or.nativeName.includes(q)) ||
+        d.en.overview.toLowerCase().includes(q) ||
+        d.or.overview.includes(q) ||
+        d.category.toLowerCase().includes(q)
+    );
+
+    if (localMatches.length > 0) {
+      return localMatches.map((d) => ({
+        id: d.id,
+        name: d.en.name,
+        nativeName: d.or.nativeName || d.or.name,
+        category: d.category,
+        severity: d.severity,
+        transmission: d.transmission,
+        overview: d.en.overview,
+        symptoms: d.en.symptoms,
+        causes: d.en.causes,
+        treatments: d.en.treatments,
+        prevention: d.en.prevention,
+        dos: d.en.dos,
+        donts: d.en.donts,
+        whenToSeeDoctor: d.en.whenToSeeDoctor,
+        faqs: d.en.faqs,
+        en: d.en,
+        or: d.or,
+      }));
+    }
+
     try {
       const res = await api.get<ApiResponse<Disease[]>>('/diseases', { params: { query } });
       return res.data.data;

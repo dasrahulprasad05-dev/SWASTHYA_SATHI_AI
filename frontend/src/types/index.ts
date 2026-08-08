@@ -193,6 +193,32 @@ export interface Disease {
   whenToSeeDoctor?: string[];
   faqs: FAQ[];
   isVerified?: boolean;
+  en?: {
+    name: string;
+    nativeName?: string;
+    overview: string;
+    symptoms: string[];
+    causes: string[];
+    treatments: string[];
+    prevention: string[];
+    dos: string[];
+    donts: string[];
+    whenToSeeDoctor?: string[];
+    faqs: Array<{ question: string; answer: string }>;
+  };
+  or?: {
+    name: string;
+    nativeName?: string;
+    overview: string;
+    symptoms: string[];
+    causes: string[];
+    treatments: string[];
+    prevention: string[];
+    dos: string[];
+    donts: string[];
+    whenToSeeDoctor?: string[];
+    faqs: Array<{ question: string; answer: string }>;
+  };
 }
 
 export interface Symptom {

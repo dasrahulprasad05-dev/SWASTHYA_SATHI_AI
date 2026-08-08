@@ -91,6 +91,25 @@
     "specialties": "Specialties",
     "services": "Available Services"
   },
+  "healthHub": {
+    "title": "Health Hub & Disease Library",
+    "subtitle": "Verified medical encyclopaedia in Odia, Hindi, and English",
+    "searchPlaceholder": "Search by disease name (e.g. Dengue, Malaria, ଡେଙ୍ଗୁ), symptoms, or transmission...",
+    "readMore": "Read Full Guide & Symptoms",
+    "severity": "Severity",
+    "categories": {
+      "All": "All",
+      "Vector-Borne": "Vector-Borne",
+      "Waterborne & Gastro": "Waterborne & Gastro",
+      "Infectious & Bacterial": "Infectious & Bacterial",
+      "Viral Infection": "Viral Infection",
+      "Chronic & Lifestyle": "Chronic & Lifestyle",
+      "Maternal & Child": "Maternal & Child",
+      "Dermatology & Skin": "Dermatology & Skin",
+      "Emergency": "Emergency",
+      "ENT & Eye Care": "ENT & Eye Care"
+    }
+  },
   "disease": {
     "overview": "Overview",
     "symptoms": "Symptoms",
@@ -102,7 +121,49 @@
     "faq": "Frequently Asked Questions",
     "dos": "Do's",
     "donts": "Don'ts",
-    "talkToAI": "Talk to AI about this condition"
+    "talkToAI": "Ask AI Sathi About This",
+    "tabs": {
+      "symptoms": "Symptoms",
+      "causes": "Causes",
+      "treatments": "Treatments",
+      "prevention": "Prevention",
+      "dos": "Do's & Don'ts",
+      "faq": "FAQs"
+    },
+    "headers": {
+      "symptomsTitle": "Common Symptoms & Clinical Signs",
+      "causesTitle": "Known Causes & Risk Factors",
+      "treatmentsTitle": "Medical Treatment & Home Care Regimen",
+      "preventionTitle": "Prevention & Hygiene Protocols",
+      "dosTitle": "Clinical Do's and Don'ts",
+      "dosSubtitle": "Adhere strictly to these guidelines to prevent complications.",
+      "faqTitle": "Frequently Asked Questions"
+    },
+    "hero": {
+      "askAI": "Ask AI Sathi About This",
+      "category": "Category",
+      "transmission": "Transmission",
+      "emergencyCare": "Emergency Care Needed",
+      "highSeverity": "High Severity",
+      "moderateSeverity": "Moderate Severity",
+      "mildCondition": "Mild Condition"
+    },
+    "doctorConsult": {
+      "title": "When to Seek Immediate Medical Consultation",
+      "subtitle": "If you or someone around you experiences any of the following critical warning signs, do not delay:",
+      "findHospital": "Find Nearest Emergency Hospital",
+      "callAmbulance": "Call 108 Ambulance (Free)"
+    },
+    "dosCard": {
+      "dosHeader": "Do's (Recommended Actions)",
+      "dontsHeader": "Don'ts (Avoid These)"
+    },
+    "detail": {
+      "backToHub": "Back to Health Hub",
+      "save": "Save",
+      "saved": "Saved",
+      "notFound": "Disease information not found."
+    }
   },
   "medicine": {
     "subtitle": "Verified dosages, interactions, and PM Jan Aushadhi affordable generics",

@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface DosAndDontsCardProps {
   dos: string[];
@@ -7,6 +8,8 @@ interface DosAndDontsCardProps {
 }
 
 export const DosAndDontsCard: React.FC<DosAndDontsCardProps> = ({ dos, donts }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -28,7 +31,7 @@ export const DosAndDontsCard: React.FC<DosAndDontsCardProps> = ({ dos, donts }) 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: '#15803D' }}>
           <CheckCircle2 size={20} />
           <h4 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>
-            Do's (Recommended Actions)
+            {t('disease.dosCard.dosHeader', "Do's (Recommended Actions)")}
           </h4>
         </div>
 
@@ -54,7 +57,7 @@ export const DosAndDontsCard: React.FC<DosAndDontsCardProps> = ({ dos, donts }) 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: '#B91C1C' }}>
           <XCircle size={20} />
           <h4 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>
-            Don'ts (Avoid These)
+            {t('disease.dosCard.dontsHeader', "Don'ts (Avoid These)")}
           </h4>
         </div>
 

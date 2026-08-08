@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Bookmark } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AppLayout } from '../components/layouts/AppLayout';
 import { DiseaseHero } from '../components/disease/DiseaseHero';
 import { DiseaseTabs } from '../components/disease/DiseaseTabs';
@@ -12,6 +13,7 @@ import type { Disease } from '../types';
 
 export const DiseaseDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { t, i18n } = useTranslation();
   const [disease, setDisease] = useState<Disease | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
@@ -31,11 +33,11 @@ export const DiseaseDetailPage: React.FC = () => {
 
   if (!disease && !isLoading) {
     return (
-      <AppLayout topbarTitle="Disease Information">
+      <AppLayout topbarTitle={t('nav.healthHub', 'Health Hub')}>
         <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <p>Disease information not found.</p>
+          <p>{t('disease.detail.notFound', 'Disease information not found.')}</p>
           <Link to="/health-hub" style={{ color: 'var(--primary)', fontWeight: 600 }}>
-            Back to Health Hub
+            {t('disease.detail.backToHub', 'Back to Health Hub')}
           </Link>
         </div>
       </AppLayout>
@@ -58,7 +60,7 @@ export const DiseaseDetailPage: React.FC = () => {
           }}
         >
           <ArrowLeft size={16} />
-          <span>Back to Health Hub</span>
+          <span>{t('disease.detail.backToHub', 'Back to Health Hub')}</span>
         </Link>
       }
       topbarRight={
@@ -80,7 +82,7 @@ export const DiseaseDetailPage: React.FC = () => {
             }}
           >
             <Bookmark size={15} fill={isSaved ? 'currentColor' : 'none'} />
-            <span>{isSaved ? 'Saved' : 'Save'}</span>
+            <span>{isSaved ? t('disease.detail.saved', 'Saved') : t('disease.detail.save', 'Save')}</span>
           </button>
         </div>
       }

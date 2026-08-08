@@ -1,6 +1,7 @@
 import React from 'react';
-import { MessageSquare, ShieldAlert, Sparkles, Activity } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Disease } from '../../types';
 
 interface DiseaseHeroProps {
@@ -8,16 +9,24 @@ interface DiseaseHeroProps {
 }
 
 export const DiseaseHero: React.FC<DiseaseHeroProps> = ({ disease }) => {
+  const { t, i18n } = useTranslation();
+  const isOdia = i18n.language === 'or';
+  const localized = (isOdia && disease.or) ? disease.or : (disease.en || disease);
+
+  const displayName = isOdia ? (disease.or?.name || disease.nativeName || disease.name) : (disease.en?.name || disease.name);
+  const secondaryName = isOdia ? (disease.en?.name || disease.name) : (disease.or?.name || disease.nativeName);
+  const displayOverview = localized.overview || disease.overview;
+
   const getSeverityStyle = (sev: Disease['severity']) => {
     switch (sev) {
       case 'Emergency':
-        return { bg: '#FEE2E2', color: '#DC2626', label: 'Emergency Care Needed' };
+        return { bg: '#FEE2E2', color: '#DC2626', label: t('disease.hero.emergencyCare', 'Emergency Care Needed') };
       case 'High':
-        return { bg: '#FEF3C7', color: '#D97706', label: 'High Severity' };
+        return { bg: '#FEF3C7', color: '#D97706', label: t('disease.hero.highSeverity', 'High Severity') };
       case 'Moderate':
-        return { bg: '#EFF6FF', color: '#2563EB', label: 'Moderate Severity' };
+        return { bg: '#EFF6FF', color: '#2563EB', label: t('disease.hero.moderateSeverity', 'Moderate Severity') };
       default:
-        return { bg: '#ECFDF5', color: '#059669', label: 'Mild Condition' };
+        return { bg: '#ECFDF5', color: '#059669', label: t('disease.hero.mildCondition', 'Mild Condition') };
     }
   };
 
@@ -35,7 +44,7 @@ export const DiseaseHero: React.FC<DiseaseHeroProps> = ({ disease }) => {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
+        <div style={{ flex: '1 1 500px' }}>
           {/* Severity & Category Badges */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
             <span
@@ -62,7 +71,7 @@ export const DiseaseHero: React.FC<DiseaseHeroProps> = ({ disease }) => {
                 border: '1px solid var(--border)',
               }}
             >
-              Category: {disease.category}
+              {t('disease.hero.category', 'Category')}: {t(`healthHub.categories.${disease.category}`, disease.category)}
             </span>
 
             {disease.transmission && (
@@ -76,7 +85,7 @@ export const DiseaseHero: React.FC<DiseaseHeroProps> = ({ disease }) => {
                   borderRadius: 'var(--radius-full)',
                 }}
               >
-                Transmission: {disease.transmission}
+                {t('disease.hero.transmission', 'Transmission')}: {disease.transmission}
               </span>
             )}
           </div>
@@ -84,23 +93,23 @@ export const DiseaseHero: React.FC<DiseaseHeroProps> = ({ disease }) => {
           {/* Title & Native Names */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', flexWrap: 'wrap' }}>
             <h1 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
-              {disease.name}
+              {displayName}
             </h1>
-            {disease.nativeName && (
+            {secondaryName && secondaryName !== displayName && (
               <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-dark)' }}>
-                ({disease.nativeName})
+                ({secondaryName})
               </span>
             )}
           </div>
 
           <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.6rem', marginBottom: 0, maxWidth: '720px', lineHeight: 1.6 }}>
-            {disease.overview}
+            {displayOverview}
           </p>
         </div>
 
         {/* AI Chat Link */}
         <Link
-          to={`/chat?query=Tell me about ${encodeURIComponent(disease.name)}`}
+          to={`/chat?query=${encodeURIComponent(isOdia ? `${displayName} ରୋଗ ବିଷୟରେ ଜଣାନ୍ତୁ` : `Tell me about ${displayName}`)}`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -117,7 +126,7 @@ export const DiseaseHero: React.FC<DiseaseHeroProps> = ({ disease }) => {
           }}
         >
           <MessageSquare size={17} />
-          <span>Ask AI Sathi About This</span>
+          <span>{t('disease.hero.askAI', 'Ask AI Sathi About This')}</span>
         </Link>
       </div>
     </div>

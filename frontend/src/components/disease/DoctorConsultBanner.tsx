@@ -1,12 +1,15 @@
 import React from 'react';
-import { AlertOctagon, Phone, ArrowRight, Hospital } from 'lucide-react';
+import { AlertOctagon, Phone, Hospital } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface DoctorConsultBannerProps {
   symptoms: string[];
 }
 
 export const DoctorConsultBanner: React.FC<DoctorConsultBannerProps> = ({ symptoms }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -23,18 +26,18 @@ export const DoctorConsultBanner: React.FC<DoctorConsultBannerProps> = ({ sympto
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#DC2626' }}>
         <AlertOctagon size={22} />
         <h4 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0, color: '#DC2626' }}>
-          When to Seek Immediate Medical Consultation
+          {t('disease.doctorConsult.title', 'When to Seek Immediate Medical Consultation')}
         </h4>
       </div>
 
       <p style={{ fontSize: '0.88rem', color: '#7F1D1D', margin: 0, lineHeight: 1.5 }}>
-        If you or someone around you experiences any of the following critical warning signs, do not delay:
+        {t('disease.doctorConsult.subtitle', 'If you or someone around you experiences any of the following critical warning signs, do not delay:')}
       </p>
 
       <ul style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.5rem', margin: 0, padding: 0 }}>
         {symptoms.map((sym, idx) => (
           <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.85rem', color: '#991B1B', fontWeight: 600 }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#DC2626' }} />
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#DC2626', flexShrink: 0 }} />
             <span>{sym}</span>
           </li>
         ))}
@@ -57,7 +60,7 @@ export const DoctorConsultBanner: React.FC<DoctorConsultBannerProps> = ({ sympto
           }}
         >
           <Hospital size={16} />
-          <span>Find Nearest Emergency Hospital</span>
+          <span>{t('disease.doctorConsult.findHospital', 'Find Nearest Emergency Hospital')}</span>
         </Link>
 
         <a
@@ -67,8 +70,8 @@ export const DoctorConsultBanner: React.FC<DoctorConsultBannerProps> = ({ sympto
             alignItems: 'center',
             gap: '0.4rem',
             backgroundColor: 'white',
-            border: '1px solid #FCA5A5',
-            color: '#B91C1C',
+            color: '#DC2626',
+            border: '1.5px solid #DC2626',
             padding: '0.6rem 1.15rem',
             borderRadius: 'var(--radius)',
             fontSize: '0.85rem',
@@ -77,7 +80,7 @@ export const DoctorConsultBanner: React.FC<DoctorConsultBannerProps> = ({ sympto
           }}
         >
           <Phone size={16} />
-          <span>Call 108 Ambulance (Free)</span>
+          <span>{t('disease.doctorConsult.callAmbulance', 'Call 108 Ambulance (Free)')}</span>
         </a>
       </div>
     </div>

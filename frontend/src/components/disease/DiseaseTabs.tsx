@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
   CheckCircle2,
-  AlertTriangle,
   HelpCircle,
   Stethoscope,
   Shield,
   BookOpen,
   Info,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Disease } from '../../types';
 import { DosAndDontsCard } from './DosAndDontsCard';
 import { DoctorConsultBanner } from './DoctorConsultBanner';
@@ -17,17 +17,30 @@ interface DiseaseTabsProps {
 }
 
 export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     'symptoms' | 'causes' | 'treatments' | 'prevention' | 'dos' | 'faq'
   >('symptoms');
 
+  const isOdia = i18n.language === 'or';
+  const localized = (isOdia && disease.or) ? disease.or : (disease.en || disease);
+
+  const symptoms = localized.symptoms || disease.symptoms || [];
+  const causes = localized.causes || disease.causes || [];
+  const treatments = localized.treatments || disease.treatments || [];
+  const prevention = localized.prevention || disease.prevention || [];
+  const dos = localized.dos || disease.dos || [];
+  const donts = localized.donts || disease.donts || [];
+  const whenToSeeDoctor = localized.whenToSeeDoctor || disease.whenToSeeDoctor;
+  const faqs = localized.faqs || disease.faqs || [];
+
   const tabs = [
-    { id: 'symptoms', label: 'Symptoms', icon: <Stethoscope size={16} /> },
-    { id: 'causes', label: 'Causes', icon: <Info size={16} /> },
-    { id: 'treatments', label: 'Treatments', icon: <BookOpen size={16} /> },
-    { id: 'prevention', label: 'Prevention', icon: <Shield size={16} /> },
-    { id: 'dos', label: "Do's & Don'ts", icon: <CheckCircle2 size={16} /> },
-    { id: 'faq', label: 'FAQs', icon: <HelpCircle size={16} /> },
+    { id: 'symptoms', label: t('disease.tabs.symptoms', 'Symptoms'), icon: <Stethoscope size={16} /> },
+    { id: 'causes', label: t('disease.tabs.causes', 'Causes'), icon: <Info size={16} /> },
+    { id: 'treatments', label: t('disease.tabs.treatments', 'Treatments'), icon: <BookOpen size={16} /> },
+    { id: 'prevention', label: t('disease.tabs.prevention', 'Prevention'), icon: <Shield size={16} /> },
+    { id: 'dos', label: t('disease.tabs.dos', "Do's & Don'ts"), icon: <CheckCircle2 size={16} /> },
+    { id: 'faq', label: t('disease.tabs.faq', 'FAQs'), icon: <HelpCircle size={16} /> },
   ];
 
   return (
@@ -42,6 +55,7 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
     >
       {/* Tab Navigation Buttons */}
       <div
+        role="tablist"
         style={{
           display: 'flex',
           gap: '0.5rem',
@@ -54,6 +68,9 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
           const isActive = activeTab === tab.id;
           return (
             <button
+              id={`tab-btn-${tab.id}`}
+              role="tab"
+              aria-selected={isActive}
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               style={{
@@ -69,7 +86,7 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
                 border: 'none',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                transition: 'all 0.15s',
+                transition: 'all 0.15s ease-in-out',
               }}
             >
               {tab.icon}
@@ -85,12 +102,12 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
         {activeTab === 'symptoms' && (
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              Common Symptoms & Clinical Signs
+              {t('disease.headers.symptomsTitle', 'Common Symptoms & Clinical Signs')}
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
-              {disease.symptoms.map((sym) => (
+              {symptoms.map((sym, idx) => (
                 <div
-                  key={sym}
+                  key={idx}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -104,14 +121,14 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
                     color: 'var(--text-primary)',
                   }}
                 >
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)' }} />
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)', flexShrink: 0 }} />
                   <span>{sym}</span>
                 </div>
               ))}
             </div>
 
-            {disease.whenToSeeDoctor && (
-              <DoctorConsultBanner symptoms={disease.whenToSeeDoctor} />
+            {whenToSeeDoctor && whenToSeeDoctor.length > 0 && (
+              <DoctorConsultBanner symptoms={whenToSeeDoctor} />
             )}
           </div>
         )}
@@ -120,10 +137,10 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
         {activeTab === 'causes' && (
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              Known Causes & Risk Factors
+              {t('disease.headers.causesTitle', 'Known Causes & Risk Factors')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {disease.causes.map((cause, idx) => (
+              {causes.map((cause, idx) => (
                 <div
                   key={idx}
                   style={{
@@ -148,10 +165,10 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
         {activeTab === 'treatments' && (
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              Medical Treatment & Home Care Regimen
+              {t('disease.headers.treatmentsTitle', 'Medical Treatment & Home Care Regimen')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {disease.treatments.map((tr, idx) => (
+              {treatments.map((tr, idx) => (
                 <div
                   key={idx}
                   style={{
@@ -176,10 +193,10 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
         {activeTab === 'prevention' && (
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              Prevention & Hygiene Protocols
+              {t('disease.headers.preventionTitle', 'Prevention & Hygiene Protocols')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {disease.prevention.map((prev, idx) => (
+              {prevention.map((prev, idx) => (
                 <div
                   key={idx}
                   style={{
@@ -204,12 +221,12 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
         {activeTab === 'dos' && (
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              Clinical Do's and Don'ts
+              {t('disease.headers.dosTitle', "Clinical Do's and Don'ts")}
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
-              Adhere strictly to these guidelines to prevent complications.
+              {t('disease.headers.dosSubtitle', 'Adhere strictly to these guidelines to prevent complications.')}
             </p>
-            <DosAndDontsCard dos={disease.dos} donts={disease.donts} />
+            <DosAndDontsCard dos={dos} donts={donts} />
           </div>
         )}
 
@@ -217,10 +234,10 @@ export const DiseaseTabs: React.FC<DiseaseTabsProps> = ({ disease }) => {
         {activeTab === 'faq' && (
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem' }}>
-              Frequently Asked Questions
+              {t('disease.headers.faqTitle', 'Frequently Asked Questions')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {disease.faqs.map((faq, idx) => (
+              {faqs.map((faq, idx) => (
                 <div
                   key={idx}
                   style={{
