@@ -52,12 +52,21 @@ export const HospitalFinderPage: React.FC = () => {
     if (navigator.geolocation) {
       setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
+
+          // Re-fetch hospitals to ensure we have the latest data
+          let currentHospitals: Hospital[];
+          try {
+            currentHospitals = await hospitalService.getHospitals(filters);
+          } catch {
+            // Fall back to current state if fetch fails
+            currentHospitals = [...hospitals];
+          }
           
           // Calculate distance for each hospital
-          const hospitalsWithDistance = hospitals.map(h => {
+          const hospitalsWithDistance = currentHospitals.map(h => {
             if (h.coordinates?.lat && h.coordinates?.lng) {
               const dist = calculateDistance(userLat, userLng, h.coordinates.lat, h.coordinates.lng);
               // Round to 1 decimal place

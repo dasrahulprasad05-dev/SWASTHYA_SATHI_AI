@@ -6,7 +6,7 @@ export const QuickActions: React.FC = () => {
   const actions = [
     { label: 'Symptom Checker', path: '/symptoms', icon: <Stethoscope size={18} color="#10B981" />, bg: '#ECFDF5' },
     { label: 'Find Nearby Hospitals', path: '/hospitals', icon: <MapPin size={18} color="#3B82F6" />, bg: '#EFF6FF' },
-    { label: 'Medicine Interaction', path: '/medicine-guide', icon: <Pill size={18} color="#8B5CF6" />, bg: '#F5F3FF' },
+    { label: 'Medicine Interaction', path: '/medicines', icon: <Pill size={18} color="#8B5CF6" />, bg: '#F5F3FF' },
     { label: 'BSKY Scheme Status', path: '/schemes', icon: <FileCheck size={18} color="#F59E0B" />, bg: '#FEF3C7' },
   ];
 

@@ -14,6 +14,7 @@ const MOCK_HOSPITALS_FALLBACK = [
     phone: '0674-2476789',
     lat: 20.2285,
     lng: 85.7824,
+    coordinates: { lat: 20.2285, lng: 85.7824 },
     rating: 4.8,
     reviewCount: 3420,
     isVerified: true,
@@ -34,6 +35,7 @@ const MOCK_HOSPITALS_FALLBACK = [
     phone: '0674-2391983',
     lat: 20.2662,
     lng: 85.8172,
+    coordinates: { lat: 20.2662, lng: 85.8172 },
     rating: 4.4,
     reviewCount: 2150,
     isVerified: true,
@@ -54,6 +56,7 @@ const MOCK_HOSPITALS_FALLBACK = [
     phone: '0674-7105300',
     lat: 20.3541,
     lng: 85.8193,
+    coordinates: { lat: 20.3541, lng: 85.8193 },
     rating: 4.7,
     reviewCount: 4890,
     isVerified: true,
@@ -74,6 +77,7 @@ const MOCK_HOSPITALS_FALLBACK = [
     phone: '0671-2414080',
     lat: 20.4686,
     lng: 85.8925,
+    coordinates: { lat: 20.4686, lng: 85.8925 },
     rating: 4.6,
     reviewCount: 5200,
     isVerified: true,
@@ -160,6 +164,11 @@ export class HospitalController {
         } catch (dbErr) {
           console.warn('Database query error, using fallback:', dbErr);
         }
+      }
+
+      // Filter by openNow (24x7 hospitals only)
+      if (req.query.openNow === 'true') {
+        hospitals = hospitals.filter((h: any) => h.isOpen24x7 === true || h.is_open_24x7 === true);
       }
 
       // If client coordinates are provided, compute distance and sort
