@@ -70,29 +70,28 @@ export class AuthController {
 
       let userId = `usr-${Date.now()}`;
 
-      // If Supabase is configured, create Supabase Auth user
+      // If Supabase is configured, create Supabase Auth user via admin API so Supabase does NOT send redundant emails
       if (isSupabaseConfigured()) {
         try {
-          const { data, error } = await supabase.auth.signUp({
+          const { data, error } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
-            options: {
-              data: {
-                name,
-                phone,
-                district,
-                language,
-                role,
-                designation: designation || (role === 'admin' ? 'Health Administrator' : 'Citizen'),
-              },
+            email_confirm: true, // auto-confirm in Supabase; SendGrid handles branded OTP & Magic Link verification
+            user_metadata: {
+              name,
+              phone,
+              district,
+              language,
+              role,
+              designation: designation || (role === 'admin' ? 'Health Administrator' : 'Citizen'),
             },
           });
 
-          if (!error && data.user) {
+          if (!error && data?.user) {
             userId = data.user.id;
           }
         } catch (dbErr) {
-          console.warn('Supabase auth signup warning (continuing with local registration):', dbErr);
+          console.warn('Supabase auth admin user creation warning (continuing with registration):', dbErr);
         }
       }
 

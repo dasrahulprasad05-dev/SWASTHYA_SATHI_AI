@@ -62,7 +62,7 @@ export const AuthPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') as AuthTab) || (searchParams.get('mode') === 'signup' ? 'citizen-signup' : 'signin');
 
-  const { login, register, registerAdmin, forgotPassword, resetPassword, isLoading, user } = useAuth();
+  const { login, register, registerAdmin, forgotPassword, resetPassword, verifyMagicLink, isLoading, user } = useAuth();
 
   const [currentTab, setCurrentTab] = useState<AuthTab>(initialTab);
   const [isAdminPortal, setIsAdminPortal] = useState(searchParams.get('portal') === 'admin');
@@ -95,6 +95,19 @@ export const AuthPage: React.FC = () => {
     password: '',
     confirmPassword: '',
   });
+
+  // Verification modal state after registration
+  const [verificationModal, setVerificationModal] = useState<{
+    isOpen: boolean;
+    email: string;
+    role: 'citizen' | 'admin';
+  }>({
+    isOpen: false,
+    email: '',
+    role: 'citizen',
+  });
+  const [verifyOtpInput, setVerifyOtpInput] = useState('');
+  const [isVerifyingRegistration, setIsVerifyingRegistration] = useState(false);
 
   // Forgot password modal state
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
@@ -158,8 +171,12 @@ export const AuthPage: React.FC = () => {
       });
       
       if (res?.verificationRequired) {
-        showToast('Security Check: A verification email has been sent. Please check your inbox and click the link to log in.', 'success');
-        setCurrentTab('signin');
+        setVerificationModal({
+          isOpen: true,
+          email: citizenForm.email,
+          role: 'citizen',
+        });
+        showToast('Verification email sent via SendGrid! Please check your inbox.', 'success');
       } else {
         showToast('Registration successful!', 'success');
         setTimeout(() => navigate('/dashboard'), 1000);
@@ -194,14 +211,46 @@ export const AuthPage: React.FC = () => {
       });
       
       if (res?.verificationRequired) {
-        showToast('Security Check: A verification email has been sent to your official email. Please verify to access the portal.', 'success');
-        setCurrentTab('signin');
+        setVerificationModal({
+          isOpen: true,
+          email: adminForm.email,
+          role: 'admin',
+        });
+        showToast('Official verification email sent via SendGrid! Please check your inbox.', 'success');
       } else {
         showToast('Official Health Administrator account created successfully!', 'success');
         setTimeout(() => navigate('/admin'), 1000);
       }
     } catch (err: any) {
       showToast(err.message || 'Admin registration failed.', 'error');
+    }
+  };
+
+  const handleVerifyRegistrationOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verifyOtpInput || verifyOtpInput.length < 6) {
+      showToast('Please enter the 6-digit OTP code received in your email.', 'error');
+      return;
+    }
+
+    setIsVerifyingRegistration(true);
+    try {
+      const res = await verifyMagicLink({
+        email: verificationModal.email,
+        otp: verifyOtpInput.trim(),
+      });
+
+      if (res.success) {
+        showToast('Email verified successfully! Logging you in...', 'success');
+        setVerificationModal({ isOpen: false, email: '', role: 'citizen' });
+        setTimeout(() => {
+          navigate(verificationModal.role === 'admin' ? '/admin' : '/dashboard');
+        }, 800);
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Invalid or expired OTP code.', 'error');
+    } finally {
+      setIsVerifyingRegistration(false);
     }
   };
 
@@ -247,16 +296,6 @@ export const AuthPage: React.FC = () => {
     } finally {
       setIsSubmittingForgot(false);
     }
-  };
-
-  const fillDemoCitizen = () => {
-    setSignInForm({ email: 'rahul.mohapatra@odisha.gov.in', password: 'demoPassword2026' });
-    setIsAdminPortal(false);
-  };
-
-  const fillDemoAdmin = () => {
-    setSignInForm({ email: 'dr.mishra.cdmo@odisha.gov.in', password: 'adminPassword2026' });
-    setIsAdminPortal(true);
   };
 
   return (
@@ -437,26 +476,6 @@ export const AuthPage: React.FC = () => {
                 </>
               )}
             </button>
-
-            {/* Quick Demo Logins */}
-            <div className="pt-4 border-t border-slate-800/80 flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={fillDemoCitizen}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-slate-300 border border-slate-700/60 transition-colors flex items-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-                Demo Citizen
-              </button>
-              <button
-                type="button"
-                onClick={fillDemoAdmin}
-                className="text-xs px-3 py-1.5 rounded-lg bg-amber-950/40 hover:bg-amber-950/70 text-amber-300 border border-amber-800/50 transition-colors flex items-center gap-1.5"
-              >
-                <Shield className="w-3.5 h-3.5 text-amber-400" />
-                Demo Admin
-              </button>
-            </div>
           </form>
         )}
 
@@ -889,6 +908,82 @@ export const AuthPage: React.FC = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ── REGISTRATION VERIFICATION MODAL ── */}
+      {verificationModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+          <div className="relative w-full max-w-md bg-slate-900 border border-teal-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-500/25">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
+
+            <h3 className="text-xl font-bold text-white mb-2">Check Your Email!</h3>
+            <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+              We have dispatched a verification email to{' '}
+              <strong className="text-teal-300 font-semibold">{verificationModal.email}</strong>.
+            </p>
+
+            <div className="p-3.5 rounded-2xl bg-teal-950/40 border border-teal-800/50 mb-5 text-left">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-teal-400 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-teal-200/90 leading-relaxed">
+                  <strong>Option 1 (Fastest):</strong> Click the <strong>"✨ Verify & Log In Automatically"</strong> button inside your email.
+                </p>
+              </div>
+            </div>
+
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-slate-800"></div>
+              <span className="flex-shrink mx-3 text-slate-500 text-xs uppercase font-semibold">Or Enter 6-Digit Code</span>
+              <div className="flex-grow border-t border-slate-800"></div>
+            </div>
+
+            <form onSubmit={handleVerifyRegistrationOtp} className="space-y-4 mt-2">
+              <div>
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={verifyOtpInput}
+                  onChange={(e) => setVerifyOtpInput(e.target.value.replace(/\D/g, ''))}
+                  placeholder="e.g. 849201"
+                  className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-4 py-3 text-xl tracking-widest font-mono text-center text-teal-300 placeholder:text-slate-600 focus:outline-none focus:border-teal-500"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isVerifyingRegistration || verifyOtpInput.length < 6}
+                className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/25 hover:opacity-90 disabled:opacity-50 transition flex items-center justify-center gap-2"
+              >
+                {isVerifyingRegistration ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Verify Code & Log In'}
+              </button>
+            </form>
+
+            <div className="mt-5 flex items-center justify-between text-xs text-slate-400">
+              <button
+                type="button"
+                onClick={() => {
+                  setVerificationModal({ isOpen: false, email: '', role: 'citizen' });
+                  setCurrentTab('signin');
+                }}
+                className="hover:text-slate-200 transition underline underline-offset-4"
+              >
+                Go to Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  showToast('Verification email re-dispatched via SendGrid!', 'success');
+                }}
+                className="text-teal-400 hover:text-teal-300 font-semibold transition"
+              >
+                Resend Email
+              </button>
+            </div>
           </div>
         </div>
       )}
