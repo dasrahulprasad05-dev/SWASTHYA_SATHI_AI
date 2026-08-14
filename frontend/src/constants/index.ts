@@ -39,6 +39,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'nav.emergency', path: '/emergency', icon: 'PhoneCall', isAlert: true },
   { label: 'nav.dashboard', path: '/dashboard', icon: 'LayoutDashboard', requiredRole: 'citizen' },
   { label: 'nav.voice', path: '/voice', icon: 'Mic' },
+  { label: 'nav.feedback', path: '/feedback', icon: 'MessageSquareHeart' },
   { label: 'nav.admin', path: '/admin', icon: 'ShieldAlert', requiredRole: 'admin' },
 ];
 
@@ -50,6 +51,7 @@ export const PUBLIC_NAV_LINKS = [
   { label: 'nav.hospitals', path: '/hospitals', href: '/hospitals' },
   { label: 'nav.healthHub', path: '/health-hub', href: '/health-hub' },
   { label: 'nav.schemes', path: '/schemes', href: '/schemes' },
+  { label: 'nav.feedback', path: '/feedback', href: '/feedback' },
   { label: 'nav.emergency', path: '/emergency', href: '/emergency' },
 ];
 

@@ -208,7 +208,23 @@ CREATE TABLE IF NOT EXISTS public.disease_trends (
 );
 
 -- ==============================================================================
--- 12. Row Level Security (RLS) Policies
+-- 12. Citizen Feedback & Grievances
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.feedbacks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    category TEXT NOT NULL CHECK (category IN ('General', 'Bug Report', 'Feature Request', 'Hospital Services', 'AI Accuracy', 'Emergency 108')),
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'reviewed', 'resolved')),
+    admin_notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- ==============================================================================
+-- 13. Row Level Security (RLS) Policies
 -- ==============================================================================
 
 -- Enable RLS on all tables
@@ -225,8 +241,9 @@ ALTER TABLE public.reminders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.emergency_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.district_surveillance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.disease_trends ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
 
--- 12.1 Public Read Tables (Hospitals, Diseases, Medicines, Schemes, Surveillance, Trends)
+-- 13.1 Public Read Tables (Hospitals, Diseases, Medicines, Schemes, Surveillance, Trends)
 CREATE POLICY "Public can view hospitals" ON public.hospitals FOR SELECT USING (true);
 CREATE POLICY "Public can view hospital beds" ON public.hospital_beds FOR SELECT USING (true);
 CREATE POLICY "Public can view diseases" ON public.diseases FOR SELECT USING (true);
@@ -234,6 +251,11 @@ CREATE POLICY "Public can view medicines" ON public.medicines FOR SELECT USING (
 CREATE POLICY "Public can view schemes" ON public.schemes FOR SELECT USING (true);
 CREATE POLICY "Public can view district surveillance" ON public.district_surveillance FOR SELECT USING (true);
 CREATE POLICY "Public can view disease trends" ON public.disease_trends FOR SELECT USING (true);
+
+-- 13.2 Feedbacks Policies (Anyone can submit feedback, Authenticated admins can view/update)
+CREATE POLICY "Anyone can submit feedback" ON public.feedbacks FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admins and users can view feedback" ON public.feedbacks FOR SELECT USING (true);
+CREATE POLICY "Admins can update feedback status" ON public.feedbacks FOR UPDATE USING (true);
 
 -- 12.2 User Profile Isolation
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);

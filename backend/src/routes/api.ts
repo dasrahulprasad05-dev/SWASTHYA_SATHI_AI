@@ -4,6 +4,7 @@ import { HospitalController } from '../controllers/hospitalController.js';
 import { DiseaseController } from '../controllers/diseaseController.js';
 import { AdminController } from '../controllers/adminController.js';
 import { AuthController } from '../controllers/authController.js';
+import { FeedbackController } from '../controllers/feedbackController.js';
 import { knowledgeBaseService } from '../services/knowledgeBaseService.js';
 import { authenticate, authorizeAdmin } from '../middleware/authMiddleware.js';
 
@@ -22,9 +23,15 @@ router.get('/health', (_req: Request, res: Response) => {
 // ── Auth & Password Management Endpoints (SendGrid Email Powered) — Public ──
 router.post('/auth/register', AuthController.register);
 router.post('/auth/login', AuthController.login);
+router.post('/auth/verify-magic-link', AuthController.verifyMagicLink);
 router.post('/auth/forgot-password', AuthController.forgotPassword);
 router.post('/auth/reset-password', AuthController.resetPassword);
 router.post('/auth/verify-otp', AuthController.verifyOTP);
+
+// ── Citizen Feedback & Review Endpoints ──
+router.post('/feedback', FeedbackController.submitFeedback);
+router.get('/admin/feedbacks', authenticate, authorizeAdmin, FeedbackController.getFeedbacks);
+router.patch('/admin/feedbacks/:id', authenticate, authorizeAdmin, FeedbackController.updateFeedbackStatus);
 
 // ── Emergency & SOS Endpoints — Authenticated ──
 router.post('/emergency/send-sos', authenticate, AuthController.sendEmergencySos);

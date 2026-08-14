@@ -23,6 +23,8 @@ import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import SymptomCheckerPage from './pages/SymptomCheckerPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
+import FeedbackPage from './pages/FeedbackPage';
 
 const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
@@ -34,6 +36,8 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/auth" element={<PageWrapper><AuthPage /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><AuthPage /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><AuthPage /></PageWrapper>} />
+        <Route path="/verify" element={<PageWrapper><VerifyEmailPage /></PageWrapper>} />
+        <Route path="/feedback" element={<PageWrapper><FeedbackPage /></PageWrapper>} />
         <Route path="/chat" element={<PageWrapper><ChatPage /></PageWrapper>} />
         <Route path="/symptoms" element={<PageWrapper><SymptomCheckerPage /></PageWrapper>} />
         <Route path="/hospitals" element={<PageWrapper><HospitalFinderPage /></PageWrapper>} />

@@ -58,11 +58,12 @@ export class EmailService {
   }
 
   /**
-   * 1. Send Email Verification / Welcome OTP
+   * 1. Send Email Verification with 1-Click Magic Link & Backup OTP
    */
-  static async sendVerificationEmail(toEmail: string, toName: string, otpCode: string): Promise<{ success: boolean }> {
+  static async sendVerificationEmail(toEmail: string, toName: string, otpCode: string, magicLink?: string): Promise<{ success: boolean }> {
     const safeName = escapeHtml(toName || 'Citizen');
     const safeOtp = escapeHtml(otpCode);
+    const verifyUrl = magicLink || `http://localhost:5173/verify?email=${encodeURIComponent(toEmail)}&otp=${encodeURIComponent(otpCode)}`;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -71,35 +72,40 @@ export class EmailService {
       <meta charset="utf-8">
       <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b1329; color: #f1f5f9; margin: 0; padding: 20px; }
-        .container { max-width: 580px; margin: 0 auto; background-color: #131d38; border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; }
-        .header { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%); padding: 30px 20px; text-align: center; color: #ffffff; }
-        .content { padding: 30px; line-height: 1.6; color: #cbd5e1; }
-        .otp-box { background: #0f172a; border: 2px dashed #0d9488; border-radius: 10px; padding: 20px; text-align: center; margin: 25px 0; }
-        .otp-code { font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #38bdf8; }
-        .footer { padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #1e293b; }
+        .container { max-width: 580px; margin: 0 auto; background-color: #131d38; border-radius: 14px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .header { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%); padding: 32px 24px; text-align: center; color: #ffffff; }
+        .content { padding: 32px 28px; line-height: 1.6; color: #cbd5e1; }
+        .btn-magic { display: inline-block; background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); color: #ffffff !important; font-weight: 700; font-size: 16px; padding: 15px 36px; border-radius: 9999px; text-decoration: none; margin: 24px 0 16px 0; box-shadow: 0 4px 14px 0 rgba(6, 182, 212, 0.4); text-align: center; }
+        .otp-box { background: #0f172a; border: 1px dashed #334155; border-radius: 10px; padding: 16px; text-align: center; margin: 20px 0; }
+        .otp-code { font-size: 28px; font-weight: 800; letter-spacing: 6px; color: #38bdf8; }
+        .footer { padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #1e293b; background: #0a0f1d; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="margin: 0; font-size: 24px;">🏥 Swasthya Sathi AI</h1>
-          <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ AI — Government of Odisha Health Initiative</p>
+          <h1 style="margin: 0; font-size: 24px; letter-spacing: -0.5px;">🏥 Swasthya Sathi AI</h1>
+          <p style="margin: 6px 0 0 0; opacity: 0.95; font-size: 14px;">ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ AI — Government of Odisha Health Initiative</p>
         </div>
         <div class="content">
-          <h2 style="color: #ffffff; margin-top: 0;">Welcome, ${safeName}! / ସ୍ୱାଗତମ୍!</h2>
-          <p>Thank you for registering with <strong>Swasthya Sathi AI</strong>. Please use the following 6-digit verification code to confirm your email and activate your digital health account:</p>
+          <h2 style="color: #ffffff; margin-top: 0; font-size: 20px;">Welcome, ${safeName}! / ସ୍ୱାଗତମ୍!</h2>
+          <p style="font-size: 15px;">Thank you for registering with <strong>Swasthya Sathi AI</strong>. Click the button below to automatically verify your email and log in instantly:</p>
           
-          <div class="otp-box">
-            <span style="font-size: 12px; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 6px;">Your Verification OTP</span>
-            <div class="otp-code">${safeOtp}</div>
-            <span style="font-size: 12px; color: #94a3b8; display: block; margin-top: 6px;">Valid for 15 minutes</span>
+          <div style="text-align: center;">
+            <a href="${verifyUrl}" class="btn-magic" target="_blank">✨ Verify & Log In Automatically</a>
           </div>
 
-          <p style="font-size: 14px; color: #94a3b8;">With your verified account, you have 24x7 access to AI symptom triage, real-time Odisha hospital bed locator, ABHA digital health records, and emergency 108 ambulance dispatch.</p>
+          <div class="otp-box">
+            <span style="font-size: 12px; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px;">Or use this 6-digit OTP code</span>
+            <div class="otp-code">${safeOtp}</div>
+            <span style="font-size: 11px; color: #64748b; display: block; margin-top: 4px;">Valid for 24 hours</span>
+          </div>
+
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5;">With your verified account, you have 24x7 access to AI symptom triage in Odia, Hindi & English, Odisha hospital bed locator, ABHA health records, and emergency 108 ambulance dispatch.</p>
         </div>
         <div class="footer">
-          <p>Health & Family Welfare Department, Government of Odisha</p>
-          <p>Emergency 108 Ambulance | State Health Helpline 104</p>
+          <p style="margin: 0 0 4px 0;">Health & Family Welfare Department, Government of Odisha</p>
+          <p style="margin: 0;">Emergency: 108 Ambulance | State Health Helpline: 104</p>
         </div>
       </div>
     </body>
@@ -172,7 +178,127 @@ export class EmailService {
   }
 
   /**
-   * 3. Send Emergency Public Health Alert Broadcast Email
+   * 3. Send Citizen Feedback Notification to Admin
+   */
+  static async sendFeedbackAdminNotificationEmail(feedback: {
+    id?: string;
+    name: string;
+    email: string;
+    category: string;
+    rating: number;
+    message: string;
+    createdAt?: string;
+  }): Promise<{ success: boolean }> {
+    const safeName = escapeHtml(feedback.name);
+    const safeEmail = escapeHtml(feedback.email);
+    const safeCategory = escapeHtml(feedback.category);
+    const safeMessage = escapeHtml(feedback.message);
+    const adminEmail = process.env.SENDGRID_SENDER_EMAIL || 'rahulprasaddas37@gmail.com';
+    const stars = '⭐'.repeat(Math.max(1, Math.min(5, feedback.rating)));
+
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b1329; color: #f1f5f9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #131d38; border-radius: 12px; border: 1px solid #3b82f6; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 24px 20px; text-align: center; color: #ffffff; }
+        .content { padding: 28px; line-height: 1.6; color: #cbd5e1; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 18px; margin: 18px 0; }
+        .badge { display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 12px; }
+        .footer { padding: 16px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #1e293b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0; font-size: 22px;">📬 New Citizen Feedback Received</h1>
+          <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 13px;">Swasthya Sathi AI Administrative Portal</p>
+        </div>
+        <div class="content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span class="badge">${safeCategory}</span>
+            <span style="font-size: 18px;">${stars} (${feedback.rating}/5)</span>
+          </div>
+
+          <div class="card">
+            <p style="margin: 0 0 8px 0;"><strong>Citizen Name:</strong> ${safeName}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Email Address:</strong> <a href="mailto:${safeEmail}" style="color: #38bdf8;">${safeEmail}</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Category:</strong> ${safeCategory}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Rating Score:</strong> ${feedback.rating} / 5</p>
+            <hr style="border: 0; border-top: 1px solid #1e293b; margin: 12px 0;" />
+            <p style="margin: 0; font-style: italic; color: #f8fafc;">"${safeMessage}"</p>
+          </div>
+
+          <p style="font-size: 13px; color: #94a3b8;">You can manage and respond to this feedback from the <strong>Swasthya Sathi Admin Console</strong> under the Feedbacks tab.</p>
+        </div>
+        <div class="footer">
+          <p style="margin: 0;">Odisha Health & Family Welfare Department — Feedback Gateway</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
+    return this.sendTransactionalEmail({
+      to: [{ email: adminEmail, name: 'Health Administrator' }],
+      subject: `📬 [Citizen Feedback] ${safeCategory} (${feedback.rating}/5) from ${safeName}`,
+      htmlContent,
+    });
+  }
+
+  /**
+   * 4. Send Feedback Acknowledgment Receipt to User
+   */
+  static async sendFeedbackReceiptEmail(toEmail: string, toName: string, category: string): Promise<{ success: boolean }> {
+    const safeName = escapeHtml(toName || 'Citizen');
+    const safeCategory = escapeHtml(category);
+
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b1329; color: #f1f5f9; margin: 0; padding: 20px; }
+        .container { max-width: 580px; margin: 0 auto; background-color: #131d38; border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%); padding: 25px 20px; text-align: center; color: #ffffff; }
+        .content { padding: 30px; line-height: 1.6; color: #cbd5e1; }
+        .footer { padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #1e293b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0; font-size: 22px;">🙏 Thank You for Your Feedback!</h1>
+          <p style="margin: 5px 0 0 0; font-size: 13px; opacity: 0.9;">Swasthya Sathi AI Team</p>
+        </div>
+        <div class="content">
+          <h2 style="color: #ffffff; margin-top: 0;">Dear ${safeName},</h2>
+          <p>Thank you for submitting your valuable feedback regarding <strong>${safeCategory}</strong>.</p>
+          <p>Your input helps us continuously improve the public healthcare AI service for all citizens across Odisha. Our healthcare administration team reviews every feedback carefully.</p>
+          <p style="font-size: 13px; color: #94a3b8;">If your feedback requires a direct resolution or follow-up, an officer will reach out to you via this email.</p>
+        </div>
+        <div class="footer">
+          <p style="margin: 0 0 4px 0;">Health & Family Welfare Department, Government of Odisha</p>
+          <p style="margin: 0;">Emergency Helpline: 108 | Health Advice: 104</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
+    return this.sendTransactionalEmail({
+      to: [{ email: toEmail, name: toName }],
+      subject: `🙏 Feedback Received — Swasthya Sathi AI`,
+      htmlContent,
+    });
+  }
+
+  /**
+   * 5. Send Emergency Public Health Alert Broadcast Email
    */
   static async sendEmergencyBroadcastEmail(
     recipients: Array<{ email: string; name?: string }>,
@@ -244,7 +370,7 @@ export class EmailService {
   }
 
   /**
-   * 4. Send Emergency SOS Confirmation Email
+   * 6. Send Emergency SOS Confirmation Email
    */
   static async sendEmergencySosConfirmation(
     toEmail: string,

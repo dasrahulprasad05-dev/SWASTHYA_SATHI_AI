@@ -57,6 +57,11 @@ export const PublicFooter: React.FC = () => {
                   BSKY & Central Health Schemes
                 </Link>
               </li>
+              <li>
+                <Link to="/feedback" style={{ color: 'var(--primary)', fontSize: '0.88rem', textDecoration: 'none', fontWeight: 600 }}>
+                  ✍️ Citizen Feedback & Grievances
+                </Link>
+              </li>
             </ul>
           </div>
 

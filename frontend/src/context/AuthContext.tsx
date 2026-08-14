@@ -14,6 +14,7 @@ interface AuthContextType {
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   resetPassword: (data: { email: string; otp: string; newPassword: string }) => Promise<{ success: boolean; message: string }>;
   verifyOTP: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
+  verifyMagicLink: (data: { email: string; token?: string; otp?: string }) => Promise<{ success: boolean; user: User; token: string; message: string }>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
 }
@@ -286,6 +287,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const verifyMagicLink = async (data: { email: string; token?: string; otp?: string }) => {
+    setIsLoading(true);
+    try {
+      const res = await authService.verifyMagicLink(data);
+      if (res.data?.user) {
+        const loggedUser: User = {
+          ...MOCK_USER,
+          ...res.data.user,
+        };
+        setUser(loggedUser);
+        localStorage.setItem('auth_token', res.data.token || 'jwt_' + Date.now());
+        localStorage.setItem('swasthya_user', JSON.stringify(loggedUser));
+        return {
+          success: true,
+          user: loggedUser,
+          token: res.data.token,
+          message: res.message || 'Email verified successfully!',
+        };
+      }
+      throw new Error('User authentication details missing in verification response.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     if (isSupabaseConfigured()) {
       try {
@@ -317,6 +343,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         forgotPassword,
         resetPassword,
         verifyOTP,
+        verifyMagicLink,
         logout,
         updateUser,
       }}

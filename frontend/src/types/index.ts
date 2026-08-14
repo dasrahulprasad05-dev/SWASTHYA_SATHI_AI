@@ -402,6 +402,31 @@ export interface ApiResponse<T> {
   };
 }
 
+// ── Feedback ──
+export type FeedbackCategory = 'General' | 'Bug Report' | 'Feature Request' | 'Hospital Services' | 'AI Accuracy' | 'Emergency 108';
+export type FeedbackStatus = 'pending' | 'reviewed' | 'resolved';
+
+export interface FeedbackItem {
+  id: string;
+  userId?: string;
+  name: string;
+  email: string;
+  category: FeedbackCategory;
+  rating: number;
+  message: string;
+  status: FeedbackStatus;
+  adminNotes?: string;
+  createdAt: string;
+}
+
+export interface FeedbackStats {
+  total: number;
+  avgRating: number;
+  pending: number;
+  resolved: number;
+}
+
 // ── Theme ──
 export type Theme = 'light' | 'dark';
 export type Language = 'en' | 'hi' | 'or';
+

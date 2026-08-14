@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import {
   Home,
   MessageSquare,
+  MessageSquareHeart,
+  PhoneCall,
   Mic,
   BookOpen,
   Hospital,
@@ -15,6 +17,7 @@ import {
   LayoutDashboard,
   User,
   Settings,
+  ShieldAlert,
   Plus,
   Heart,
   LogOut,
@@ -32,6 +35,8 @@ interface AppSidebarProps {
 const ICON_MAP: Record<string, React.ReactNode> = {
   Home: <Home size={19} />,
   MessageSquare: <MessageSquare size={19} />,
+  MessageSquareHeart: <MessageSquareHeart size={19} />,
+  PhoneCall: <PhoneCall size={19} />,
   Mic: <Mic size={19} />,
   BookOpen: <BookOpen size={19} />,
   Hospital: <Hospital size={19} />,
@@ -43,6 +48,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard size={19} />,
   User: <User size={19} />,
   Settings: <Settings size={19} />,
+  ShieldAlert: <ShieldAlert size={19} />,
 };
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot, onClose }) => {

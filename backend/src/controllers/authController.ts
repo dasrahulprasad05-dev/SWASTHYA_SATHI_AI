@@ -6,12 +6,13 @@ import { supabase, supabaseAdmin, isSupabaseConfigured } from '../config/supabas
 
 const JWT_SECRET = process.env.JWT_SECRET || 'swasthya_sathi_super_secret_jwt_key_2026';
 
-// In-memory OTP storage for password resets & verification (with 15 min TTL)
+// In-memory OTP storage for password resets & verification (with 24h TTL)
 // NOTE: Not shared across instances — not suitable for multi-server deployments.
 // For production with load balancers, migrate to Redis or database-backed storage.
 interface OtpRecord {
   email: string;
   code: string;
+  magicToken?: string;
   type: 'verification' | 'password_reset';
   expiresAt: number;
   attempts: number;       // Bug 5: track failed verification attempts
@@ -29,6 +30,11 @@ function generateOtp(): string {
   return crypto.randomInt(100000, 1000000).toString();
 }
 
+// Generate cryptographic hex token for 1-click magic links
+function generateMagicToken(): string {
+  return crypto.randomBytes(24).toString('hex');
+}
+
 // Bug 9: Periodic cleanup of expired OTP records to prevent memory leaks
 setInterval(() => {
   const now = Date.now();
@@ -43,7 +49,7 @@ const ADMIN_SECRET_KEY = process.env.ODISHA_HEALTH_ADMIN_KEY || 'ODISHA_HEALTH_2
 
 export class AuthController {
   /**
-   * Citizen & Admin User Registration
+   * Citizen & Admin User Registration with 1-Click Magic Link & OTP
    */
   static async register(req: Request, res: Response): Promise<void> {
     try {
@@ -90,26 +96,31 @@ export class AuthController {
         }
       }
 
-      // Generate verification OTP and dispatch Twilio SendGrid email
+      // Generate verification OTP and 1-Click Magic Token
       const otp = generateOtp();
+      const magicToken = generateMagicToken();
+      const clientUrl = process.env.CORS_ORIGIN || 'http://localhost:5173';
+      const magicLink = `${clientUrl}/verify?email=${encodeURIComponent(email)}&token=${magicToken}&otp=${otp}`;
+
       otpStore.set(email.toLowerCase(), {
         email: email.toLowerCase(),
         code: otp,
+        magicToken,
         type: 'verification',
-        expiresAt: Date.now() + 15 * 60 * 1000,
+        expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours validity
         attempts: 0,
         lockedUntil: 0,
-        data: { name, email, role, district, phone },
+        data: { id: userId, name, email, role, district, phone, language, designation },
       });
 
-      // Dispatch Twilio SendGrid verification email in background
-      EmailService.sendVerificationEmail(email, name, otp).catch((err) =>
+      // Dispatch Twilio SendGrid verification email in background with Magic Link & OTP
+      EmailService.sendVerificationEmail(email, name, otp, magicLink).catch((err) =>
         console.error('Failed to send verification email:', err)
       );
 
       res.status(201).json({
         success: true,
-        message: 'Account registered successfully. A verification code has been dispatched to your email.',
+        message: 'Account registered successfully. A verification link & code has been dispatched to your email.',
         data: {
           user: {
             id: userId,
@@ -188,6 +199,111 @@ export class AuthController {
       });
     } catch (error: any) {
       res.status(500).json({ error: 'Login failed.', details: error?.message });
+    }
+  }
+
+  /**
+   * One-Click Magic Link Verification & Auto-Login
+   * Verifies the token or OTP from email, logs user in, and returns JWT session
+   */
+  static async verifyMagicLink(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, token, otp } = req.body;
+
+      if (!email || (!token && !otp)) {
+        res.status(400).json({ error: 'Email and verification token/OTP are required.' });
+        return;
+      }
+
+      const recordKey = email.toLowerCase().trim();
+      const record = otpStore.get(recordKey);
+
+      let isVerified = false;
+      let userData = record?.data;
+
+      if (record) {
+        if (record.lockedUntil > Date.now()) {
+          const remainingMinutes = Math.ceil((record.lockedUntil - Date.now()) / 60000);
+          res.status(429).json({ error: `Too many failed attempts. Please try again in ${remainingMinutes} minute(s).` });
+          return;
+        }
+
+        if (Date.now() > record.expiresAt) {
+          otpStore.delete(recordKey);
+          res.status(400).json({ error: 'Verification link has expired. Please sign up or request a new one.' });
+          return;
+        }
+
+        // Verify either magic token match or OTP code match
+        if ((token && record.magicToken === token) || (otp && record.code === otp.trim())) {
+          isVerified = true;
+          otpStore.delete(recordKey);
+        } else {
+          record.attempts += 1;
+          if (record.attempts >= MAX_OTP_ATTEMPTS) {
+            record.lockedUntil = Date.now() + LOCKOUT_DURATION_MS;
+            res.status(429).json({ error: 'Too many failed verification attempts. Account locked for 15 minutes.' });
+            return;
+          }
+          res.status(400).json({ error: `Invalid verification link or code. ${MAX_OTP_ATTEMPTS - record.attempts} attempts remaining.` });
+          return;
+        }
+      } else if (isSupabaseConfigured()) {
+        // Check if user is in Supabase
+        try {
+          const { data } = await supabaseAdmin.auth.admin.listUsers();
+          const found = data?.users?.find((u) => u.email === email.toLowerCase());
+          if (found) {
+            isVerified = true;
+            userData = {
+              id: found.id,
+              email: found.email,
+              name: found.user_metadata?.name || found.email?.split('@')[0],
+              role: found.user_metadata?.role || 'citizen',
+              district: found.user_metadata?.district || 'Khordha',
+              designation: found.user_metadata?.designation,
+            };
+          }
+        } catch (dbErr) {
+          console.warn('Supabase magic link lookup error:', dbErr);
+        }
+      }
+
+      if (!isVerified) {
+        res.status(400).json({ error: 'Invalid or expired verification link.' });
+        return;
+      }
+
+      const verifiedUser = {
+        id: userData?.id || `usr-${Date.now()}`,
+        name: userData?.name || email.split('@')[0],
+        email: email.toLowerCase(),
+        phone: userData?.phone || '',
+        district: userData?.district || 'Khordha',
+        language: userData?.language || 'en',
+        role: userData?.role || 'citizen',
+        designation: userData?.designation || (userData?.role === 'admin' ? 'Health Administrator' : 'Citizen'),
+        isVerified: true,
+      };
+
+      // Sign real JWT token for instant automatic authentication
+      const jwtToken = jwt.sign(
+        { userId: verifiedUser.id, email: verifiedUser.email, role: verifiedUser.role },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Account verified successfully! Logging you in...',
+        data: {
+          user: verifiedUser,
+          token: jwtToken,
+        },
+      });
+    } catch (error: any) {
+      console.error('Magic link verification error:', error);
+      res.status(500).json({ error: 'Verification failed.', details: error?.message });
     }
   }
 
