@@ -23,6 +23,7 @@ import {
 import { AppLayout } from '../components/layouts/AppLayout';
 import { EmergencyCard } from '../components/common/EmergencyCard';
 import { QuickActions } from '../components/common/QuickActions';
+import { MarkdownRenderer } from '../components/common/MarkdownRenderer';
 import { chatService } from '../services/apiServices';
 
 // ── Common Symptoms Tags ──
@@ -333,21 +334,13 @@ export const SymptomCheckerPage: React.FC = () => {
 
             {/* Main Analysis */}
             <GlassCard>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
                 <HeartPulse size={20} color="var(--primary)" />
-                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  AI Assessment
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  Clinical Assessment & Guidance
                 </h3>
               </div>
-              <p style={{
-                fontSize: '0.92rem',
-                lineHeight: 1.75,
-                color: 'var(--text-secondary)',
-                margin: 0,
-                whiteSpace: 'pre-wrap',
-              }}>
-                {result.content}
-              </p>
+              <MarkdownRenderer content={result.content} />
             </GlassCard>
 
             {/* Recommendations */}

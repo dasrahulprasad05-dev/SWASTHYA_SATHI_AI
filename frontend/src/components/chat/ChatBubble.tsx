@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { Message } from '../../types';
 import { formatDate } from '../../lib/utils';
+import { MarkdownRenderer } from '../common/MarkdownRenderer';
 
 interface ChatBubbleProps {
   message: Message;
@@ -152,16 +153,8 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onSendFollowUp 
         </div>
 
         {/* Content Body */}
-        <div
-          style={{
-            fontSize: '0.92rem',
-            lineHeight: 1.7,
-            color: 'var(--text-primary)',
-            whiteSpace: 'pre-line',
-            marginBottom: '1rem',
-          }}
-        >
-          {message.content}
+        <div style={{ marginBottom: '1rem' }}>
+          <MarkdownRenderer content={message.content} />
         </div>
 
         {/* Recommendations Section */}

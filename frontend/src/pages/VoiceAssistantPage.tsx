@@ -5,6 +5,7 @@ import { AppLayout } from '../components/layouts/AppLayout';
 import { chatService } from '../services/apiServices';
 import { QuickActions } from '../components/common/QuickActions';
 import { EmergencyCard } from '../components/common/EmergencyCard';
+import { MarkdownRenderer } from '../components/common/MarkdownRenderer';
 
 export const VoiceAssistantPage: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
@@ -157,15 +158,15 @@ export const VoiceAssistantPage: React.FC = () => {
                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#F8FAFC', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                      <img src="/logos/main-logo.jpg" alt="AI" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
                    </div>
-                   <div>
-                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>Swasthya Sathi AI • Now</div>
-                     <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.25rem' }}>
-                       {response}
-                     </div>
-                     <button
-                       onClick={() => speakText(response)}
-                       style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: 'var(--primary)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, marginTop: '0.5rem' }}
-                     >
+                    <div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>Swasthya Sathi AI • Now</div>
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <MarkdownRenderer content={response} />
+                      </div>
+                      <button
+                        onClick={() => speakText(response)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', color: 'var(--primary)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, marginTop: '0.5rem' }}
+                      >
                        <Volume2 size={15} />
                        <span>Replay Audio</span>
                      </button>
