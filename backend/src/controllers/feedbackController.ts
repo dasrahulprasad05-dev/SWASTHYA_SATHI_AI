@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { supabase, isSupabaseConfigured } from '../config/supabase.js';
 import { EmailService } from '../services/emailService.js';
-import { AuthenticatedRequest } from '../middleware/authMiddleware.js';
+import type { AuthenticatedRequest } from '../middleware/authMiddleware.js';
 
 export interface FeedbackItem {
   id: string;
