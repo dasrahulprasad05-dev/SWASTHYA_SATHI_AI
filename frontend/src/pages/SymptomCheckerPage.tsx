@@ -61,6 +61,107 @@ interface AnalysisResult {
   confidence: number;
 }
 
+// ── Glassmorphism Card Wrapper ──
+const GlassCard: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
+  <div
+    style={{
+      backgroundColor: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-2xl)',
+      padding: '2rem',
+      boxShadow: 'var(--shadow-lg)',
+      backdropFilter: 'blur(12px)',
+      ...style,
+    }}
+  >
+    {children}
+  </div>
+);
+
+// ── Step Indicator ──
+const StepIndicator: React.FC<{ step: Step }> = ({ step }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
+    {[1, 2, 3].map((s) => (
+      <React.Fragment key={s}>
+        <div
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 700,
+            fontSize: '0.85rem',
+            backgroundColor: step >= s ? 'var(--primary)' : 'var(--surface-hover)',
+            color: step >= s ? '#fff' : 'var(--text-muted)',
+            border: step === s ? '2px solid var(--primary-light)' : '2px solid transparent',
+            transition: 'all 0.3s',
+          }}
+        >
+          {step > s ? <CheckCircle2 size={18} /> : s}
+        </div>
+        {s < 3 && (
+          <div
+            style={{
+              width: '50px',
+              height: '3px',
+              borderRadius: '2px',
+              backgroundColor: step > s ? 'var(--primary)' : 'var(--border)',
+              transition: 'all 0.3s',
+            }}
+          />
+        )}
+      </React.Fragment>
+    ))}
+  </div>
+);
+
+// ── Analysis Loading Animation ──
+const AnalyzingAnimation: React.FC = () => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '4rem 2rem',
+      textAlign: 'center',
+    }}
+  >
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+      style={{ marginBottom: '1.5rem' }}
+    >
+      <Activity size={48} color="var(--primary)" />
+    </motion.div>
+    <h3 style={{ color: 'var(--text-primary)', margin: '0 0 0.5rem 0', fontSize: '1.2rem' }}>
+      Analyzing Your Symptoms...
+    </h3>
+    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '400px' }}>
+      Our AI is cross-referencing your symptoms with our medical knowledge base to provide you with the most accurate assessment.
+    </p>
+    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+          style={{
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            backgroundColor: 'var(--primary)',
+          }}
+        />
+      ))}
+    </div>
+  </motion.div>
+);
+
 export const SymptomCheckerPage: React.FC = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
@@ -138,107 +239,6 @@ export const SymptomCheckerPage: React.FC = () => {
     setResult(null);
     setIsAnalyzing(false);
   };
-
-  // ── Step Indicator ──
-  const StepIndicator = () => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
-      {[1, 2, 3].map((s) => (
-        <React.Fragment key={s}>
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '0.85rem',
-              backgroundColor: step >= s ? 'var(--primary)' : 'var(--surface-hover)',
-              color: step >= s ? '#fff' : 'var(--text-muted)',
-              border: step === s ? '2px solid var(--primary-light)' : '2px solid transparent',
-              transition: 'all 0.3s',
-            }}
-          >
-            {step > s ? <CheckCircle2 size={18} /> : s}
-          </div>
-          {s < 3 && (
-            <div
-              style={{
-                width: '50px',
-                height: '3px',
-                borderRadius: '2px',
-                backgroundColor: step > s ? 'var(--primary)' : 'var(--border)',
-                transition: 'all 0.3s',
-              }}
-            />
-          )}
-        </React.Fragment>
-      ))}
-    </div>
-  );
-
-  // ── Glassmorphism Card Wrapper ──
-  const GlassCard: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
-    <div
-      style={{
-        backgroundColor: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-2xl)',
-        padding: '2rem',
-        boxShadow: 'var(--shadow-lg)',
-        backdropFilter: 'blur(12px)',
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
-
-  // ── Analysis Loading Animation ──
-  const AnalyzingAnimation = () => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '4rem 2rem',
-        textAlign: 'center',
-      }}
-    >
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-        style={{ marginBottom: '1.5rem' }}
-      >
-        <Activity size={48} color="var(--primary)" />
-      </motion.div>
-      <h3 style={{ color: 'var(--text-primary)', margin: '0 0 0.5rem 0', fontSize: '1.2rem' }}>
-        Analyzing Your Symptoms...
-      </h3>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '400px' }}>
-        Our AI is cross-referencing your symptoms with our medical knowledge base to provide you with the most accurate assessment.
-      </p>
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-            style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--primary)',
-            }}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
 
   return (
     <AppLayout
@@ -452,7 +452,7 @@ export const SymptomCheckerPage: React.FC = () => {
         ) : (
           /* ── Wizard View ── */
           <GlassCard>
-            <StepIndicator />
+            <StepIndicator step={step} />
 
             <AnimatePresence mode="wait">
               {/* ── Step 1: Basic Details ── */}
@@ -477,11 +477,17 @@ export const SymptomCheckerPage: React.FC = () => {
                       Age
                     </label>
                     <input
-                      type="number"
-                      min="1"
-                      max="120"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={3}
                       value={age}
-                      onChange={(e) => setAge(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        if (val === '' || (Number(val) >= 0 && Number(val) <= 120)) {
+                          setAge(val);
+                        }
+                      }}
                       placeholder="Enter your age"
                       style={{
                         width: '100%',
