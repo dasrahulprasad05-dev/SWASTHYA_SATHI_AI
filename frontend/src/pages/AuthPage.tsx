@@ -72,6 +72,7 @@ export const AuthPage: React.FC = () => {
   const [showCitizenConfirm, setShowCitizenConfirm] = useState(false);
   const [showAdminPass, setShowAdminPass] = useState(false);
   const [showAdminConfirm, setShowAdminConfirm] = useState(false);
+  const [showForgotPass, setShowForgotPass] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Form states
@@ -894,14 +895,23 @@ export const AuthPage: React.FC = () => {
                   <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                     New Secure Password *
                   </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••••••"
-                    value={forgotNewPassword}
-                    onChange={(e) => setForgotNewPassword(e.target.value)}
-                    className="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-teal-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showForgotPass ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={forgotNewPassword}
+                      onChange={(e) => setForgotNewPassword(e.target.value)}
+                      className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-4 pr-11 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPass(!showForgotPass)}
+                      className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300 focus:outline-none"
+                    >
+                      {showForgotPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex gap-2">
