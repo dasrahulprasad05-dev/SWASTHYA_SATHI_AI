@@ -202,6 +202,50 @@ export class AuthController {
   }
 
   /**
+   * Resend Verification Email & OTP
+   */
+  static async resendVerification(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        res.status(400).json({ error: 'Email is required.' });
+        return;
+      }
+
+      const cleanEmail = email.toLowerCase().trim();
+      const otp = generateOtp();
+      const magicToken = generateMagicToken();
+      const clientUrl = process.env.CORS_ORIGIN || 'https://swasthya-sathi-ai-five.vercel.app';
+      const magicLink = `${clientUrl}/verify?email=${encodeURIComponent(cleanEmail)}&token=${magicToken}&otp=${otp}`;
+
+      const existingRecord = otpStore.get(cleanEmail);
+      const name = existingRecord?.data?.name || cleanEmail.split('@')[0];
+
+      otpStore.set(cleanEmail, {
+        email: cleanEmail,
+        code: otp,
+        magicToken,
+        type: 'verification',
+        expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+        attempts: 0,
+        lockedUntil: 0,
+        data: existingRecord?.data || { email: cleanEmail, name },
+      });
+
+      // Dispatch via SendGrid
+      await EmailService.sendVerificationEmail(cleanEmail, name, otp, magicLink);
+
+      res.status(200).json({
+        success: true,
+        message: 'A fresh verification email with a 1-click magic link and 6-digit OTP has been sent.',
+      });
+    } catch (err: any) {
+      console.error('Resend verification error:', err);
+      res.status(500).json({ error: 'Failed to resend verification email.', details: err?.message });
+    }
+  }
+
+  /**
    * One-Click Magic Link Verification & Auto-Login
    * Verifies the token or OTP from email, logs user in, and returns JWT session
    */

@@ -24,6 +24,7 @@ router.get('/health', (_req: Request, res: Response) => {
 router.post('/auth/register', AuthController.register);
 router.post('/auth/login', AuthController.login);
 router.post('/auth/verify-magic-link', AuthController.verifyMagicLink);
+router.post('/auth/resend-verification', AuthController.resendVerification);
 router.post('/auth/forgot-password', AuthController.forgotPassword);
 router.post('/auth/reset-password', AuthController.resetPassword);
 router.post('/auth/verify-otp', AuthController.verifyOTP);

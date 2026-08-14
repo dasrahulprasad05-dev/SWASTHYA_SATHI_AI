@@ -20,6 +20,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/apiServices';
 import { PasswordStrengthMeter } from '../components/auth/PasswordStrengthMeter';
 
 const ODISHA_DISTRICTS = [
@@ -249,6 +250,19 @@ export const AuthPage: React.FC = () => {
       }
     } catch (err: any) {
       showToast(err?.message || 'Invalid or expired OTP code.', 'error');
+    } finally {
+      setIsVerifyingRegistration(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!verificationModal.email) return;
+    setIsVerifyingRegistration(true);
+    try {
+      await authService.resendVerification(verificationModal.email);
+      showToast('Fresh verification email & 6-digit OTP code dispatched via SendGrid!', 'success');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to resend email.', 'error');
     } finally {
       setIsVerifyingRegistration(false);
     }
@@ -976,12 +990,11 @@ export const AuthPage: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  showToast('Verification email re-dispatched via SendGrid!', 'success');
-                }}
-                className="text-teal-400 hover:text-teal-300 font-semibold transition"
+                onClick={handleResendVerification}
+                disabled={isVerifyingRegistration}
+                className="text-teal-400 hover:text-teal-300 font-semibold transition disabled:opacity-50"
               >
-                Resend Email
+                {isVerifyingRegistration ? 'Sending...' : 'Resend Email & OTP'}
               </button>
             </div>
           </div>

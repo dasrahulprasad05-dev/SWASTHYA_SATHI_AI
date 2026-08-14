@@ -488,6 +488,15 @@ export const authService = {
       throw new Error(err.response?.data?.error || 'Invalid or expired verification link.');
     }
   },
+
+  resendVerification: async (email: string) => {
+    try {
+      const res = await api.post('/auth/resend-verification', { email });
+      return res.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || 'Failed to resend verification email.');
+    }
+  },
 };
 
 // ── Citizen Feedback & Review Service ──
