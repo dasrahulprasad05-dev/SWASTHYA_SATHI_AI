@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageSquare, Pin, Trash2, Plus, Clock } from 'lucide-react';
+import { MessageSquare, Pin, Trash2, Plus } from 'lucide-react';
 import type { Chat } from '../../types';
 import { getChatGroupLabel } from '../../lib/utils';
 

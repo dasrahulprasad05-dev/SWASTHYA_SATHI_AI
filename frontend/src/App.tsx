@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -38,13 +39,13 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/hospitals" element={<PageWrapper><HospitalFinderPage /></PageWrapper>} />
         <Route path="/health-hub" element={<PageWrapper><HealthHubPage /></PageWrapper>} />
         <Route path="/disease/:id" element={<PageWrapper><DiseaseDetailPage /></PageWrapper>} />
-        <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+        <Route path="/dashboard" element={<PageWrapper><ProtectedRoute requiredRole="citizen"><DashboardPage /></ProtectedRoute></PageWrapper>} />
         <Route path="/medicines" element={<PageWrapper><MedicineGuidePage /></PageWrapper>} />
         <Route path="/records" element={<PageWrapper><HealthRecordsPage /></PageWrapper>} />
         <Route path="/schemes" element={<PageWrapper><GovernmentSchemesPage /></PageWrapper>} />
         <Route path="/emergency" element={<PageWrapper><EmergencyHelpPage /></PageWrapper>} />
         <Route path="/voice" element={<PageWrapper><VoiceAssistantPage /></PageWrapper>} />
-        <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
+        <Route path="/admin" element={<PageWrapper><ProtectedRoute requiredRole="admin"><AdminPage /></ProtectedRoute></PageWrapper>} />
         <Route path="/profile" element={<PageWrapper><ProfilePage /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><SettingsPage /></PageWrapper>} />
         <Route path="*" element={<Navigate to="/" replace />} />

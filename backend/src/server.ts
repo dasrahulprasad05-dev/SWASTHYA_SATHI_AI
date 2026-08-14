@@ -30,7 +30,11 @@ app.use(cors({
       return callback(null, true);
     }
 
-    callback(null, true); // Allow all origins in dev; tighten in production
+    if (process.env.NODE_ENV === 'production') {
+      return callback(new Error('CORS policy violation: Origin not allowed.'));
+    }
+
+    callback(null, true); // Allow all origins in dev
   },
   credentials: true,
 }));

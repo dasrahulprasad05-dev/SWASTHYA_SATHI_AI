@@ -197,7 +197,69 @@ export class HospitalController {
   static async getById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const hospital = MOCK_HOSPITALS_FALLBACK.find((h) => h.id === id) || MOCK_HOSPITALS_FALLBACK[0];
+
+      // Bug 7 Fix: Query Supabase first, matching the pattern from getAll
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error } = await supabase
+            .from('hospitals')
+            .select(`
+              *,
+              hospital_beds (
+                icu_beds,
+                oxygen_beds,
+                general_beds
+              )
+            `)
+            .eq('id', id)
+            .single();
+
+          if (!error && data) {
+            const hospital = {
+              id: data.id,
+              name: data.name,
+              type: data.type,
+              address: data.address,
+              city: data.city,
+              district: data.district,
+              state: data.state,
+              pincode: data.pincode,
+              phone: data.phone,
+              lat: data.lat,
+              lng: data.lng,
+              coordinates: { lat: data.lat, lng: data.lng },
+              rating: data.rating || 4.5,
+              reviewCount: data.review_count || 100,
+              isVerified: data.is_verified ?? true,
+              isOpen24x7: data.is_open_24x7 ?? true,
+              specialties: data.specialties || [],
+              services: data.services || [],
+              beds: {
+                icu: (Array.isArray(data.hospital_beds) ? data.hospital_beds[0]?.icu_beds : data.hospital_beds?.icu_beds) || 0,
+                oxygen: (Array.isArray(data.hospital_beds) ? data.hospital_beds[0]?.oxygen_beds : data.hospital_beds?.oxygen_beds) || 0,
+                general: (Array.isArray(data.hospital_beds) ? data.hospital_beds[0]?.general_beds : data.hospital_beds?.general_beds) || 0,
+              },
+            };
+
+            res.status(200).json({
+              success: true,
+              data: hospital,
+            });
+            return;
+          }
+        } catch (dbErr) {
+          console.warn('Database getById query error, falling back to mock:', dbErr);
+        }
+      }
+
+      // Fall back to mock array
+      const hospital = MOCK_HOSPITALS_FALLBACK.find((h) => h.id === id);
+
+      // Bug 20 Fix: Return 404 instead of silently returning the first mock hospital
+      if (!hospital) {
+        res.status(404).json({ error: 'Hospital not found.' });
+        return;
+      }
 
       res.status(200).json({
         success: true,

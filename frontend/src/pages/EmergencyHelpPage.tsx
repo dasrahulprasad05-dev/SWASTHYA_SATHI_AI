@@ -83,7 +83,7 @@ export const EmergencyHelpPage: React.FC = () => {
         emergencyType: 'High-Priority 108 Ambulance Dispatch',
       });
 
-      setSosSentStatus(`🚨 108 Ambulance SOS Dispatched! Confirmation & Live Tracking emailed via Brevo to ${email}.`);
+      setSosSentStatus(`🚨 108 Ambulance SOS Dispatched! Confirmation & Live Tracking emailed to ${email}.`);
       setTimeout(() => setSosSentStatus(null), 8000);
     } catch {
       setSosSentStatus('🚨 108 Ambulance Dispatched. Emergency responders notified.');
@@ -100,7 +100,7 @@ export const EmergencyHelpPage: React.FC = () => {
       topbarSubtitle="One-tap 108 ambulance connection and lifesaving emergency protocols"
     >
       <div style={{ maxWidth: '1050px', margin: '0 auto' }}>
-        {/* Live Brevo SOS Notification Banner */}
+        {/* Live SOS Notification Banner */}
         <div
           style={{
             background: 'linear-gradient(135deg, #991b1b 0%, #dc2626 100%)',
@@ -146,7 +146,7 @@ export const EmergencyHelpPage: React.FC = () => {
                 </span>
                 <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800 }}>Instant Emergency SOS Dispatch</h3>
                 <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.88rem', opacity: 0.9 }}>
-                  Transmits GPS coordinates to nearest active ambulance and sends Brevo email dispatch ticket.
+                  Transmits GPS coordinates to nearest active ambulance and sends email dispatch ticket.
                 </p>
               </div>
             </div>

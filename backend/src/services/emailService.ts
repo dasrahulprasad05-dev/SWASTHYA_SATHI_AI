@@ -1,8 +1,7 @@
+import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
 export interface SendEmailPayload {
   to: Array<{ email: string; name?: string }>;
@@ -11,50 +10,50 @@ export interface SendEmailPayload {
   sender?: { email: string; name: string };
 }
 
+// Sanitize user-provided HTML inputs to prevent XSS in email clients
+function escapeHtml(str: string): string {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export class EmailService {
   /**
-   * Core method to send transactional email via Brevo REST API
+   * Core method to send transactional email via Twilio SendGrid API
    */
   static async sendTransactionalEmail(payload: SendEmailPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
-    const apiKey = process.env.BREVO_API_KEY || '';
-    const senderEmail = process.env.BREVO_SENDER_EMAIL || 'dasrahulprasad05@gmail.com';
-    const senderName = process.env.BREVO_SENDER_NAME || 'Swasthya Sathi AI (ଓଡ଼ିଶା ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ)';
+    const apiKey = process.env.SENDGRID_API_KEY || '';
+    const senderEmail = process.env.SENDGRID_SENDER_EMAIL || 'dasrahulprasad05@gmail.com';
+    const senderName = process.env.SENDGRID_SENDER_NAME || 'Swasthya Sathi AI (ଓଡ଼ିଶା ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ)';
 
-    if (!apiKey || apiKey === 'your_brevo_api_key_here') {
-      console.log(`[BREVO EMAIL SIMULATION] To: ${payload.to.map((t) => t.email).join(', ')} | Subject: "${payload.subject}"`);
+    // If no valid SendGrid API key configured, simulate sending gracefully for local/dev
+    if (!apiKey || apiKey === 'your_sendgrid_api_key_here' || apiKey.startsWith('your_')) {
+      console.log(`[TWILIO SENDGRID SIMULATION] To: ${payload.to.map((t) => t.email).join(', ')} | Subject: "${payload.subject}"`);
       return { success: true, messageId: `simulated-${Date.now()}` };
     }
 
     try {
-      const body = {
-        sender: payload.sender || { email: senderEmail, name: senderName },
-        to: payload.to,
+      sgMail.setApiKey(apiKey);
+
+      const msg = {
+        to: payload.to.map((t) => (t.name ? { email: t.email, name: t.name } : { email: t.email })),
+        from: payload.sender || { email: senderEmail, name: senderName },
         subject: payload.subject,
-        htmlContent: payload.htmlContent,
+        html: payload.htmlContent,
       };
 
-      const response = await fetch(BREVO_API_URL, {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'api-key': apiKey,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Brevo API Error:', response.status, errorText);
-        return { success: false, error: errorText };
-      }
-
-      const data = (await response.json()) as { messageId?: string };
-      console.log(`[BREVO EMAIL SENT] MessageId: ${data.messageId} to ${payload.to.map((t) => t.email).join(', ')}`);
-      return { success: true, messageId: data.messageId };
+      const [response] = await sgMail.send(msg);
+      const messageId = (response?.headers?.['x-message-id'] as string) || `sg-${Date.now()}`;
+      console.log(`[TWILIO SENDGRID SENT] Status: ${response.statusCode} | MessageId: ${messageId} to ${payload.to.map((t) => t.email).join(', ')}`);
+      return { success: true, messageId };
     } catch (err: any) {
-      console.error('Brevo Email Network Exception:', err);
-      return { success: false, error: err?.message || 'Network exception while dispatching email' };
+      const errorDetails = err?.response?.body?.errors?.map((e: any) => e.message).join(', ') || err?.message || 'SendGrid dispatch error';
+      console.error('Twilio SendGrid API Error:', errorDetails);
+      return { success: false, error: errorDetails };
     }
   }
 
@@ -62,6 +61,9 @@ export class EmailService {
    * 1. Send Email Verification / Welcome OTP
    */
   static async sendVerificationEmail(toEmail: string, toName: string, otpCode: string): Promise<{ success: boolean }> {
+    const safeName = escapeHtml(toName || 'Citizen');
+    const safeOtp = escapeHtml(otpCode);
+
     const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -84,12 +86,12 @@ export class EmailService {
           <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ AI — Government of Odisha Health Initiative</p>
         </div>
         <div class="content">
-          <h2 style="color: #ffffff; margin-top: 0;">Welcome, ${toName || 'Citizen'}! / ସ୍ୱାଗତମ୍!</h2>
+          <h2 style="color: #ffffff; margin-top: 0;">Welcome, ${safeName}! / ସ୍ୱାଗତମ୍!</h2>
           <p>Thank you for registering with <strong>Swasthya Sathi AI</strong>. Please use the following 6-digit verification code to confirm your email and activate your digital health account:</p>
           
           <div class="otp-box">
             <span style="font-size: 12px; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 6px;">Your Verification OTP</span>
-            <div class="otp-code">${otpCode}</div>
+            <div class="otp-code">${safeOtp}</div>
             <span style="font-size: 12px; color: #94a3b8; display: block; margin-top: 6px;">Valid for 15 minutes</span>
           </div>
 
@@ -106,7 +108,7 @@ export class EmailService {
 
     return this.sendTransactionalEmail({
       to: [{ email: toEmail, name: toName }],
-      subject: `🏥 Verify Your Account — Swasthya Sathi AI (${otpCode})`,
+      subject: `🏥 Verify Your Account — Swasthya Sathi AI`,
       htmlContent,
     });
   }
@@ -115,6 +117,10 @@ export class EmailService {
    * 2. Send Password Reset OTP Email
    */
   static async sendPasswordResetEmail(toEmail: string, toName: string, otpCode: string): Promise<{ success: boolean }> {
+    const safeName = escapeHtml(toName || 'User');
+    const safeEmail = escapeHtml(toEmail);
+    const safeOtp = escapeHtml(otpCode);
+
     const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -137,13 +143,13 @@ export class EmailService {
           <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Swasthya Sathi AI Security Center</p>
         </div>
         <div class="content">
-          <h2 style="color: #ffffff; margin-top: 0;">Hello, ${toName || 'User'}</h2>
-          <p>We received a request to reset the password for your <strong>Swasthya Sathi AI</strong> account (${toEmail}).</p>
+          <h2 style="color: #ffffff; margin-top: 0;">Hello, ${safeName}</h2>
+          <p>We received a request to reset the password for your <strong>Swasthya Sathi AI</strong> account (${safeEmail}).</p>
           <p>Use the following 6-digit One-Time Password (OTP) to securely reset your password:</p>
           
           <div class="otp-box">
             <span style="font-size: 12px; text-transform: uppercase; color: #fda4af; display: block; margin-bottom: 6px;">Password Reset OTP</span>
-            <div class="otp-code">${otpCode}</div>
+            <div class="otp-code">${safeOtp}</div>
             <span style="font-size: 12px; color: #fda4af; display: block; margin-top: 6px;">Expires in 15 minutes</span>
           </div>
 
@@ -160,7 +166,7 @@ export class EmailService {
 
     return this.sendTransactionalEmail({
       to: [{ email: toEmail, name: toName }],
-      subject: `🔒 Your Password Reset OTP: ${otpCode} — Swasthya Sathi AI`,
+      subject: `🔒 Password Reset Request — Swasthya Sathi AI`,
       htmlContent,
     });
   }
@@ -175,11 +181,16 @@ export class EmailService {
     district: string = 'All Odisha Districts',
     guidelines: string[] = []
   ): Promise<{ success: boolean }> {
-    const guidelineListHtml = guidelines.length > 0
+    const safeTitle = escapeHtml(alertTitle);
+    const safeMessage = escapeHtml(message);
+    const safeDistrict = escapeHtml(district);
+    const safeGuidelines = guidelines.map(g => escapeHtml(g));
+
+    const guidelineListHtml = safeGuidelines.length > 0
       ? `<div style="background: #0f172a; border-left: 4px solid #ef4444; padding: 15px; border-radius: 6px; margin: 15px 0;">
            <strong style="color: #f87171;">Recommended Citizen Precautions:</strong>
            <ul style="margin: 8px 0 0 0; padding-left: 20px; color: #cbd5e1;">
-             ${guidelines.map((g) => `<li style="margin-bottom: 5px;">${g}</li>`).join('')}
+             ${safeGuidelines.map((g) => `<li style="margin-bottom: 5px;">${g}</li>`).join('')}
            </ul>
          </div>`
       : '';
@@ -202,12 +213,12 @@ export class EmailService {
       <div class="container">
         <div class="header">
           <span class="badge">🚨 OFFICIAL PUBLIC HEALTH ADVISORY</span>
-          <h1 style="margin: 12px 0 0 0; font-size: 22px;">${alertTitle}</h1>
-          <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">Target District / Region: <strong>${district}</strong></p>
+          <h1 style="margin: 12px 0 0 0; font-size: 22px;">${safeTitle}</h1>
+          <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">Target District / Region: <strong>${safeDistrict}</strong></p>
         </div>
         <div class="content">
           <p style="font-size: 16px; color: #f8fafc; font-weight: 500;">Dear Citizen / ସମ୍ମାନନୀୟ ନାଗରିକ,</p>
-          <p style="font-size: 15px; line-height: 1.7;">${message}</p>
+          <p style="font-size: 15px; line-height: 1.7;">${safeMessage}</p>
           
           ${guidelineListHtml}
 
@@ -227,7 +238,7 @@ export class EmailService {
 
     return this.sendTransactionalEmail({
       to: recipients,
-      subject: `🚨 [HEALTH ALERT] ${alertTitle} — ${district}`,
+      subject: `🚨 [HEALTH ALERT] ${safeTitle} — ${safeDistrict}`,
       htmlContent,
     });
   }
@@ -241,6 +252,10 @@ export class EmailService {
     locationText: string,
     emergencyType: string = 'Medical Emergency'
   ): Promise<{ success: boolean }> {
+    const safeName = escapeHtml(toName || 'User');
+    const safeLocation = escapeHtml(locationText);
+    const safeEmergencyType = escapeHtml(emergencyType);
+
     const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -262,10 +277,10 @@ export class EmailService {
         </div>
         <div class="content">
           <h2 style="color: #ffffff; margin-top: 0;">Emergency Ticket Active</h2>
-          <p>An emergency SOS alert was triggered for <strong>${toName || 'User'}</strong>.</p>
+          <p>An emergency SOS alert was triggered for <strong>${safeName}</strong>.</p>
           <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            <p style="margin: 0 0 6px 0;"><strong>Type:</strong> <span style="color: #f87171;">${emergencyType}</span></p>
-            <p style="margin: 0;"><strong>Incident Location:</strong> ${locationText}</p>
+            <p style="margin: 0 0 6px 0;"><strong>Type:</strong> <span style="color: #f87171;">${safeEmergencyType}</span></p>
+            <p style="margin: 0;"><strong>Incident Location:</strong> ${safeLocation}</p>
           </div>
           <p>The state emergency ambulance dispatch grid (108) has been alerted. Keep your phone line free for the dispatch coordinator call.</p>
         </div>

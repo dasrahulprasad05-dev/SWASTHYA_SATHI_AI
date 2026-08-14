@@ -37,9 +37,9 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'nav.schemes', path: '/schemes', icon: 'Landmark' },
   { label: 'nav.records', path: '/records', icon: 'FileText' },
   { label: 'nav.emergency', path: '/emergency', icon: 'PhoneCall', isAlert: true },
-  { label: 'nav.dashboard', path: '/dashboard', icon: 'LayoutDashboard' },
+  { label: 'nav.dashboard', path: '/dashboard', icon: 'LayoutDashboard', requiredRole: 'citizen' },
   { label: 'nav.voice', path: '/voice', icon: 'Mic' },
-  { label: 'nav.admin', path: '/admin', icon: 'ShieldAlert' },
+  { label: 'nav.admin', path: '/admin', icon: 'ShieldAlert', requiredRole: 'admin' },
 ];
 
 export const APP_NAV_ITEMS = NAV_ITEMS;

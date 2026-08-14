@@ -12,7 +12,7 @@ export interface User {
   location?: string;
   district?: string;
   language: 'en' | 'hi' | 'or';
-  role: 'citizen' | 'health_officer' | 'admin' | 'user' | 'super_admin';
+  role: 'citizen' | 'doctor' | 'health_worker' | 'health_officer' | 'admin' | 'user' | 'super_admin';
   designation?: string;
   department?: string;
   isVerified: boolean;
@@ -53,7 +53,7 @@ export interface RegisterData {
   password: string;
   district?: string;
   language?: string;
-  role?: 'citizen' | 'health_officer' | 'admin';
+  role?: 'citizen' | 'doctor' | 'health_worker' | 'health_officer' | 'admin';
 }
 
 export interface AdminRegisterData extends RegisterData {
@@ -81,6 +81,7 @@ export interface Chat {
   timestamp: string;
   isPinned?: boolean;
   messageCount: number;
+  unread?: boolean;
   language?: 'en' | 'hi' | 'or';
 }
 
@@ -173,7 +174,7 @@ export interface Disease {
   description?: string;
   overview: string;
   category: string;
-  severity: 'Emergency' | 'High' | 'Moderate' | 'Mild';
+  severity: 'Emergency' | 'High' | 'Moderate' | 'Mild' | 'Low' | 'Critical';
   transmission?: string;
   commonIn?: string;
   isContagious?: boolean;
@@ -385,6 +386,7 @@ export interface NavItem {
   badge?: string;
   badgeColor?: string;
   isAlert?: boolean;
+  requiredRole?: 'admin' | 'citizen' | 'health_officer';
 }
 
 // ── API Response ──

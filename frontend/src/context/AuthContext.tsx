@@ -114,16 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // 3. Fallback Offline Simulation
-      await new Promise((resolve) => setTimeout(resolve, 400));
-      const loggedUser: User = {
-        ...MOCK_USER,
-        email: credentials.email,
-        role: credentials.adminPortal ? 'admin' : 'citizen',
-        designation: credentials.adminPortal ? 'Chief Public Health Officer' : 'Citizen',
-      };
-      setUser(loggedUser);
-      localStorage.setItem('auth_token', 'jwt_' + Date.now());
+      // Bug 2 Fix: No fallback — if both backend and Supabase fail, reject login
+      throw new Error('Authentication failed. Please check your credentials and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // 2. Try Backend API (Brevo OTP fallback)
+      // 2. Try Backend API (SendGrid OTP fallback)
       try {
         const res = await authService.register({
           name: data.name,
@@ -269,8 +261,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authService.forgotPassword(email);
       return { success: true, message: res.message || 'OTP sent to your email.' };
     } catch (err: any) {
-      // Offline fallback simulation
-      return { success: true, message: 'Password reset OTP simulated: check console or email.' };
+      // Bug 6 Fix: No fallback — propagate the error
+      return { success: false, message: err?.message || 'Failed to send password reset OTP. Please try again.' };
     }
   };
 
@@ -279,9 +271,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authService.resetPassword(data);
       return { success: true, message: res.message || 'Password reset successfully.' };
     } catch (err: any) {
-      if (data.otp && data.otp.length === 6) {
-        return { success: true, message: 'Password reset successfully!' };
-      }
+      // Bug 6 Fix: No bypass — reject invalid OTP properly
       throw err;
     }
   };
@@ -291,9 +281,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authService.verifyOTP(email, otp);
       return { success: true, message: res.message || 'Email verified successfully.' };
     } catch (err: any) {
-      if (otp && otp.length === 6) {
-        return { success: true, message: 'Email verified successfully!' };
-      }
+      // Bug 6 Fix: No bypass — reject invalid OTP properly
       throw err;
     }
   };

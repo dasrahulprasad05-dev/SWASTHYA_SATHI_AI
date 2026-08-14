@@ -64,7 +64,7 @@ export const AdminPage: React.FC = () => {
         testEmail: user?.email,
       });
       setBroadcastSent(true);
-      setStatusNote(`Emergency alert dispatched via Brevo Email to ${broadcastDistrict} and ${user?.email || 'officials'}.`);
+      setStatusNote(`Emergency alert dispatched via SendGrid Email to ${broadcastDistrict} and ${user?.email || 'officials'}.`);
       setTimeout(() => {
         setBroadcastSent(false);
         setStatusNote('');
@@ -217,7 +217,7 @@ export const AdminPage: React.FC = () => {
                 }}
               >
                 {broadcastSent ? <CheckCircle2 size={16} /> : <Send size={16} />}
-                <span>{isBroadcasting ? 'Dispatching via Brevo...' : broadcastSent ? 'Alert Dispatched via Brevo Email!' : 'Push Emergency Citizen Alert'}</span>
+                <span>{isBroadcasting ? 'Dispatching via SendGrid...' : broadcastSent ? 'Alert Dispatched via SendGrid Email!' : 'Push Emergency Citizen Alert'}</span>
               </button>
 
               {statusNote && (

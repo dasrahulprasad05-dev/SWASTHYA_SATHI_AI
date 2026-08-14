@@ -135,7 +135,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ bottomSlot, onClose }) =
 
       {/* Navigation List */}
       <nav style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-        {APP_NAV_ITEMS.map((item) => {
+        {APP_NAV_ITEMS
+          .filter((item) => {
+            if (!item.requiredRole) return true;
+            if (item.requiredRole === 'admin') return user?.role === 'admin';
+            if (item.requiredRole === 'citizen') return user?.role !== 'admin';
+            return true;
+          })
+          .map((item) => {
           const isActive = location.pathname === item.path;
           const isAlert = item.isAlert;
 

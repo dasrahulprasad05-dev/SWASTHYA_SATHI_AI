@@ -214,7 +214,7 @@ export const AuthPage: React.FC = () => {
     setIsSubmittingForgot(true);
     try {
       const res = await forgotPassword(forgotEmail);
-      showToast(res.message || 'OTP sent to your email via Brevo!', 'success');
+      showToast(res.message || 'OTP sent to your email via SendGrid!', 'success');
       setForgotStep(2);
     } catch (err: any) {
       showToast(err.message || 'Failed to dispatch reset OTP.', 'error');
@@ -500,7 +500,7 @@ export const AuthPage: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                Email Address (For Brevo Verification) *
+                Email Address (For Email Verification) *
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
@@ -604,7 +604,7 @@ export const AuthPage: React.FC = () => {
 
             <div className="p-3 rounded-xl bg-teal-950/30 border border-teal-800/40 text-xs text-teal-300 flex items-center gap-2">
               <Send className="w-4 h-4 text-teal-400 flex-shrink-0" />
-              <span>Brevo will send an automated verification OTP to your email upon creation.</span>
+              <span>An automated verification OTP will be sent to your email upon creation.</span>
             </div>
 
             <button
@@ -782,7 +782,7 @@ export const AuthPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Reset Account Password</h3>
-                  <p className="text-xs text-slate-400">Brevo Transactional Security Gateway</p>
+                  <p className="text-xs text-slate-400">Twilio SendGrid Security Gateway</p>
                 </div>
               </div>
               <button
@@ -800,7 +800,7 @@ export const AuthPage: React.FC = () => {
             {forgotStep === 1 ? (
               <form onSubmit={handleRequestResetOtp} className="space-y-4">
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Enter your registered account email. We will instantly dispatch a secure 6-digit OTP via <strong>Brevo Email</strong>.
+                  Enter your registered account email. We will instantly dispatch a secure 6-digit OTP via <strong>SendGrid Email</strong>.
                 </p>
 
                 <div>
@@ -844,7 +844,7 @@ export const AuthPage: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                    6-Digit Brevo OTP Code *
+                    6-Digit Verification OTP Code *
                   </label>
                   <input
                     type="text"

@@ -423,7 +423,7 @@ export const adminService = {
   },
 };
 
-// ── Authentication & Brevo Email Service ──
+// ── Authentication & SendGrid Email Service ──
 export const authService = {
   login: async (credentials: { email: string; password: string; adminPortal?: boolean }) => {
     try {

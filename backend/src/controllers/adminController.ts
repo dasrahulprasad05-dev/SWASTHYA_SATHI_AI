@@ -48,7 +48,16 @@ export class AdminController {
       if (isSupabaseConfigured()) {
         const { data, error } = await supabase.from('disease_trends').select('*');
         if (!error && data && data.length > 0) {
-          res.status(200).json({ success: true, data });
+          // Bug 8 Fix: Map DB column names to the API format expected by the frontend
+          res.status(200).json({
+            success: true,
+            data: data.map((row: any) => ({
+              month: row.month,
+              dengue: row.dengue_cases ?? row.dengue ?? 0,
+              malaria: row.malaria_cases ?? row.malaria ?? 0,
+              diarrhoea: row.diarrhoea_cases ?? row.diarrhoea ?? 0,
+            })),
+          });
           return;
         }
       }
@@ -79,7 +88,7 @@ export class AdminController {
 
       console.log(`[EMERGENCY BROADCAST DISPATCHED] District: ${district} | Type: ${alertType} | Message: ${message}`);
 
-      // Dispatch Brevo Emergency Broadcast Email
+      // Dispatch Twilio SendGrid Emergency Broadcast Email
       const recipients = testEmail
         ? [{ email: testEmail, name: 'Verified Citizen' }]
         : [

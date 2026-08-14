@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     phone TEXT,
     location TEXT DEFAULT 'Odisha, India',
     language TEXT DEFAULT 'or' CHECK (language IN ('en', 'hi', 'or')),
-    role TEXT DEFAULT 'citizen' CHECK (role IN ('citizen', 'doctor', 'health_worker', 'admin')),
+    role TEXT DEFAULT 'citizen' CHECK (role IN ('citizen', 'doctor', 'health_worker', 'health_officer', 'admin', 'user', 'super_admin')),
     abha_id TEXT,
     emergency_contacts JSONB DEFAULT '[]'::jsonb,
     is_verified BOOLEAN DEFAULT true,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS public.diseases (
     name TEXT NOT NULL UNIQUE,
     native_name TEXT,
     category TEXT NOT NULL, -- e.g. 'Vector-Borne Disease', 'Water-Borne Disease', 'Seasonal'
-    severity TEXT NOT NULL CHECK (severity IN ('Low', 'Moderate', 'High', 'Critical')),
+    severity TEXT NOT NULL CHECK (severity IN ('Low', 'Moderate', 'High', 'Critical', 'Emergency', 'Mild')),
     transmission TEXT,
     overview TEXT NOT NULL,
     symptoms TEXT[] DEFAULT '{}',
