@@ -27,7 +27,7 @@ export class EmailService {
    */
   static async sendTransactionalEmail(payload: SendEmailPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
     const apiKey = process.env.SENDGRID_API_KEY || '';
-    const senderEmail = process.env.SENDGRID_SENDER_EMAIL || 'dasrahulprasad05@gmail.com';
+    const senderEmail = process.env.SENDGRID_SENDER_EMAIL || 'rahulprasaddas37@gmail.com';
     const senderName = process.env.SENDGRID_SENDER_NAME || 'Swasthya Sathi AI (ଓଡ଼ିଶା ସ୍ୱାସ୍ଥ୍ୟ ସାଥୀ)';
 
     // If no valid SendGrid API key configured, simulate sending gracefully for local/dev
