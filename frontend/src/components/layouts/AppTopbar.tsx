@@ -51,6 +51,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
 
   return (
     <header
+      className="topbar-header"
       style={{
         height: 'var(--topbar-height)',
         backgroundColor: 'var(--surface)',
@@ -89,7 +90,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
         ) : (
           <div>
             {title && (
-              <h1 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+              <h1 className="topbar-title" style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
                 {title}
               </h1>
             )}
@@ -103,7 +104,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
       </div>
 
       {/* Right Section: Language, Notifications, Theme, User */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+      <div className="topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
         {rightContent}
 
         {/* Language Selector */}
@@ -125,7 +126,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
             }}
           >
             <Globe size={15} color="var(--primary)" />
-            <span>{currentLang.nativeLabel}</span>
+            <span className="topbar-lang-label">{currentLang.nativeLabel}</span>
             <span style={{ fontSize: '0.65rem' }}>▼</span>
           </button>
 
@@ -173,6 +174,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
 
         {/* Theme Toggle */}
         <button
+          className="topbar-hide-mobile"
           onClick={toggleTheme}
           title="Toggle Theme"
           style={{
@@ -192,7 +194,7 @@ export const AppTopbar: React.FC<AppTopbarProps> = ({
         </button>
 
         {/* Notifications Bell */}
-        <div style={{ position: 'relative' }}>
+        <div className="topbar-hide-mobile" style={{ position: 'relative' }}>
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
             style={{

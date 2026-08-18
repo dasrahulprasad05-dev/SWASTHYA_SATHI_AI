@@ -24,7 +24,7 @@ export const LandingPage: React.FC = () => {
         }}
       >
         {/* Gradient Overlay for Text Readability */}
-        <div style={{
+        <div className="hero-gradient-overlay" style={{
           position: 'absolute',
           inset: 0,
           background: 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 35%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0) 100%)',

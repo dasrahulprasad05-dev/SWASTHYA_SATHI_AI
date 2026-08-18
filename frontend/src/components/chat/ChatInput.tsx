@@ -42,7 +42,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div style={{ padding: '0.85rem 1.5rem 1.25rem 1.5rem', backgroundColor: 'transparent', position: 'relative' }}>
+    <div className="chat-input-wrapper" style={{ padding: '0.85rem 1.5rem 1.25rem 1.5rem', backgroundColor: 'transparent', position: 'relative' }}>
       <div style={{ maxWidth: '840px', margin: '0 auto' }}>
         {/* Input Bar Container */}
         <motion.div

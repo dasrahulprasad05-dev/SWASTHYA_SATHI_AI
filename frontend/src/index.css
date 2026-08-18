@@ -445,11 +445,14 @@ ul, ol {
 
 /* ── Mobile Responsiveness ── */
 
-/* Hidden on desktop, shown on mobile */
-.mobile-only {
-  display: none !important;
+/* ── Desktop guard: hide mobile-only elements on wide screens ── */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
 }
 
+/* ── Mobile Breakpoint (≤768px) ── */
 @media (max-width: 768px) {
   .mobile-only {
     display: flex !important;
@@ -460,11 +463,9 @@ ul, ol {
     display: none !important;
   }
 
-  /* Right panel takes full width or hidden */
+  /* Right panel completely hidden on mobile */
   .mobile-right-panel {
-    width: 100% !important;
-    border-left: none !important;
-    border-top: 1px solid var(--border);
+    display: none !important;
   }
 
   .mobile-hide {
@@ -474,6 +475,7 @@ ul, ol {
   .mobile-flex-col {
     flex-direction: column !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
   
   /* Content padding reduction */
@@ -481,9 +483,159 @@ ul, ol {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
+
+  /* ── Chat Page Mobile Fixes ── */
+  .chat-sidebar-panel {
+    display: none !important;
+  }
+
+  .chat-container {
+    height: calc(100vh - var(--topbar-height) - 2rem) !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  .chat-messages-area {
+    padding: 0.75rem !important;
+  }
+
+  .chat-input-wrapper {
+    padding: 0.5rem 0.75rem 0.75rem 0.75rem !important;
+  }
+
+  /* ── Topbar Mobile Fixes ── */
+  .topbar-desktop-only {
+    display: none !important;
+  }
+
+  .topbar-actions {
+    gap: 0.4rem !important;
+  }
+
+  .topbar-header {
+    padding: 0 0.75rem !important;
+  }
+
+  /* ── Typography scaling ── */
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.1rem; }
+
+  /* ── Main content area ── */
+  main.mobile-px-2 {
+    padding: 0.75rem !important;
+  }
+
+  /* ── Hospital grid mobile fix ── */
+  .hospital-grid {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* ── Hero section mobile fix ── */
+  .hero-floating-card {
+    display: none !important;
+  }
+
+  .hero-robot-image {
+    width: 200px !important;
+  }
+
+  .hero-right-column {
+    height: 300px !important;
+  }
+
+  .hero-heading {
+    font-size: clamp(2rem, 8vw, 2.8rem) !important;
+  }
+
+  .hero-description {
+    font-size: 0.95rem !important;
+  }
+
+  /* ── Landing page gradient fix for portrait ── */
+  .hero-gradient-overlay {
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 40%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,0.2) 100%) !important;
+  }
+
+  .hospital-map-panel {
+    min-height: 300px !important;
+    height: 300px !important;
+  }
+
+  /* ── Reduce main area padding ── */
+  main {
+    padding: 0.75rem !important;
+  }
 }
 
-/* Sidebar Drawer for Mobile */
+/* ── Extra-small phones (≤ 480px) ── */
+@media (max-width: 480px) {
+  /* Further reduce padding */
+  .mobile-px-2 {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+
+  main {
+    padding: 0.5rem !important;
+  }
+
+  /* Scale down heading fonts */
+  h1 { font-size: 1.5rem !important; }
+  h2 { font-size: 1.25rem !important; }
+  h3 { font-size: 1.1rem !important; }
+
+  /* Chat input goes full-width */
+  .chat-input-wrapper {
+    padding: 0.35rem 0.5rem 0.5rem 0.5rem !important;
+  }
+
+  /* Hero section extra-small */
+  .hero-heading {
+    font-size: clamp(1.6rem, 8vw, 2.2rem) !important;
+  }
+
+  .hero-right-column {
+    height: 220px !important;
+  }
+
+  .hero-robot-image {
+    width: 160px !important;
+  }
+
+  .hero-cta-buttons {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .hero-cta-buttons > * {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Feature pills wrap tighter */
+  .hero-feature-pills {
+    gap: 0.5rem !important;
+  }
+
+  .hero-feature-pills > div {
+    font-size: 0.78rem !important;
+    padding: 0.3rem 0.75rem !important;
+  }
+
+  /* Topbar title size reduction */
+  .topbar-title {
+    font-size: 1rem !important;
+  }
+
+  /* Language selector compact */
+  .topbar-lang-label {
+    display: none !important;
+  }
+}
+
+/* ── Sidebar Drawer for Mobile ── */
 .mobile-drawer-overlay {
   position: fixed;
   inset: 0;

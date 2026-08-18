@@ -53,7 +53,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         />
 
         {/* Workspace: Content + Right Panel */}
-        <div className="mobile-flex-col" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <div className="mobile-flex-col" style={{ flex: 1, display: 'flex', overflow: 'auto' }}>
           {/* Main Area */}
           <main style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', minWidth: 0 }} className="mobile-px-2">
             {children}

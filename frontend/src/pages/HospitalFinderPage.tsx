@@ -176,9 +176,10 @@ export const HospitalFinderPage: React.FC = () => {
 
         {/* Split View: List on Left, Map on Right */}
         <div
+          className="hospital-grid hospital-container-responsive"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '1.5rem',
             height: 'calc(100vh - var(--topbar-height) - 13rem)',
             minHeight: '520px',
@@ -230,7 +231,7 @@ export const HospitalFinderPage: React.FC = () => {
           </div>
 
           {/* Right: Sticky Interactive Map */}
-          <div style={{ height: '100%', minHeight: '400px' }}>
+          <div className="hospital-map-panel" style={{ height: '100%', minHeight: '400px' }}>
             <HospitalMap
               hospitals={hospitals}
               selectedHospital={selectedHospital}

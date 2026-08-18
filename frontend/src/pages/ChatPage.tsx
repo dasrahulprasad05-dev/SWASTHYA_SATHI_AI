@@ -122,6 +122,7 @@ export const ChatPage: React.FC = () => {
       }
     >
       <div
+        className="chat-container app-chat-main"
         style={{
           display: 'flex',
           height: 'calc(100vh - var(--topbar-height) - 3rem)',
@@ -133,18 +134,20 @@ export const ChatPage: React.FC = () => {
         }}
       >
         {/* Left: Chat history panel */}
-        <ChatSidebar
-          chats={chats}
-          activeChatId={activeChatId}
-          onSelectChat={handleSelectChat}
-          onNewChat={handleNewChat}
-          onDeleteChat={handleDeleteChat}
-        />
+        <div className="chat-sidebar-panel">
+          <ChatSidebar
+            chats={chats}
+            activeChatId={activeChatId}
+            onSelectChat={handleSelectChat}
+            onNewChat={handleNewChat}
+            onDeleteChat={handleDeleteChat}
+          />
+        </div>
 
         {/* Right: Messages conversation area */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%' }}>
+        <div className="chat-content-area" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%' }}>
           {/* Scrollable messages */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+          <div className="chat-messages-area" style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
             {messages.length === 0 ? (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <AIWelcome onSelectPrompt={handleSendMessage} />
@@ -169,7 +172,7 @@ export const ChatPage: React.FC = () => {
           </div>
 
           {/* Chat input footer */}
-          <div style={{ marginTop: 'auto' }}>
+          <div className="chat-input-wrapper" style={{ marginTop: 'auto' }}>
             <ChatInput
               onSendMessage={handleSendMessage}
               isLoading={isLoading}

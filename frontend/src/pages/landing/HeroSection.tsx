@@ -38,10 +38,12 @@ export const HeroSection: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="hero-left-column"
             style={{ paddingRight: '2rem' }}
           >
             {/* Headline */}
             <h1
+              className="hero-heading"
               style={{
                 fontSize: 'clamp(2.8rem, 5vw, 4.2rem)',
                 fontWeight: 900,
@@ -58,6 +60,7 @@ export const HeroSection: React.FC = () => {
 
             {/* Description */}
             <p
+              className="hero-description"
               style={{
                 fontSize: '1.1rem',
                 color: '#475569',
@@ -72,6 +75,7 @@ export const HeroSection: React.FC = () => {
 
             {/* 4 Feature Badges */}
             <div
+              className="hero-feature-pills"
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -101,7 +105,7 @@ export const HeroSection: React.FC = () => {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="hero-cta-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <Link
                 to="/chat"
                 style={{
@@ -149,7 +153,7 @@ export const HeroSection: React.FC = () => {
           </motion.div>
 
           {/* Right Column: Robot Mascot & Orbit */}
-          <div className="relative h-[450px] lg:h-[600px] flex items-center justify-center mt-8 lg:mt-0 overflow-hidden lg:overflow-visible">
+          <div className="hero-right-column relative h-[450px] lg:h-[600px] flex items-center justify-center mt-8 lg:mt-0 overflow-hidden lg:overflow-visible">
             
             {/* Base Hologram Ring */}
             <div style={{
@@ -175,6 +179,7 @@ export const HeroSection: React.FC = () => {
             <motion.img 
               src="/images/robot-mascot.png" 
               alt="Medical AI Robot Mascot" 
+              className="hero-robot-image"
               animate={{ y: [-15, 15, -15] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
               style={{
@@ -191,6 +196,7 @@ export const HeroSection: React.FC = () => {
             {floatingCards.map((card, idx) => (
               <motion.div
                 key={idx}
+                className="hero-floating-card"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: card.delay, duration: 0.5 }}
